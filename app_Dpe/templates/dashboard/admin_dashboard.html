@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+  <style>
+    /* Your existing styles */
+.top_bar {
+  background: #002a4e;
+  color: white;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 10px 0;
+  direction: rtl;
+  font-family: "Amiri", "Arial", sans-serif;
+  position: fixed;       /* ✅ Fixée en haut */
+  top: 0;                /* ✅ tout en haut */
+  width: 100%;
+  z-index: 1000;         /* ✅ au-dessus de tout sauf header */
+}
+
+
+    a:link {
+      text-decoration: none;
+    }
+
+    .order-card {
+      color: #fff;
+    }
+
+    .bg-c-blue {
+      background: #104f66;
+    }
+
+    .bg-c-green {
+      background: #4C51BF;
+    }
+
+    .bg-c-yellow {
+      background: #53616e;
+    }
+
+    .bg-c-pink {
+      background: #3186ca;
+    }
+
+    .card {
+      -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
+      box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
+      margin-bottom: 30px;
+      -webkit-transition: all 0.3s ease-in-out;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .card .card-block {
+      padding: 25px;
+    }
+
+    .order-card i {
+      font-size: 26px;
+    }
+
+    .f-left {
+      float: left;
+    }
+
+    .f-right {
+      float: right;
+    }
+
+    header {
+      left: 0px;
+      right: 0px;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Gill Sans", sans-serif;
+    }
+
+    header {
+  position: fixed;
+  top: 50px;             /* ✅ laisse la place à la barre */
+  width: 100%;
+  z-index: 999;
+  height: 5.8em !important;
+  background: #f8f9fa;
+}
+
+    .left_area h3 {
+      margin: 0px;
+      text-transform: uppercase;
+      font-size: 22px;
+      font-weight: 900;
+      float: right; /* ✅ le place à droite */
+      text-align: right; /* ✅ aligne le texte à droite */
+
+    }
+
+    .left_area span {
+      color: #19B3D3;
+    }
+    .right_area {
+      float: left; /* ✅ place le bouton à gauche */
+      top: 10px;
+    }
+
+    .logout_btn {
+      padding: 5px;
+      background: #ef5350;
+      text-decoration: none;
+      float: right;
+      margin-top: -30px;
+      margin-right: 0;
+      margin-left: 40px;
+      border-radius: 2px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      transition: 0.5s;
+    }
+
+    .logout_btn:hover {
+      background: #ca4745;
+    }
+
+    .sidebar {
+      background: #2171b1;
+      margin-top: 8em;
+      padding-top: 30px;
+      position: fixed;
+      right: 0; /* ✅ à la place de left: 0 */
+      width: 250px;
+      height: 100%;
+      transition: 0.5s;
+      transition-property: right;
+    }
+
+
+    .sidebar .profile_image {
+      width: 100px;
+      height: 100px;
+      border-radius: 100px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar h4 {
+      color: #f3f3f3;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      color: #fff;
+      display: block;
+      width: 100%;
+      line-height: 60px;
+      text-decoration: none;
+      padding-left: 40px;
+      box-sizing: border-box;
+      transition: 0.5s;
+    }
+
+    .sidebar a:hover {
+      background: #969696;
+      color: white;
+    }
+
+    .sidebar i {
+      padding-right: 10px;
+    }
+
+    label #sidebar_btn {
+      z-index: 1;
+      position: fixed;
+      cursor: pointer;
+      right: 300px;
+      left: auto;
+      font-size: 20px;
+      margin: 5px 0;
+      transition: 0.5s;
+      transition-property: color;
+    }
+
+    label #sidebar_btn:hover {
+      color: #5f5f5f;
+    }
+
+    #check:checked~.sidebar {
+      right: -190px;
+    }
+
+    #check:checked~.sidebar a span {
+      display: none;
+    }
+
+    #check:checked~.sidebar a {
+      font-size: 20px;
+      margin-left: 170px;
+      width: 80px;
+    }
+
+    .content {
+      margin-right: 250px;
+      background: url(background.png) no-repeat;
+      background-position: center;
+      background-size: cover;
+      height: 100vh;
+      transition: 0.5s;
+    }
+
+
+    #check:checked~.content {
+      margin-right: 60px;
+    }
+
+    #check {
+      display: none;
+    }
+
+    .panel-primary {
+      border-color: #002a4e !important;
+    }
+
+    .panel-primary>.panel-heading {
+      background-color: #002a4e !important;
+      border-color: #002a4e !important;
+    }
+
+    /* New styles */
+    .card-container {
+      margin-top: 5em;
+    }
+
+    .card-container .card {
+      margin: 15px;
+    }
+
+    /* Center alignment */
+    .justify-content-center {
+      justify-content: center !important;
+    }
+  </style>
+</head>
+
+<body>
+  <input type="checkbox" id="check">
+  <div class="top_bar">
+  <h2>المنظومة المعلوماتية الإدارة المركزية</h2>
+</div>
+  <!--header area start-->
+  <header class="shadow bg-light">
+    <label for="check">
+  <i style="right: 200px; margin-top: 17px; position: fixed;" class="fas fa-bars" id="sidebar_btn"></i>
+</label>
+
+    <div class="left_area">
+      <h3> المندوب المركزي</h3>
+    </div>
+    <div class="right_area">
+  <a href="{% url 'logout' %}" class="logout_btn" style="border-radius:0px; margin-top: 20px;">خروج</a>
+</div>
+
+  </header>
+  <!--header area end-->
+  <!--sidebar start-->
+  <div class="sidebar">
+    <center>
+     
+   
+      <h6 style="color: rgb(255, 255, 255);">( Admin )</h6>
+    </center>
+    <a href="{% url 'tableauboard' %}"><i class="fas fa-tachometer-alt"></i><span>المعطيات العامة</span></a>
+    
+      </div>
+
+   
+<br><br><br><br><br><br><br>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-4 col-xl-3">
+        <a href="" style="text-decoration: none;color:white;">
+          <div class="card bg-c-pink order-card">
+            <div class="card-block">
+              <h6 class="m-b-20">الاحصائيات </h6>
+              <h2 class="text-right"><i class="fas fa-user-graduate f-left"></i><span>{{ nombre_projets }}</span></h2>
+            </div>
+          </div>
+        </a>
+      </div>
+
+       <div class="col-md-4 col-xl-3">
+        <a href="" style="text-decoration: none;color:white;">
+          <div class="card bg-c-pink order-card">
+            <div class="card-block">
+              <h6 class="m-b-20">الاحصائيات </h6>
+              <h2 class="text-right"><i class="fas fa-user-graduate f-left"></i><span>{{ nombre_projets }}</span></h2>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-md-4 col-xl-3">
+        <a href="" style="text-decoration: none;color:white;">
+          <div class="card bg-c-pink order-card">
+            <div class="card-block">
+              <h6 class="m-b-20">الاحصائيات </h6>
+              <h2 class="text-right"><i class="fas fa-user-graduate f-left"></i><span>{{ nombre_reclamations }}</span></h2>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!--content start-->
+  <div class="content">
+    <br><br><br><br><br>
+    {% block content %}
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+    {% endblock content %}
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    {% include "account/footer.html" %}
+  </div>
+  <!--content end-->
+</body>
+
+</html>

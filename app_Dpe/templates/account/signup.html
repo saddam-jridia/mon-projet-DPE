@@ -1,0 +1,26 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% load crispy_forms_filters %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>{% trans "Sign Up" %}</h1>
+
+    <p>Vous avez déjà un compte? Alors veuillez <a href="{% url 'account_login' %}">vous connecter</a></p>
+</div>
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form enctype="multipart/form-data"  class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-grid mt-3">
+            <button class="btn btn-dark" type="submit">{% trans "S'inscrire" %}</button>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

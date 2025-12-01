@@ -1,0 +1,65 @@
+{% extends 'dashboard/clientbase.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-center">User Profile</h2>
+                    </div>
+                    <div class="card-body">
+                        
+
+                        {% if user.is_admin %}
+                            <ul>
+                                <li><strong>Role:</strong> Admin</li>
+                                <li><strong>Name:</strong> {{ user.name }}</li>
+                                <li><strong>Phone:</strong> {{ user.phone }}</li>
+                                <li><strong>Your email:</strong> {{ user.email }}</li>
+                                <!-- Add more profile information as needed -->
+                            </ul>
+                            
+                           <!--  <a class="btn btn-dark" href="{% url 'projet' %}">Projets</a>
+                            <a class="btn btn-dark" href="{% url 'listeprojet' %}">Liste des Projets</a>
+                            <a class="btn btn-dark" href="{% url 'map' %}">Map</a>
+                            <a class="btn btn-dark" href="{% url 'listereclamation' %}">Liste des Reclamations</a>
+                       --> {% elif user.is_customer %}
+                            
+                            <ul>
+                                <li><strong>Role:</strong> Client</li>
+                                <li><strong>Name:</strong> {{ user.name }}</li>
+                                <li><strong>Phone:</strong> {{ user.phone }}</li>
+                                <li><strong>Your email:</strong> {{ user.email }}</li>
+
+                                <!-- Add more profile information as needed -->
+                            </ul>
+                           <!-- <a class="btn btn-dark" href="{% url 'reclamation' %}">Reclamation</a>
+                       --> {% elif user.is_employee %}
+                          
+                            <ul>
+                                <li><strong>Role:</strong> Employee</li>
+                                <li><strong>Name:</strong> {{ user.name }}</li>
+                                <li><strong>Phone:</strong> {{ user.phone }}</li>
+                                <li><strong>Your email:</strong> {{ user.email }}</li>
+
+                                <!-- Add more profile information as needed -->
+                            </ul>
+                           <!-- <div class="btn-group" role="group" aria-label="Actions">
+                            <a class="btn btn-dark" href="{% url 'user_map' %}">Map</a> &nbsp;
+                             <form action="{% url 'reclamation_map' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="notification_id" value="{{ notification_id }}">
+                                <button type="submit" class="btn btn-dark"> Notification Map</button>
+                            </form>
+                        </div>-->
+                        {% else %}
+                            <p><em>Login to access additional profile information.</em></p>
+                        {% endif %}
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

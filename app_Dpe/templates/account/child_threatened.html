@@ -1,0 +1,20 @@
+{% extends "account/base.html" %}
+
+{% block content %}
+<h1 style="text-align:center; margin-bottom: 30px;">صفحة الطفل المهدد</h1>
+<p style="text-align:center;">محتوى سيتم إضافته لاحقاً.</p>
+
+<div style="text-align:center; margin-top:40px;">
+    <!-- Bouton Retour vers index2 -->
+    <a href="{% url 'index2' %}" 
+       style="display:inline-block; margin:10px; padding:10px 20px; background-color:#6c757d; color:white; border-radius:5px; text-decoration:none; font-weight:bold;">
+       الرجوع
+    </a>
+
+    <!-- Bouton Déconnexion -->
+    <a href="{% url 'logout' %}" 
+       style="display:inline-block; margin:10px; padding:10px 20px; background-color:#dc3545; color:white; border-radius:5px; text-decoration:none; font-weight:bold;">
+       تسجيل الخروج
+    </a>
+</div>
+{% endblock %}

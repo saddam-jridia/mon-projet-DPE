@@ -1,0 +1,58 @@
+/* ------------------ GLOBAL ------------------ */
+body {
+    font-family: "Times New Roman", "Tajawal", "Roboto", "Tahoma", sans-serif;
+    background-color: #e6f0ff;
+    direction: rtl;
+    text-align: right;
+}
+
+h1, h2, h3, h4 {
+    font-family: "Times New Roman", "Tajawal", sans-serif;
+    font-weight: bold;
+}
+
+/* ------------------ NAVBAR ------------------ */
+.ministere-page .navbar {
+    background-color: #f9fbff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    min-height: 70px;
+}
+
+/* --- Logos uniformisés --- */
+.logo-nav {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.logo-nav:hover {
+    transform: scale(1.05);
+}
+
+/* --- Texte central --- */
+.text-tunisie {
+    font-family: "Times New Roman", serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.2;
+    color: #003366;
+}
+
+/* --- Centrage vertical --- */
+.navbar .container {
+    align-items: center !important;
+}
+
+/* ------------------ RESPONSIVE ------------------ */
+@media (max-width: 768px) {
+    .text-tunisie {
+        display: none;
+    }
+
+    .logo-nav {
+        height: 40px;
+    }
+}

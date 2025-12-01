@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block head_title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <style>
+        .form-group {
+            margin-top: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {% block body %}
+    {% if messages %}
+        <div class="p-2">
+            {% for message in messages %}
+                <div class="text-center border-bottom">{{message}}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% csrf_token %}
+    <div class="p-2 mb-2 bg-dark">
+        <div class="container d-flex justify-content-between">
+            <div class="container mt-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <a class="text-light" href="{% url 'account_signup' %}">signup</a>
+                        <a class="btn btn-dark" href="{% url 'tableauboard' %}">Tableau de Board</a>
+                        <a class="btn btn-dark" href="{% url 'parametre' %}">Paramètres</a>
+                        <a class="btn btn-dark" href="{% url 'projet' %}">Projets</a>
+                        <a class="btn btn-dark" href="{% url 'listeprojet' %}">Liste des Projets</a>
+                        <a class="btn btn-dark" href="{% url 'map' %}">Map</a>
+                        <a class="btn btn-dark" href="{% url 'listereclamation' %}">Liste des Reclamations</a>
+                        <a class="text-light" href="{% url 'logout' %}">logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block content %}{% endblock %}
+    {% endblock %}
+    {% block extra_body %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+    <div class="row">
+        <!-- Vertical Navbar -->
+        <div class="col-md-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-projects-tab" data-bs-toggle="pill" href="#v-pills-projects" role="tab" aria-controls="v-pills-projects" aria-selected="true">Projects</a>
+                <a class="nav-link" id="v-pills-claims-tab" data-bs-toggle="pill" href="#v-pills-claims" role="tab" aria-controls="v-pills-claims" aria-selected="false">Réclamations</a>
+            </div>
+        </div>
+        <!-- Content Area -->
+        <div class="col-md-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                <!-- Projects Tab Content -->
+                <div class="tab-pane fade show active" id="v-pills-projects" role="tabpanel" aria-labelledby="v-pills-projects-tab">
+                    {% block projects_content %}
+                    <h2>Projects</h2>
+                    <p><strong>Total number of projects: {{ nombre_projets }}</strong></p>
+                    <h2>Statistiques des projets par Etat</h2>
+                    <canvas id="etatProjetChart" width="400" height="400"></canvas>
+                    <br>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <h2>Statistics on Project Types</h2>
+                    <canvas id="projectTypeChart" width="400" height="400"></canvas>
+                    {% endblock %}
+                </div>
+                <!-- Claims Tab Content -->
+                <div class="tab-pane fade" id="v-pills-claims" role="tabpanel" aria-labelledby="v-pills-claims-tab">
+                    {% block claims_content %}
+                    <h2>Réclamations</h2>
+                    <p><strong>Total number of Réclamations: {{ nombre_reclamations }}</strong></p>
+                    
+                        <div>
+                            <h2>Statistiques des réclamations par type</h2>
+                            <canvas id="reclamationsChart" width="400" height="200"></canvas>
+                        </div>
+
+                        <div>
+                            <h2>Statistiques des réclamations par Ville</h2>
+                            <div>
+                                <canvas id="cityStatsChart"  width: 60%;
+                                margin: auto;></canvas>
+                            </div>
+                        </div>
+                        <h2>Statistiques des Réclamations par Localisation</h2>
+                        <canvas id="locationChart" width="400" height="400"></canvas>
+
+                        <div>
+                            <h2>Statistiques des réclamations par état</h2>
+                            <canvas id="etatChart" width="400" height="200"></canvas>
+                        </div>
+                   
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+var ctx = document.getElementById('projectTypeChart').getContext('2d');
+        var typeCounts = {{ type_counts|safe }};
+        var labels = Object.keys(typeCounts);
+        var data = Object.values(typeCounts);
+
+
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['red', 'blue', 'green'], // Ajouter plus de couleurs si nécessaire
+
+                    
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                }
+            }
+        });
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Récupérer les données de l'état du projet et du nombre de projets
+            var labels = [];
+            var data = [];
+            {% for etat, nombre_projets in statistiques_etats.items %}
+                labels.push("{{ etat }}");
+                data.push("{{ nombre_projets }}");
+            {% endfor %}
+            // Configurer les données du graphe des projets par état
+            var ctx = document.getElementById('etatProjetChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nombre du projet',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false
+                }
+            });
+
+ // Récupérer les données des réclamations par type
+var labels = [];
+var data = [];
+{% for reclamation in reclamations_par_type %}
+    labels.push("{{ reclamation.type }}");
+    data.push({{ reclamation.nombre_reclamations }}); // Retirez les guillemets
+{% endfor %}
+// Configurer les données du graphique histogramme des réclamations par type
+var ctx = document.getElementById('reclamationsChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar', // Utilisez 'bar' pour un graphique histogramme
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Nombre de réclamations par type',
+            data: data,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: false,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0, // Ajuster la précision à 0 pour éviter les décimales
+                    callback: function(value) {
+                        return value.toLocaleString('en-US'); // Utiliser toLocaleString pour afficher les nombres réels
+                    }
+                }
+            }
+        }
+    }
+});
+
+            // Récupérer les données de réclamations par état
+           /* var etatLabels = [];
+            var etatData = [];
+            {% for reclamation in reclamations_par_etat %}
+                etatLabels.push("{{ reclamation.etat }}");
+                etatData.push("{{ reclamation.nombre_reclamations }}");
+            {% endfor %}
+            // Configurer les données du graphe des réclamations par état en graphique circulaire
+            var etatCtx = document.getElementById('etatChart').getContext('2d');
+            new Chart(etatCtx, {
+                type: 'pie',
+                data: {
+                    labels: etatLabels,
+                    datasets: [{
+                        label: 'Nombre de réclamations par état',
+                        data: etatData,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false
+                }
+            });*/
+
+                  
+     // Récupérer les données des réclamations par région
+
+// Graphique des réclamations par région
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Exemple de données JSON. Remplacez par vos données réelles.
+            const reclamations = [
+                {"lat": 33.339922, "lng": 10.495868, "city": "medenine"},
+                {"lat": 33.807598, "lng": 10.845147, "city": "djerba"},
+                {"lat": 33.5036797, "lng": 11.1097173, "city": "zarzis"},
+                // Ajoutez plus de réclamations ici
+            ];
+
+            const cityCounts = {
+                medenine: 0,
+                djerba: 0,
+                zarzis: 0
+            };
+
+            // Calculer le nombre de réclamations par ville
+            reclamations.forEach(reclamation => {
+                if (reclamation.city === 'medenine') {
+                    cityCounts.medenine++;
+                } else if (reclamation.city === 'djerba') {
+                    cityCounts.djerba++;
+                } else if (reclamation.city === 'zarzis') {
+                    cityCounts.zarzis++;
+                }
+            });
+
+            const cityData = {
+                labels: Object.keys(cityCounts),
+                datasets: [{
+                    label: 'Nombre de Réclamations',
+                    data: Object.values(cityCounts),
+                    backgroundColor: ['red', 'blue', 'green'] // Ajouter plus de couleurs si nécessaire
+                }]
+            };
+
+            const config = {
+                type: 'pie',
+                data: cityData,
+                options: {
+                    responsive: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Réclamations par Ville'
+                        }
+                    }
+                },
+            };
+
+            const cityStatsChart = new Chart(
+                document.getElementById('cityStatsChart'),
+                config
+            );
+        });
+      
+var ctx = document.getElementById('locationChart').getContext('2d');
+        var locationChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    label: 'Réclamations',
+                    data: {{ data|safe }},
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Réclamations par Localisation'
+                    }
+                }
+            },
+        });
+
+// Fonction pour récupérer les données des états depuis localStorage
+function getEtatData() {
+    var etatCounts = {};
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (key.startsWith('selectedEtat_')) {
+            var etat = localStorage.getItem(key);
+            if (etat) {
+                if (!etatCounts[etat]) {
+                    etatCounts[etat] = 0;
+                }
+                etatCounts[etat]++;
+            }
+        }
+    }
+    return etatCounts;
+}
+
+        // Fonction pour créer le graphique
+        function createChart() {
+            var etatData = getEtatData();
+            var labels = Object.keys(etatData);
+            var data = Object.values(etatData);
+
+            var ctx = document.getElementById('etatChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nombre de réclamations par état',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                  
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 10,
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Charger les données et créer le graphique au chargement de la page
+        document.addEventListener('DOMContentLoaded', createChart);
+    </script>
+</body>
+</html>

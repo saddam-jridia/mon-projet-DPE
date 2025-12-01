@@ -1,0 +1,12 @@
+{% extends "account/base.html" %}
+
+{% block head_title %}تم التسجيل بنجاح{% endblock %}
+
+{% block content %}
+<div class="container my-5 text-center" dir="rtl">
+    <div class="alert alert-success">
+        تم تسجيل المندوب بنجاح!
+    </div>
+    <a href="{% url 'login' %}" class="btn btn-primary">العودة إلى تسجيل الدخول</a>
+</div>
+{% endblock %}

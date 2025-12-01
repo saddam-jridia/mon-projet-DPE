@@ -1,0 +1,100 @@
+{% extends "account/base.html" %}
+{% block content %}
+
+ {% if request.user.delegate_profile %}
+    <div role="alert" style="font-size:18px;">
+        المندوب الجهوي بولاية 
+        <strong>{{ request.user.delegate_profile.get_wilaya_display }}</strong> - 
+         <strong>{{ request.user.delegate_profile.first_name }}</strong> - 
+         <strong>{{ request.user.delegate_profile.last_name }}</strong> - 
+         <strong>{{ request.user.delegate_profile.unique_id }}</strong>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-start" role="alert">
+        لم يتم تعيين بيانات المندوب لهذا المستخدم.
+    </div>
+    {% endif %}
+<div class="container mb-5">
+
+    
+   
+
+</div>
+
+<div class="content"> 
+  <div class="container">
+    <div class="row justify-content-center">
+
+`
+ <div class="col-md-4 mb-4">
+  <a  style="text-decoration:none;">
+    <div class="card-menu animate__animated animate__fadeInUp animate__slow" style="background:#89bee0;">
+      <i class="fas fa-child fa-2x mb-3"></i><br>
+    طفل مهدد
+    </div>
+  </a>
+</div>
+
+<div class="col-md-4 mb-4">
+  <a  style="text-decoration:none;">
+    <div class="card-menu animate__animated animate__fadeInUp animate__slow" style="background:#198754;">
+      <i class="fas fa-users fa-2x mb-3"></i><br>
+       طفل جانح
+
+    </div>
+  </a>
+</div>
+
+<div class="col-md-4 mb-4">
+  <a  style="text-decoration:none;">
+    <div class="card-menu animate__animated animate__fadeInUp animate__slow" style="background:#ffc107;">
+      <i class="fas fa-baby fa-2x mb-3"></i><br>
+      الاتجار
+    </div>
+  </a>
+</div>
+
+<div class="col-md-4 mb-4">
+  <a  style="text-decoration:none;">
+    <div class="card-menu animate__animated animate__fadeInUp animate__slow" style="background:#0dcaf0; min-height:180px;">
+      <i class="fas fa-globe fa-2x mb-3"></i><br>
+        البحث والتقصي
+    </div>
+  </a>
+</div>
+
+
+</div>
+```
+
+  </div>
+</div>
+
+<style>
+.card-menu {
+    color: white;
+    padding: 40px 20px;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    transition: 0.3s ease-in-out;
+    min-height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.card-blue { background: #005c99; }      
+.card-green { background: #2e8540; }     
+.card-red { background: #c62828; }       
+.card-purple { background: #6a1b9a; }    
+.card-menu:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+.no-decoration {
+    text-decoration: none;
+}
+</style>
+{% endblock %}

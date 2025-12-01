@@ -1,0 +1,127 @@
+{% extends "account/base.html" %}
+{% load static %}
+
+{% block head_title %}تسجيل الدخول{% endblock %}
+
+{% block extra_head %}
+<style>
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        padding: 2rem 0;
+    }
+
+    .card-login {
+        width: 100%;
+        max-width: 450px;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+    .card-login-header {
+        background: var(--primary-color);
+        color: white;
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: bold;
+        padding: 1.2rem;
+    }
+
+    .card-login-body {
+        padding: 2rem 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 0.75rem;
+        direction: rtl;
+        text-align: right;
+        border: 1px solid #b3cde0;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 6px rgba(0, 123, 255, 0.25);
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: bold;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        border: none;
+        transition: 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background-color: #0075c9;
+        transform: translateY(-2px);
+    }
+
+    .card-login-footer {
+        text-align: center;
+        padding: 1rem;
+        background: var(--secondary-color);
+        font-size: 0.9rem;
+    }
+
+    .card-login-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .card-login-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="card card-login">
+        <div class="card-login-header">
+            تسجيل الدخول
+        </div>
+        <div class="card-login-body">
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <div class="mb-3">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">كلمة السر</label>
+                    {{ form.password }}
+                    {{ form.password.errors }}
+                </div>
+
+                <button type="submit" class="btn-login">دخول</button>
+            </form>
+        </div>
+
+        <div class="card-login-footer">
+            <div class="small">
+                <a href="{% url 'delegate_create' %}">ليس لديك حساب؟ سجّل هنا</a><br>
+                <a href="{% url 'password_reset' %}">نسيت كلمة السر؟</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

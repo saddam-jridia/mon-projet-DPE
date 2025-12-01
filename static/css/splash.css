@@ -1,0 +1,49 @@
+/* ---------  ÉCRAN D’ENTRÉE  --------- */
+#splash{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:opacity .6s ease;
+}
+.splash-inner{
+    text-align:center;
+    animation:zoomIn .7s ease;
+}
+.splash-logo{
+    height:90px;
+    width:auto;
+    margin-bottom:1rem;
+}
+.splash-text{
+    font-family:"Times New Roman",serif;
+    font-size:1.3rem;
+    color:#003366;
+    margin-bottom:1.5rem;
+}
+/* Petit spinner (comme osra.tn) */
+.splash-spinner{
+    width:24px;
+    height:24px;
+    margin:0 auto;
+    border:3px solid #eef;
+    border-top-color:#005a9e;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes zoomIn{
+    from{transform:scale(.85);opacity:0}
+    to{transform:scale(1);opacity:1}
+}
+/* ---------  APPARITION HOME  --------- */
+.fade-in{
+    animation:fadeIn .6s ease forwards;
+}
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(15px)}
+    to{opacity:1;transform:translateY(0)}
+}

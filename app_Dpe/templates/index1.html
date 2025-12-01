@@ -1,0 +1,174 @@
+<!doctype html>
+{% load static %}
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>DPE</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- CSS local -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/splash.css' %}">
+
+    <style>
+        body, h1, h2, h3, h4, p, a, button {
+            font-family: "Times New Roman", serif !important;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #a8d8ff, #b8e4ff, #cfeeff);
+            color: #003154;
+        }
+
+        #hero-section {
+            min-height: 55vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        #hero-section h1 {
+            font-size: 70px;
+            font-weight: bold;
+            margin-bottom: 60px;
+        }
+
+        #hero-section .btn-primary {
+            font-size: 22px;
+            padding: 12px 40px;
+            border-radius: 10px;
+            background-color: #005a9e;
+            border: none;
+            color: white;
+            transition: 0.3s;
+        }
+
+        #hero-section .btn-primary:hover {
+            background-color: #0075c9;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            #hero-section h1 {
+                font-size: 36px;
+            }
+            #hero-section .btn-primary {
+                font-size: 18px;
+                padding: 10px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ====== SPLASH SCREEN ====== -->
+    <section id="splash">
+        <div class="splash-inner">
+            <img src="{% static 'images/dpe.png' %}" alt="Logo DPE" class="splash-logo">
+            <p class="splash-text">مندوبية حماية الطفولة</p>
+            <div class="splash-spinner"></div>
+        </div>
+    </section>
+
+    <!-- ====== HOME PAGE ====== -->
+    <div id="home" class="d-none">
+        <!-- Navbar -->
+        <nav class="navbar navbar-light bg-white shadow-sm py-2">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <img src="{% static 'images/logo-femme.png' %}" alt="Ministère Femme" class="logo-nav">
+                </div>
+
+                <div class="text-center d-flex flex-column align-items-center flex-grow-1">
+                    <img src="{% static 'images/tunisie.png' %}" alt="République" class="logo-nav mb-1">
+                    <span class="text-tunisie">الجمهورية التونسية</span>
+                    <span class="text-tunisie small">
+                        وزارة الأسرة والمرأة والطفولة وكبار السن<br>
+                        مكتب المندوب العام لحماية الطفولة
+                    </span>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <img src="{% static 'images/dpe.png' %}" alt="DPE" class="logo-nav">
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero -->
+        <section id="hero-section">
+            <div class="container">
+                <h1>المنظومة المعلوماتية لمندوبي حماية الطفولة</h1>
+                <a href="{% url 'login' %}" class="btn btn-primary">
+                    <i class="fa-solid fa-right-to-bracket"></i> دخول
+                </a>
+                <!-- Info Sections -->
+<section class="info-section py-4">
+    <div class="container">
+        <div class="row text-center">
+
+            <!-- مندوبي حماية الطفولة -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <i class="fa-solid fa-user-shield mb-2" style="font-size: 38px; color:#0d6efd;"></i>
+                <h5 class="mb-2">مندوبي حماية الطفولة</h5>
+                <p style="font-size: 14px;">متابعة وتسيير عمل مندوبي حماية الطفولة بكفاءة وفعالية.</p>
+            </div>
+
+            <!-- إضافة أطفال -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <i class="fa-solid fa-child mb-2" style="font-size: 38px; color:#198754;"></i>
+                <h5 class="mb-2">إضافة أطفال</h5>
+                <p style="font-size: 14px;">تسجيل الحالات الجديدة بطريقة منظمة لضمان سرعة التدخل.</p>
+            </div>
+
+            <!-- البحث والتقصي -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <i class="fa-solid fa-search mb-2" style="font-size: 38px; color:#dc3545;"></i>
+                <h5 class="mb-2">البحث والتقصّي</h5>
+                <p style="font-size: 14px;">تنفيذ عمليات البحث والتقصي بشكل دقيق وميداني.</p>
+            </div>
+
+            <!-- تحليل البيانات -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <i class="fa-solid fa-chart-line mb-2" style="font-size: 38px; color:#6f42c1;"></i>
+                <h5 class="mb-2">تحليل البيانات</h5>
+                <p style="font-size: 14px;">تحليل البيانات وإصدار تقارير دقيقة لدعم القرارات.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+            </div>
+        </section>
+
+
+
+        <!-- Footer -->
+        {% include "account/footer.html" %}
+    </div>
+
+    <!-- ====== ANIMATION SCRIPT ====== -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const splash = document.getElementById('splash');
+            const home = document.getElementById('home');
+
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.remove();
+                    home.classList.remove('d-none');
+                    home.classList.add('fade-in');
+                }, 600);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
