@@ -1,0 +1,1351 @@
+<!-- app_Dpe/templates/app_Dpe/child_list_institutions.html -->
+
+{% extends 'account/Header.html' %}
+{% load dict_extras %}
+ {% load static %}
+{% load widget_tweaks %} 
+
+{% block content %}
+ 
+
+
+
+
+<!-- Bootstrap -->
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet">
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* =========================================================
+   VARIABLES
+========================================================= */
+:root {
+    --primary: #b8860b;
+    --primary-dark: #8c6d0b;
+    --primary-light: #f4e4bc;
+    --accent: #d4a520;
+
+    --bg: #f5f5f5;
+    --card-bg: #ffffff;
+
+    --text: #1a1a1a;
+    --text-light: #5a5b5d;
+
+    --border: #e2e8f0;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow: 0 4px 10px rgba(0,0,0,0.08);
+    --shadow-lg: 0 20px 35px rgba(0,0,0,0.12);
+
+    --radius: 20px;
+    --radius-sm: 12px;
+
+    --transition: all 0.3s ease;
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+* {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+body {
+    margin: 0;
+    padding: 0;
+
+    font-family: 'Tajawal', sans-serif !important;
+
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            rgba(184, 134, 11, 0.04) 0%,
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 90% 80%,
+            rgba(184, 134, 11, 0.05) 0%,
+            transparent 40%
+        ),
+        linear-gradient(
+            135deg,
+            #f5f5f5 0%,
+            #e8e8e8 100%
+        );
+
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+.main-content {
+    min-height: calc(100vh - 150px);
+
+    /*
+       Si ton Header possède une sidebar de 300px,
+       garde cette marge.
+    */
+    margin-right: 100px;
+
+    padding: 30px 25px 50px;
+
+    direction: rtl;
+}
+
+
+/* =========================================================
+   HEADER DE LA PAGE
+========================================================= */
+.page-header {
+    max-width: 1000px;
+    margin: 0 auto 25px;
+
+    background: linear-gradient(
+        135deg,
+        #f0eeea 0%,
+        #fcfbfa 100%
+    );
+
+    border-radius: var(--radius);
+
+    padding: 10px 20px;
+
+    color: white;
+
+    box-shadow: var(--shadow-lg);
+
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* effet décoratif */
+.page-header::before {
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+    height: 200px;
+
+    top: -120px;
+    left: -80px;
+
+    background: rgba(255,255,255,0.08);
+
+    border-radius: 50%;
+}
+
+
+/* contenu header */
+.page-header-content {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+/* titre */
+.page-header h1 {
+    margin: 0;
+
+    font-size: 1.7rem;
+
+    font-weight: 800;
+
+    font-family: 'Tajawal', sans-serif;
+}
+
+
+.page-header h1 i {
+    margin-left: 10px;
+
+    color: #ffffff;
+}
+
+
+/* sous-titre */
+.page-header p {
+    margin: 5px 0 0;
+
+    font-size: 0.95rem;
+
+    opacity: 0.9;
+}
+
+
+/* =========================================================
+   FORM WRAPPER
+========================================================= */
+.form-wrapper {
+
+    width: 100%;
+
+    max-width: 1050px;
+
+    margin: 0 auto;
+
+    padding: 0 10px;
+
+    position: relative;
+
+    z-index: 10;
+}
+
+
+/* =========================================================
+   FORM CARD
+========================================================= */
+.form-card {
+
+    background: var(--card-bg);
+
+    border-radius: var(--radius);
+
+    box-shadow:
+        var(--shadow-lg),
+        0 0 0 1px rgba(0,0,0,0.02);
+
+    overflow: hidden;
+
+    border: 1px solid rgba(184, 134, 11, 0.12);
+
+    animation: slideUp 0.6s ease-out;
+}
+
+
+@keyframes slideUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   FORM HEADER
+========================================================= */
+.form-header {
+
+    background: linear-gradient(
+        135deg,
+        #1a1a1a 0%,
+        #2c2c2c 100%
+    );
+
+    padding: 20px 25px;
+
+    text-align: center;
+
+    border-bottom: 4px solid var(--primary);
+
+    position: relative;
+}
+
+
+.form-header h2 {
+
+    color: white;
+
+    font-size: 1.45rem;
+
+    font-weight: 800;
+
+    margin: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    font-family: 'Tajawal', sans-serif;
+}
+
+
+.form-header h2 i {
+
+    color: var(--primary);
+
+    font-size: 1.4rem;
+}
+
+
+/* =========================================================
+   FORM BODY
+========================================================= */
+.form-body {
+
+    padding: 30px;
+
+    direction: rtl;
+}
+
+
+/* =========================================================
+   SECTION TITLE
+========================================================= */
+.section-title {
+
+    font-size: 1.15rem;
+
+    font-weight: 800;
+
+    color: var(--text);
+
+    border-right: 5px solid var(--primary);
+
+    padding: 10px 15px;
+
+    margin: 25px 0 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-family: 'Tajawal', sans-serif;
+
+    background: linear-gradient(
+        to left,
+        rgba(184,134,11,0.08),
+        transparent
+    );
+
+    border-radius: 8px;
+}
+
+
+/* première section */
+.section-title:first-child {
+    margin-top: 0;
+}
+
+
+.section-title i {
+
+    color: var(--primary);
+
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   INFO BOX
+========================================================= */
+.info-box {
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fafbfe 0%,
+            #ffffff 100%
+        );
+
+    border: 2px solid var(--border);
+
+    border-radius: 16px;
+
+    padding: 22px;
+
+    margin-bottom: 25px;
+
+    transition: var(--transition);
+
+    overflow: hidden;
+}
+
+
+/* ligne dorée à droite */
+.info-box::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 5px;
+    height: 100%;
+
+    background: linear-gradient(
+        180deg,
+        var(--primary),
+        var(--accent)
+    );
+}
+
+
+/* hover */
+.info-box:hover {
+
+    border-color: rgba(184,134,11,0.45);
+
+    box-shadow: var(--shadow);
+
+    transform: translateY(-1px);
+}
+
+
+/* titre à l'intérieur */
+.info-box h5 {
+
+    font-size: 1rem;
+
+    font-weight: 800;
+
+    color: var(--text);
+
+    margin: 0 0 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    font-family: 'Tajawal', sans-serif;
+}
+
+
+.info-box h5 i {
+
+    color: var(--primary);
+
+    font-size: 1.1rem;
+}
+
+
+/* =========================================================
+   FORM GROUP
+========================================================= */
+.form-group {
+
+    margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+.form-group label,
+.info-box label {
+
+    display: block;
+
+    font-weight: 700;
+
+    margin-bottom: 7px;
+
+    color: var(--text);
+
+    font-size: 0.9rem;
+
+    font-family: 'Tajawal', sans-serif;
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   INPUT / SELECT / TEXTAREA
+========================================================= */
+.form-control,
+.form-select,
+.info-box input,
+.info-box select,
+.info-box textarea {
+
+    width: 100%;
+
+    padding: 11px 14px;
+
+    border: 2px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    font-family: 'Tajawal', sans-serif !important;
+
+    font-size: 0.9rem !important;
+
+    color: var(--text);
+
+    background: #f8fafc;
+
+    direction: rtl;
+
+    text-align: right;
+
+    transition: var(--transition);
+
+    min-height: 45px;
+}
+
+
+/* focus */
+.form-control:focus,
+.form-select:focus,
+.info-box input:focus,
+.info-box select:focus,
+.info-box textarea:focus {
+
+    outline: none;
+
+    border-color: var(--primary);
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 4px rgba(184,134,11,0.10);
+}
+
+
+/* textarea */
+textarea.form-control,
+.info-box textarea {
+
+    min-height: 110px;
+
+    resize: vertical;
+}
+
+
+/* =========================================================
+   ROW / COL
+========================================================= */
+.row {
+
+    --bs-gutter-x: 1.2rem;
+    --bs-gutter-y: 0.8rem;
+}
+
+
+/* =========================================================
+   BOUTON SUBMIT
+========================================================= */
+.btn-submit {
+
+    width: 100%;
+
+    min-height: 52px;
+
+    margin-top: 10px;
+
+    padding: 12px 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    border-radius: 50px;
+
+    border: 2px solid var(--primary);
+
+    background: linear-gradient(
+        135deg,
+        #1a1a1a 0%,
+        #2c2c2c 100%
+    );
+
+    color: white;
+
+    font-family: 'Tajawal', sans-serif;
+
+    font-size: 1rem;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+
+.btn-submit i {
+
+    color: var(--primary);
+}
+
+
+.btn-submit:hover {
+
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+
+    border-color: var(--primary);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(184,134,11,0.30);
+
+    color: white;
+}
+
+
+.btn-submit:hover i {
+
+    color: white;
+}
+
+
+/* =========================================================
+   ERREURS DJANGO
+========================================================= */
+.errorlist {
+
+    list-style: none;
+
+    padding: 0;
+
+    margin: 5px 0 0;
+
+    color: #c41230;
+
+    font-size: 0.82rem;
+
+    font-weight: 600;
+
+    font-family: 'Tajawal', sans-serif;
+}
+
+
+/* =========================================================
+   ALERT
+========================================================= */
+.alert-success {
+
+    background: linear-gradient(
+        135deg,
+        #d4edda,
+        #c3e6cb
+    );
+
+    border: 2px solid #28a745;
+
+    border-radius: 14px;
+
+    color: #155724;
+
+    font-weight: 600;
+
+    padding: 15px;
+
+    margin-bottom: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    font-family: 'Tajawal', sans-serif;
+}
+
+
+/* =========================================================
+   RADIO / CHECKBOX
+========================================================= */
+input[type="radio"],
+input[type="checkbox"] {
+
+    accent-color: var(--primary);
+
+    width: 17px;
+    height: 17px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   BOUTON RETOUR
+========================================================= */
+.back-container {
+
+    max-width: 1050px;
+
+    margin: 0 auto 15px;
+
+    padding: 0 10px;
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    direction: ltr;
+}
+
+
+.btn-back {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    background: white;
+
+    color: var(--text);
+
+    padding: 9px 20px;
+
+    border-radius: 50px;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    font-size: 0.85rem;
+
+    border: 2px solid var(--border);
+
+    transition: var(--transition);
+
+    box-shadow: var(--shadow-sm);
+
+    font-family: 'Tajawal', sans-serif;
+}
+
+
+.btn-back:hover {
+
+    border-color: var(--primary);
+
+    color: var(--primary);
+
+    transform: translateX(-4px);
+
+    text-decoration: none;
+
+    box-shadow: var(--shadow);
+}
+
+
+/* =========================================================
+   RESPONSIVE TABLET
+========================================================= */
+@media (max-width: 992px) {
+
+    .main-content {
+
+        margin-right: 0;
+
+        padding: 20px 15px 40px;
+    }
+
+    .form-wrapper {
+
+        max-width: 100%;
+    }
+
+    .page-header {
+
+        max-width: 100%;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE MOBILE
+========================================================= */
+@media (max-width: 768px) {
+
+    .main-content {
+
+        padding: 15px 10px 30px;
+
+        margin-right: 0;
+    }
+
+
+    .page-header {
+
+        padding: 20px;
+
+        border-radius: 15px;
+    }
+
+
+    .page-header-content {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .page-header h1 {
+
+        font-size: 1.3rem;
+    }
+
+
+    .form-wrapper {
+
+        padding: 0;
+    }
+
+
+    .form-card {
+
+        border-radius: 15px;
+    }
+
+
+    .form-header {
+
+        padding: 18px 15px;
+    }
+
+
+    .form-header h2 {
+
+        font-size: 1.15rem;
+    }
+
+
+    .form-body {
+
+        padding: 18px 15px;
+    }
+
+
+    .section-title {
+
+        font-size: 1rem;
+
+        padding: 9px 12px;
+    }
+
+
+    .info-box {
+
+        padding: 15px;
+
+        border-radius: 12px;
+    }
+
+
+    .btn-submit {
+
+        font-size: 0.9rem;
+    }
+
+
+    .back-container {
+
+        padding: 0;
+    }
+}
+
+
+/* =========================================================
+   PETIT MOBILE
+========================================================= */
+@media (max-width: 576px) {
+
+    .main-content {
+
+        padding: 10px 7px 25px;
+    }
+
+
+    .form-body {
+
+        padding: 14px 10px;
+    }
+
+
+    .info-box {
+
+        padding: 13px 10px;
+    }
+
+
+    .section-title {
+
+        font-size: 0.95rem;
+
+        margin-top: 18px;
+    }
+
+
+    .form-group label {
+
+        font-size: 0.85rem;
+    }
+
+
+    .form-control,
+    .form-select {
+
+        font-size: 0.85rem !important;
+
+        padding: 10px;
+    }
+
+
+    .btn-submit {
+
+        min-height: 48px;
+
+        padding: 10px;
+    }
+}
+
+/* ================================
+   LIEUX DE VISITE - CHECKBOX
+================================ */
+
+.visit-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+
+    padding: 15px;
+    border-radius: 12px;
+
+    transition: all 0.3s ease;
+
+    min-height: 60px;
+}
+
+.visit-checkbox:hover {
+    border-color: #b8860b;
+    background: #fffdf7;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(184, 134, 11, 0.12);
+}
+
+.visit-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+
+    cursor: pointer;
+
+    accent-color: #b8860b;
+}
+
+.visit-checkbox label {
+    margin: 0;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    font-family: 'Tajawal', sans-serif;
+
+    color: #1a1a1a;
+}
+
+
+</style>
+
+ <div class="main-content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+        
+
+    </div>
+
+
+    <!-- BOUTON RETOUR -->
+    <div class="back-container">
+
+        <a href="{% url 'liste_enfants_suivi' %}"
+           class="btn-back">
+
+            <i class="fas fa-arrow-right"></i>
+
+            العودة إلى قائمة الأطفال
+
+        </a>
+
+    </div>
+
+
+    <!-- FORMULAIRE -->
+    <div class="form-wrapper">
+
+        {% if success_message %}
+
+        <div class="alert-success">
+
+            <i class="fas fa-check-circle"></i>
+
+            {{ success_message }}
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="form-card">
+
+            <div class="form-header">
+
+                <h2>
+
+                    <i class="fas fa-edit"></i>
+
+                    تقييم و متابعة  وضعية الطفل
+
+                </h2>
+
+            </div>
+
+
+            <div class="form-body">
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+<div style="background:#ffe5e5; color:#b00020; padding:15px; margin-bottom:20px;">
+    <strong>هناك أخطاء في النموذج:</strong>
+
+    {{ form.errors }}
+
+    {{ form.non_field_errors }}
+</div>
+{% endif %}
+
+    <div class="section-title">
+        <i class="fas fa-comments"></i>
+        التواصل مع الطفل ووليه وورود التقارير
+    </div>
+
+    <div class="info-box">
+
+        <h5>
+            <i class="fas fa-handshake"></i>
+            عدد المقابلات المكتبية
+        </h5>
+
+        <div class="row">
+
+         
+
+            <div class="col-md-4">
+                <label>مع الطفل</label>
+                {{ form.avec_enfant }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع الأم</label>
+                {{ form.avec_mere }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع الأب</label>
+                {{ form.avec_pere }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع العائلة الموسعة</label>
+                {{ form.avec_famille_etendue }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع الولي القانوني</label>
+                {{ form.avec_tuteur_legal }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع أحد أفراد الأسرة</label>
+                {{ form.avec_membre_famille }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع إطار طبي</label>
+                {{ form.avec_cadre_medical }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع إطار تربوي بمؤسسة إيواء</label>
+                {{ form.avec_cadre_educatif }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section-title">
+        <i class="fas fa-phone"></i>
+        عدد المكالمات الهاتفية
+    </div>
+
+    <div class="info-box">
+
+        <div class="row">
+
+           
+
+            <div class="col-md-4">
+                <label>مع الطفل</label>
+                {{ form.appel_enfant }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع الأم</label>
+                {{ form.appel_mere }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع الأب</label>
+                {{ form.appel_pere }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع العائلة الموسعة</label>
+                {{ form.appel_famille_etendue }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع الولي القانوني</label>
+                {{ form.appel_tuteur_legal }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع أحد أفراد الأسرة</label>
+                {{ form.appel_membre_famille }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع إطار طبي</label>
+                {{ form.appel_cadre_medical }}
+            </div>
+
+            <div class="col-md-4">
+                <label>مع إطار تربوي بمؤسسة إيواء</label>
+                {{ form.appel_cadre_educatif }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+  <div class="section-title">
+    <i class="fas fa-map-marker-alt"></i>
+    الزيارات الميدانية للطفل
+</div>
+
+<div class="info-box">
+
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="form-group">
+            <label>عدد الزيارات</label>
+            {{ form.nb_visites }}
+        </div>
+    </div>
+
+</div>
+
+
+<h5 class="mb-3">
+    <i class="fas fa-map-marker-alt"></i>
+    مكان الزيارة
+</h5>
+
+<div class="row">
+
+    <div class="col-md-4 mb-3">
+        <div class="visit-checkbox">
+            {{ form.visite_institution_educative }}
+            <label for="{{ form.visite_institution_educative.id_for_label }}">
+                مؤسسة تربوية
+            </label>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 mb-3">
+        <div class="visit-checkbox">
+            {{ form.visite_institution_hospitaliere }}
+            <label for="{{ form.visite_institution_hospitaliere.id_for_label }}">
+                مؤسسة استشفائية
+            </label>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 mb-3">
+        <div class="visit-checkbox">
+            {{ form.visite_institution_depot }}
+            <label for="{{ form.visite_institution_depot.id_for_label }}">
+                مؤسسة إيداع
+            </label>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 mb-3">
+        <div class="visit-checkbox">
+            {{ form.visite_centre_reforme }}
+            <label for="{{ form.visite_centre_reforme.id_for_label }}">
+                مركز إصلاح الأطفال
+            </label>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 mb-3">
+        <div class="visit-checkbox">
+            {{ form.visite_maison }}
+            <label for="{{ form.visite_maison.id_for_label }}">
+                المنزل
+            </label>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 mb-3">
+        <div class="visit-checkbox">
+            {{ form.visite_autre }}
+            <label for="{{ form.visite_autre.id_for_label }}">
+                أخرى
+            </label>
+        </div>
+    </div>
+
+</div>
+
+
+<div id="autre-lieu-container" style="display: none;">
+
+    <div class="form-group">
+
+        <label>
+            تحديد مكان الزيارة الآخر
+        </label>
+
+        {{ form.autre_lieu_visite }}
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+    <div class="section-title">
+        <i class="fas fa-chart-line"></i>
+        تقييم وضعية الطفل
+    </div>
+
+    <div class="info-box">
+
+        <div class="form-group">
+
+            <label>
+                تقييم وضعية الطفل
+            </label>
+
+            {{ form.evaluation }}
+
+        </div>
+
+      
+
+    </div>
+
+
+    <button type="submit" class="btn-submit">
+
+        <i class="fas fa-save"></i>
+
+    تسجيل المتابعة
+
+    </button>
+
+</form>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const autreCheckbox = document.querySelector(
+        'input[name="visite_autre"]'
+    );
+
+    const autreContainer = document.getElementById(
+        "autre-lieu-container"
+    );
+
+    if (!autreCheckbox || !autreContainer) {
+        return;
+    }
+
+    function toggleAutreLieu() {
+
+        autreContainer.style.display =
+            autreCheckbox.checked ? "block" : "none";
+
+    }
+
+    autreCheckbox.addEventListener(
+        "change",
+        toggleAutreLieu
+    );
+
+    toggleAutreLieu();
+
+});
+</script>
+{% endblock %}

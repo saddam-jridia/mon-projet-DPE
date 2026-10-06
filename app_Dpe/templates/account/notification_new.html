@@ -1,0 +1,793 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<style>
+
+  
+
+
+    .card {
+    transform: scale(0.97);           /* تكبير الكارد قليلاً */
+    border-radius: 16px;              /* زوايا أجمل */
+}
+.card-header h4 {
+    font-size: 22px;                  /* تكبير العنوان */
+    font-weight: 800;                 /* سمك الخط */
+    letter-spacing: 1px;              /* تباعد بسيط */
+    font-family: "Times New Roman", serif;      /* نفس خط المنظومة */
+    
+}
+
+    .section-title {
+        background: #e9ecef;
+        padding: 10px;
+        border-right: 4px solid #d4a520;
+        font-weight: bold;
+        margin-top: 2px;
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .unmarried-box, .foreign-box {
+        border: 2px solid #d4a520;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 6px;
+        background: #f8faff;
+    }
+    /* إجبار جميع عناصر النموذج على الاصطفاف يميناً */
+.form-group, .row, label, input, select {
+    direction: rtl;
+    text-align: right;
+}
+
+/* ضبط اتجاه الأعمدة داخل Bootstrap row */
+.row > [class*="col-"] {
+    text-align: right !important;
+}
+.section-title {
+    font-family: "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: #0c0c0c;
+    text-align: right;
+    margin-bottom: 15px;
+    border-right: 4px solid #090909;
+    padding-right: 10px;
+}
+.content {
+    margin-right: 50px; /* espace pour le sidebar */
+    margin-top: 40px;   /* pour ne pas chevaucher header */
+    padding: 200px;
+}
+
+
+   /* Formulaire en RTL */
+form {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Labels */
+form label {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Champs texte, date, select, textarea */
+form input[type="text"],
+form input[type="date"],
+form textarea,
+form select {
+    text-align: right;
+    direction: rtl;
+}
+
+/* Radios et checkboxes */
+form input[type="radio"],
+form input[type="checkbox"] {
+    float: right;      /* bouton à droite */
+    margin-left: 10px; /* espace entre bouton et label */
+}
+
+/* Paragraphes à l'intérieur des cartes */
+.card-body p {
+    text-align: right;
+}
+
+/* Options multiples dans les cards */
+.card-body div > label {
+    display: inline-block;
+    margin-right: 5px;
+    text-align: right;
+}
+
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .unmarried-box, .foreign-box {
+        border: 2px solid #d4a520;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 6px;
+        background: #f8faff;
+    }
+    .container {
+    /* ou margin-top: calc(50px + 60px + 50px) si tu veux plus précis */
+      margin-right: 220px;
+        margin-top: 30px;
+       /* pour ne pas chevaucher header */
+   
+     
+     
+}
+
+.btn-dark-blue {
+  background-color: #0a0a0a;
+  border-color: #080808;
+  color: #ffffff !important;
+}
+.btn-dark-blue:hover {
+  background-color: #070707;
+  border-color: #111111;
+}
+.bg-custom-light {
+  background-color: #e9ecef !important;
+  color: #060606 !important; /* noir Bootstrap */
+}
+
+.child-info {
+    background-color: #0b0b0b; /* الأزرق المطلوب */
+    color: white;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.child-info p {
+    margin-bottom: 10px;
+}
+
+.child-info strong {
+    color: #f7dd8e; /* لون ذهبي خفيف للعناوين */
+}
+
+</style>
+
+
+<div class="container">
+  <div class="col-md-10 mx-auto">
+    <div class="card">
+      <div class="btn text-black fw-bold" style="background-color: #d4a520; border-color: #d4a520;">
+    <h3>استمارة إدخال إشعار جديد</h3>
+</div>
+
+            <div class="card-body">
+                <form method="post" dir="rtl">
+                    {% csrf_token %}
+                  
+
+    <!-- بيانات الطفل -->
+    <div class="card mb-3">
+<div class="card-header  fw-bold h4 bg-custom-light">
+  المعطيات الخاصة بالطفل
+</div>
+       <div class="card-body child-info">
+    <div class="row">
+        <div class="col-md-6">
+            <h5><strong>المعرف الوحيد:</strong> {{ child.uid }}</h5>
+        </div>
+        <div class="col-md-6">
+            <h5><strong>رقم الملف:</strong> {{ child.numero_dossier }}</h5>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5><strong>الاسم:</strong> {{ child.first_name }}</h5>
+        </div>
+        <div class="col-md-6">
+            <h5><strong>اللقب:</strong> {{ child.last_name }}</h5>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5><strong>الجنس:</strong> {{ child.get_gender_display }}</h5>
+        </div>
+        <div class="col-md-6">
+            <h5><strong>تاريخ الميلاد:</strong> {{ child.birth_date|date:"d/m/Y"|default:"-" }}</h5>
+        </div>
+    </div>
+
+    <input type="hidden" name="child_id" value="{{ child.id }}">
+</div>
+
+
+    </div>
+
+    <!-- بيانات الإشعار -->
+    <div class="card mb-3">
+        <div class="card-header fw-bold h4 bg-custom-light">بيانات الإشعار</div>
+        <div class="card-body">
+             <label>عدد الإشعار</label>
+            <input type="text" name="notifier_number" class="form-control" value="{{ next_notifier_number }}" readonly>
+
+
+
+<label class="mt-2">تاريخ الإشعار</label>
+<input type="date" name="notification_date" class="form-control" required 
+       max="{{ today }}">
+
+           
+        </div>
+    </div>
+
+ <!-- مصدر الإشعار -->
+<!-- مصدر الإشعار -->
+<div class="card mb-3">
+    <div class="card-header fw-bold h4 bg-custom-light">
+        مصدر الإشعار
+    </div>
+
+    <div class="card-body">
+
+        <select name="notifier_source"
+                id="notifier_source"
+                class="form-select text-end"
+                required
+                onchange="toggleOtherNotifier()">
+
+            <option value="">---</option>
+
+            {% for value, label in notifier_source_choices %}
+                <option value="{{ value }}"
+                    {% if child.notifier_source == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <!-- يظهر فقط إذا اختار "other" -->
+        <input type="text"
+               name="notifier_source_other"
+               id="notifier_source_other"
+               class="form-control mt-2"
+               placeholder="يرجى تحديد مصدر الإشعار"
+               value="{{ child.notifier_source_other|default:'' }}"
+               style="display:none;">
+
+    </div>
+</div>
+
+
+    <!-- طريقة الإشعار -->
+    <div class="card mb-3">
+        <div class="card-header  fw-bold h4 bg-custom-light">طريقة الإشعار</div>
+        <div class="card-body">
+            {% for value,label in notification_method_choices %}
+<div>
+    <input type="radio"
+           name="notification_method"
+           value="{{ value }}"
+           {% if forloop.first %}required{% endif %}>
+    <label>{{ label }}</label>
+</div>
+{% endfor %}
+        </div>
+    </div>
+
+    <!-- أشكال التهديد-->
+    <div class="card mb-3">
+        <div class="card-header  fw-bold h4 bg-custom-light">أشكال التهديد</div>
+        <div class="card-body">
+          <!-- فقدان السند العائلي -->
+<label class="fw-bold">فقدان الطفل لوالديه وبقاؤه دون سند عائلي</label><br>
+
+<input type="checkbox" name="threats_loss" value="parents_dead">
+وفاة الأبوين وبقاء الطفل دون سند عائلي<br>
+
+<input type="checkbox" name="threats_loss" value="parents_hospitalized">
+وجود الأبوين بمؤسسة استشفائية وبقاء الطفل دون سند عائلي<br>
+
+<input type="checkbox" name="threats_loss" value="natural_disaster">
+بسبب الكوارث الطبيعية<br>
+
+<input type="checkbox" name="threats_loss" value="adoptive_parent_dead">
+بقاء الطفل المتبنى دون رعاية بموجب وفاة المتبني<br>
+
+<input type="checkbox" name="threats_loss" value="divorce_refusal">
+طلاق الوالدين ورفض كليهما حضانة الطفل<br>
+
+<input type="checkbox" name="threats_loss" value="parent_absence_unknown">
+غياب الأم أو الأب بمغادرة محل الزوجية إلى وجهة غير معلومة<br>
+
+<input type="checkbox" name="threats_loss" value="step_parent_refusal">
+زواج المطلق(ة) أو الأرمل(ة) ورفض حضانة الربيـب من الزوج(ة)<br>
+
+<input type="checkbox" name="threats_loss" value="chronic_mental_illness">
+إصابة الأبوين بمرض عقلي مزمن وبقاء الطفل دون سند عائلي<br>
+
+<input type="checkbox" name="threats_loss" value="parents_unknown_location">
+تواجد الأبوين بوجهة غير معلومة وبقاء الطفل دون سند عائلي<br>
+
+<input type="checkbox" name="threats_loss" value="parents_imprisoned">
+تواجد الأبوين أو أحدهما في السجن وبقاء الطفل دون سند عائلي<br>
+
+<input type="checkbox" name="threats_loss" value="conflict_zones">
+تواجد الأبوين في مناطق النزاع وبقاء الطفل دون سند عائلي<br>
+
+<input type="text" name="threats_loss_other"
+       class="form-control mt-2"
+       placeholder="أخرى">
+
+
+<hr>
+
+<!-- الإهمال والتشرد -->
+<label class="fw-bold">تعريض الطفل للإهمال والتشرد</label><br>
+<input type="checkbox" name="threats_neglect" value="hygiene_food"> إهمال العناية بغذاء الطفل ونظافته ولباسه<br>
+<input type="checkbox" name="threats_neglect" value="abandonment"> التخلي عن الطفل بمؤسسة عمومية أو خاصة أو بفضاء عام بدون موجب<br>
+<input type="checkbox" name="threats_neglect" value="school_absence">عدم الحضور لتسلم الطفل المقيم بمؤسسة عمومية أو خاصة <br>
+<input type="checkbox" name="threats_neglect" value="medical_refusal"> تكرار غياب الطفل عن المدرسة <br>
+<input type="checkbox" name="threats_neglect" value="disabled_child"> الامتناع عن مداواته والسهر على علاجه<br>
+<input type="checkbox" name="threats_neglect" value="medical"> اعتياد ترك الطفل المعوق داخل البيت مخفيا عن الأنظار <br>
+<input type="checkbox" name="threats_neglect" value="medical_re"> التسكع في الشوارع ودون وجهة معلومة<br>
+<input type="checkbox" name="threats_neglect" value="medical_ref"> رفض قبول الطفل من كلا الابوين عند صدور قرار في الحضانة<br>
+<input type="checkbox" name="threats_neglect" value="medical_refuse"> تعود هجر الابوين لمحل الاسرة لمدة طويلة دون توفير المرافق اللازمة للطفل <br>
+<input type="text" name="threats_neglect_other" class="form-control mt-1" placeholder="أخرى">
+
+<hr>
+
+<!-- التقصير في التربية والرعاية -->
+<label class="fw-bold">التقصير البيّن والمتواصل في التربية والرعاية</label><br>
+<input type="checkbox" name="threats_care" value="no_civil_registration"> عدم ترسيم الطفل بدفاتر الحالة المدنية وحرمانه من الهوية<br>
+<input type="checkbox" name="threats_care" value="no_school"> عدم الحاق الطفل بمقاعد الدراسة رغم بلوغه سن التمدرس<br>
+<input type="checkbox" name="threats_care" value="prevent_study"> منع الطفل (ة) من مواصلة دراسته<br>
+<input type="checkbox" name="threats_care" value="no_supervision"> اعتياد الغياب المدرسي للطفل لإخلال الولي بدوره<br>
+<input type="checkbox" name="threats_care" value="no_vaccines">عدم إيلاء الوالدين للطفل أي اهتمام بلفت الانتباه لسلوكه<br>
+<input type="checkbox" name="threats_care" value="digital_risks"> اعتياد ترك الطفل دون رقابة<br>
+
+<input type="checkbox" name="threats_care" value="dig"> ارتداء الطفل للباس غير الملائم للمناخ والمحيط الاجتماعي<br>
+<input type="checkbox" name="threats_care" value="digi"> تعريض الطفل لحوادث متكررة بسبب التقصير<br>
+<input type="checkbox" name="threats_care" value="digit"> عدم استفاء التلاقيح اللازمة<br>
+<input type="checkbox" name="threats_care" value="digital"> تعرض الطفل لمخاطر وسائل الاتصال الحديثة<br>
+<input type="checkbox" name="threats_care" value="digital_ri">  عدم زيارة الطفل المريض والمقيم بالمستشفى بدون سبب<br>
+<input type="checkbox" name="threats_care" value="digital_ris"> عدم الحرص على تلقي الطفل الرعاية الصحية <br>
+<input type="checkbox" name="threats_care" value="digital_risk"> التعريض لمخاطر الخلافات العائلية<br>
+
+
+
+<input type="text" name="threats_care_other" class="form-control mt-1" placeholder="أخرى">
+
+<hr>
+
+<!-- عجز الأبوين أو الولي -->
+<label class="fw-bold">عجز الأبوين أو من يسهر على رعاية الطفل عن الإحاطة والتربية</label><br>
+<input type="checkbox" name="threats_guardian" value="dangerous_behavior"> إتيان الطفل لسلوكيات محفوفة بالمخاطر<br>
+<input type="checkbox" name="threats_guardian" value="poverty_illness"> عجز عن الإحاطة بالطفل بسبب إصابة الولي بالإعاقة أو مرض أو تقدم في السن<br>
+<input type="checkbox" name="threats_guardian" value="school_dropout"> افلات الطفل بصفة بينة عن أية مراقبة من قبل والديه أو الحاضن أو المتعهد به<br>
+<input type="checkbox" name="threats_guardian" value="begging"> التسرب والتغيب المدرسي<br>
+<input type="checkbox" name="threats_guardian" value="runaway">تسول الطفل تلقائيا وبإرادته<br>
+<input type="checkbox" name="threats_guardian" value="behavior_disorder"> نقص أو انعدام الموارد المادية للأسرة<br>
+
+<input type="checkbox" name="threats_guardian" value="beh"> هروب الطفل من المنزل أو من المؤسسة والمبيت خارجها<br>
+<input type="checkbox" name="threats_guardian" value="beha"> عدم زيارة الطفل المريض والمقيم بالمستشفى <br>
+
+<input type="checkbox" name="threats_guardian" value="behavi"> استهلاك المواد السمية المصنفة وغير المصنفة<br>
+
+<input type="checkbox" name="threats_guardian" value="behavior"> ممارسة الطفل التهديد اللفظي والمادي ضد المشرفين على رعايته<br>
+
+<input type="checkbox" name="threats_guardian" value="behavior_d"> اعتداء الطفل على ذاته<br>
+
+<input type="checkbox" name="threats_guardian" value="behavior_dis"> ميل الطفل الى الممارسات الجنسية المثلية<br>
+
+<input type="checkbox" name="threats_guardian" value="behavior_diso"> تعود عدم مراقبة الطفل بتركه يهجر محل الأسرة<br>
+
+<input type="checkbox" name="threats_guardian" value="behavior_disor"> التخلي عن طفل مولود خارج اطار الزواج<br>
+
+<input type="checkbox" name="threats_guardian" value="behavior_disord">اضطرابات سلوكية
+<br>
+
+<input type="checkbox" name="threats_guardian" value="behavior_disordd">ايذاء النفس <br>
+<!-- ✅ محاولة الانتحار - avec ID pour le JavaScript -->
+<input type="checkbox" name="threats_guardian" value="suicide_attempt" id="suicide_attempt_checkbox"> محاولة الانتحار<br>
+
+<hr>
+<!-- ✅ Section conditionnelle : affichée seulement si محاولة الانتحار est cochée -->
+<div id="suicide_details_section"style="display: none; background-color: #f7dd8e; padding: 15px; border-radius: 8px;">
+    
+    <hr>
+    <label class="fw-bold">الوسيلة</label><br>
+    <input type="checkbox" name="suicide_methods" value="dangerous_liquids">محاولة انتحار الطفل بمواد خطرة أو أدوية<br>
+    <input type="checkbox" name="suicide_methods" value="burning">محاولة انتحار الطفل بسكب مواد قابلة للاحتراق على جسده<br>
+    <input type="checkbox" name="suicide_methods" value="hanging">محاولة انتحار الطفل شنقًا<br>
+    <input type="checkbox" name="suicide_methods" value="cutting">محاولة الانتحار بقطع الشرايين<br>
+    <input type="checkbox" name="suicide_methods" value="jumping">محاولة الانتحار بإلقاء نفسه من مكان مرتفع أو أمام وسائل النقل<br>
+    <input type="checkbox" name="suicide_methods" value="overdose">محاولة الانتحار بشرب جرعة مفرطة من المواد المخدرة<br>
+    <input type="checkbox" name="suicide_methods" value="other">أخرى
+    <input type="text" name="suicide_methods_other" class="form-control mt-1">
+
+    <hr>
+    <label class="fw-bold">الأسباب</label><br>
+    <input type="checkbox" name="suicide_reasons" value="cyber_blackmail">محاولة انتحار الطفل بسبب الابتزاز الإلكتروني<br>
+    <input type="checkbox" name="suicide_reasons" value="social_injustice">محاولة انتحار الطفل بسبب إحساسه بالغبن نتيجة الظروف الاجتماعية<br>
+    <input type="checkbox" name="suicide_reasons" value="family_conflicts">محاولة انتحار الطفل بسبب الخلافات العائلية<br>
+    <input type="checkbox" name="suicide_reasons" value="accident">محاولة انتحار الطفل بسبب حادث عرضي<br>
+    <input type="checkbox" name="suicide_reasons" value="school_failure">محاولة انتحار الطفل بسبب فشل مدرسي<br>
+    <input type="checkbox" name="suicide_reasons" value="emotional_shock">محاولة الانتحار بسبب الصدمات العاطفية<br>
+    <input type="checkbox" name="suicide_reasons" value="emotional">محاولة الانتحار بسبب الالعاب و التحديات الالكترونية<br>
+    <input type="checkbox" name="suicide_reasons" value="shock">محاولة الانتحار بسبب التنمر<br>
+    <input type="checkbox" name="suicide_reasons" value="other">أخرى<br>
+    <input type="text" name="suicide_reasons_other" class="form-control mb-2" placeholder="اذكر سببًا آخر">
+
+    <hr>
+    <label class="fw-bold">المكان</label><br>
+    <input type="checkbox" name="suicide_place" value="home"> المنزل<br>
+    <input type="checkbox" name="suicide_place" value="school"> مؤسسة تربوية<br>
+    <input type="checkbox" name="suicide_place" value="public_space"> فضاء عام<br>
+    <input type="checkbox" name="suicide_place" value="care_center"> مؤسسة رعاية<br>
+    <input type="checkbox" name="suicide_place" value="other">أخرى<br>
+    <input type="text" name="suicide_place_other" class="form-control mb-2" placeholder="اذكر مكانًا آخر">
+
+    <hr>
+</div>
+
+
+<hr>
+<label class="fw-bold">اعتياد سوء معاملة الطفل</label><br>
+
+<input type="checkbox" name="abuse_types" value="detention"> احتجاز الطفل<br>
+<input type="checkbox" name="abuse_types" value="public_violence"> تعنيف الطفل بالفضاء العام<br>
+<input type="checkbox" name="abuse_types" value="institutional_physical"> تعنيف الطفل جسديًا داخل الإطار المؤسساتي<br>
+<input type="checkbox" name="abuse_types" value="institutional_verbal"> تعنيف الطفل لفظيًا أو معنويًا داخل الإطار المؤسساتي<br>
+<input type="checkbox" name="abuse_types" value="family_physical">تعنيف الطفل جسديًا من قبل افراد العائلة<br>
+<input type="checkbox" name="abuse_types" value="family_moral"> تعنيف الطفل معنويًا من قبل افراد العائلة<br>
+<input type="checkbox" name="abuse_types" value="physical">تعنيف الطفل جسديًا من قبل شخص من خارج  العائلة<br>
+<input type="checkbox" name="abuse_types" value="moral"> تعنيف الطفل معنويًا من قبل شخص من خارج العائلة<br>
+
+<input type="checkbox" name="abuse_types" value="witness_violence"> تعريض الطفل لمشاهدة الخلافات العنيفة داخل الأسرة<br>
+<input type="checkbox" name="abuse_types" value="discrimination"> تعريض الطفل للتمييز<br>
+<input type="checkbox" name="abuse_types" value="hard_work"> تكليف الطفل بأعمال مرهقة<br>
+<input type="checkbox" name="abuse_types" value="food_deprivation"> عقاب الطفل باعتياد حرمانه من الطعام<br>
+<input type="checkbox" name="abuse_types" value="step_parent_abuse"> سوء معاملة الطفل من قبل زوج الأم / زوجة الأب<br>
+<input type="checkbox" name="abuse_types" value="media_defamation"> التشهير الإعلامي بالحياة الخاصة للطفل<br>
+<input type="checkbox" name="abuse_types" value="torture"> تعريض الطفل للتعذيب<br>
+<input type="checkbox" name="abuse_types" value="disability_abuse"> سوء معاملة الطفل بسبب الإعاقة<br>
+
+<input type="checkbox" name="abuse_types" value="other">
+أخرى<br>
+<input type="text" name="abuse_types_other" class="form-control mb-2">
+
+<hr>
+<label class="fw-bold">استغلال الطفل ذكرا كان أو أنثى جنسيًا</label><br>
+
+<input type="checkbox" name="sexual_exploitation" value="incest"> زنا المحارم<br>
+
+<input type="checkbox" name="sexual_exploitation" value="family_exploitation">
+الاستغلال الجنسي للطفل في المحيط الأسري<br>
+
+<input type="checkbox" name="sexual_exploitation" value="child_on_child">
+الاستغلال الجنسي / اعتداء على طفل من قبل طفل آخر داخل مؤسسة<br>
+
+<input type="checkbox" name="sexual_exploitation" value="staff_exploitation">
+الاستغلال الجنسي للطفل من قبل إطار أو عون مباشر للطفل داخل مؤسسة<br>
+
+<input type="checkbox" name="sexual_exploitation" value="with_partner">
+ممارسة الطفل للجنس مع صديق / صديقة<br>
+
+<input type="checkbox" name="sexual_exploitation" value="casual_person">
+ممارسة الطفل للجنس مع شخص عرضي<br>
+
+<input type="checkbox" name="sexual_exploitation" value="homosexual_relations">
+الاستغلال الجنسي للطفل في العلاقات الجنسية المثلية<br>
+
+<input type="checkbox" name="sexual_exploitation" value="online_exploitation">
+الاستغلال الجنسي عبر وسائل الاتصال الحديثة<br>
+
+<input type="checkbox" name="sexual_exploitation" value="brothels_service">
+خدمة القائمين على بيوت الدعارة من طرف الأطفال<br>
+
+<input type="checkbox" name="sexual_exploitation" value="sexual_materials">
+عرض وتداول مصنفات مطبوعة أو مرئية تخاطب غرائز الطفل الجنسية<br>
+
+<input type="checkbox" name="sexual_exploitation" value="prostitution">
+استغلال الطفل في بغاء الغير ودعارته<br>
+
+<input type="checkbox" name="sexual_exploitation" value="pornography">
+استغلال الطفل في المواد الإباحية و المحامل و الوسائط<br>
+
+<input type="checkbox" name="sexual_exploitation" value="prostitution_networks">
+استغلال الطفل في شبكات الدعارة<br>
+
+<input type="checkbox" name="sexual_exploitation" value="sex_by_exploiter">
+ممارسة الجنس مع الطفل من قبل المستغل<br>
+
+<input type="checkbox" name="sexual_exploitation" value="sex_in_presence">
+ممارسة الجنس بحضور الطفل<br>
+
+
+
+<input type="checkbox" name="sexual_exploitation" value="illegal_adoption">
+تبني طفل بغاية استغلاله<br>
+
+<input type="checkbox" name="sexual_exploitation" value="other">
+أخرى<br>
+<input type="text" name="sexual_exploitation_other" class="form-control mb-2">
+
+<hr>
+<label class="fw-bold">استغلال الطفل في الإجرام المنظم</label><br>
+
+<input type="checkbox" name="organized_crime" value="illegal_border">
+محاولة اجتياز الحدود خلسة في اطار جريمة منظمة<br>
+
+<input type="checkbox" name="organized_crime" value="smuggling">
+استغلال الطفل في بيع السلع المهربة والتهريب<br>
+
+<input type="checkbox" name="organized_crime" value="violence_incitation">
+تحريض الطفل على القيام بأعمال العنف والترويع<br>
+
+<input type="checkbox" name="organized_crime" value="hate_ideas">
+استغلال الطفل في زرع أفكار التعصب والكراهية<br>
+
+<input type="checkbox" name="organized_crime" value="hate_recruitment">
+استقطاب الطفل في زرع أفكار التعصب والكراهية<br>
+
+<input type="checkbox" name="organized_crime" value="online_violence">
+تحريض الطفل على العنف عبر وسائل الاتصال الحديثة<br>
+
+<input type="checkbox" name="organized_crime" value="drug_distribution">
+استغلال الطفل في ترويج المواد المخدرة أو الكحولية<br>
+
+<input type="checkbox" name="organized_crime" value="theft">
+استغلال الطفل في عمليات السرقة والنشل<br>
+
+<input type="checkbox" name="organized_crime" value="alcohol_sales">
+استغلال الطفل في بيع المواد الكحولية وترويجها<br>
+
+<input type="checkbox" name="organized_crime" value="stolen_goods">
+ترويج المواد المسروقة<br>
+
+<input type="checkbox" name="organized_crime" value="public_property">
+إشراك الطفل في الاعتداء على المرافق العمومية والممتلكات<br>
+
+<input type="checkbox" name="organized_crime" value="organized_begging">
+استغلال الطفل في التسول في إطار جريمة منظمة<br>
+
+<input type="checkbox" name="organized_crime" value="armed_conflict">
+استغلال الطفل في النزاع المسلح<br>
+
+<input type="checkbox" name="organized_crime" value="trafficking">
+التسفير إلى الخارج بغاية الاستغلال<br>
+
+<input type="checkbox" name="organized_crime" value="illegal_adoption">
+تبني طفل بغاية استغلاله<br>
+
+<input type="checkbox" name="organized_crime" value="selling_child">
+بيع طفل<br>
+
+<input type="checkbox" name="organized_crime" value="organ_trafficking">
+نزع الأعضاء أو الأنسجة أو الخلايا أو الأمشاج أو الأجنة أو جزء منها<br>
+
+<input type="checkbox" name="organized_crime" value="other">
+أخرى<br>
+<input type="text" name="organized_crime_other" class="form-control mb-2">
+
+
+<hr>
+<label class="fw-bold">تعريض الطفل للتسول أو استغلاله اقتصاديًا</label><br>
+
+<input type="checkbox" name="economic_exploitation" value="early_work">
+حمل الطفل على العمل في سن مبكر واستغلاله خارج الأطر القانونية<br>
+
+<input type="checkbox" name="economic_exploitation" value="public_shows">
+استغلال الطفل في عروض جماهيرية غير مرخص فيها<br>
+
+<input type="checkbox" name="economic_exploitation" value="marginal_activities">
+تعاطي الطفل للأنشطة الهامشية<br>
+
+<input type="checkbox" name="economic_exploitation" value="begging">
+تعريض الطفل للتسول<br>
+
+<input type="checkbox" name="economic_exploitation" value="domestic_work">
+استغلال الطفل في العمل المنزلي<br>
+
+<input type="checkbox" name="economic_exploitation" value="agriculture">
+استغلال الطفل في العمل الفلاحي<br>
+
+<input type="checkbox" name="economic_exploitation" value="industry">
+استغلال الطفل في العمل الصناعي<br>
+
+<input type="checkbox" name="economic_exploitation" value="illegal_adoption">
+تبني طفل بغاية استغلاله<br>
+
+
+
+<input type="checkbox" name="economic_exploitation" value="other">
+أخرى<br>
+<input type="text" name="economic_exploitation_other" class="form-control mb-2">
+        </div>
+    </div>
+
+ <!-- مصدر التهديد -->
+<div class="card mb-3">
+    <div class="card-header fw-bold h4 bg-custom-light">
+        مصدر التهديد
+    </div>
+
+    <div class="card-body">
+        <select name="threat_source"
+                class="form-select text-end"
+                required>
+
+            <option value="">---</option>
+
+            {% for value, label in threat_source_choices %}
+                <option value="{{ value }}"
+                    {% if child.threat_source == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+</div>
+
+    <!-- مكان التهديد -->
+   <!-- مكان التهديد -->
+<div class="card mb-3">
+    <div class="card-header fw-bold h4 bg-custom-light">
+        مكان التهديد
+    </div>
+
+    <div class="card-body">
+        <select name="threat_location"
+                class="form-select text-end"
+                required>
+
+            <option value="">---</option>
+
+            {% for value, label in threat_location_choices %}
+                <option value="{{ value }}"
+                    {% if child.threat_location == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+</div>
+
+
+   <button class="btn btn-dark-blue w-100 fw-bold h5">
+ تسجيل الإشعار
+</button>
+</form>
+
+    
+</div>
+</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+
+      <!-- Header -->
+      <div class="modal-header text-white"
+           style="background: linear-gradient(135deg, #0b0b0b, #060606);">
+        <h5 class="modal-title">
+          ✔️ اضافة اشعار 
+        </h5>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body text-center"
+           style="background-color:#f4f8fb;">
+
+        <i class="bi bi-check-circle-fill"
+           style="font-size:40px; color:#198754;"></i>
+
+        <h4 class="mt-3 text-dark">
+          تم اضافة اشعار بنجاح
+        </h4>
+
+    
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% if show_success_modal %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const successModalEl = document.getElementById("successModal");
+    if (!successModalEl) return;
+
+    const successModal = new bootstrap.Modal(successModalEl, {
+        backdrop: 'static',
+        keyboard: false
+    });
+    successModal.show();
+
+    setTimeout(() => {
+        window.location.href = "{% url 'list_notification' child.id %}";
+    }, 4000);
+
+
+
+});
+</script>
+{% endif %}
+
+
+
+  <script>
+function toggleOtherNotifier() {
+    const select = document.getElementById('notifier_source');
+    const otherInput = document.getElementById('notifier_source_other');
+
+    if (select.value === 'other') {
+        otherInput.style.display = 'block';
+        otherInput.required = true;
+    } else {
+        otherInput.style.display = 'none';
+        otherInput.required = false;
+        otherInput.value = '';
+    }
+}
+
+/* لتشغيله تلقائيًا في update */
+document.addEventListener('DOMContentLoaded', toggleOtherNotifier);
+
+document.addEventListener('DOMContentLoaded', function () {
+    const suicideCheckbox = document.getElementById('suicide_attempt_checkbox');
+    const suicideDetails = document.getElementById('suicide_details_section');
+
+    function toggleSuicideDetails() {
+        if (suicideCheckbox.checked) {
+            suicideDetails.style.display = 'block';
+        } else {
+            suicideDetails.style.display = 'none';
+            // Optionnel : décocher toutes les cases si on cache la section
+            suicideDetails.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            suicideDetails.querySelectorAll('input[type="text"]').forEach(txt => txt.value = '');
+        }
+    }
+
+    // Écouteur d'événement
+    suicideCheckbox.addEventListener('change', toggleSuicideDetails);
+    
+    // Vérification initiale (au cas où la page serait rechargée avec la case cochée)
+    toggleSuicideDetails();
+});
+
+</script>
+  
+{% endblock %}

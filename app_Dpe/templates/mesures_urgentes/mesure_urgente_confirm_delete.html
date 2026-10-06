@@ -1,0 +1,621 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Container principal */
+    .delete-main-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* En-tête de page */
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: slideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-header h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+        color: #2c3e50;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+    
+    .page-header h2 i {
+        color: #dc3545;
+        font-size: 1.6rem;
+    }
+    
+    .page-header-subtitle {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    /* Carte de confirmation */
+    .delete-card {
+        max-width: 550px;
+        width: 100%;
+        margin: 0 auto;
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+    }
+    
+    .delete-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* En-tête de la carte */
+    .delete-card-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        padding: 20px 25px;
+        text-align: center;
+    }
+    
+    .delete-card-header h3 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.4rem;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .delete-card-header h3 i {
+        font-size: 1.3rem;
+    }
+    
+    /* Corps de la carte */
+    .delete-card-body {
+        padding: 30px 25px;
+        text-align: center;
+        background: white;
+    }
+    
+    /* Icône de suppression */
+    .delete-icon-wrapper {
+        margin-bottom: 20px;
+    }
+    
+    .delete-icon-circle {
+        width: 80px;
+        height: 80px;
+        background: #fff5f5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        border: 2px solid #ffe0e0;
+    }
+    
+    .delete-icon-circle i {
+        font-size: 2.5rem;
+        color: #dc3545;
+    }
+    
+    /* Message */
+    .delete-message {
+        font-size: 1.2rem;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    /* Boîte d'information */
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 18px;
+        margin: 20px 0;
+        text-align: right;
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .info-label i {
+        color: #dc3545;
+        font-size: 0.9rem;
+        width: 20px;
+    }
+    
+    .info-value {
+        color: #212529;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .badge-order {
+        background: #343a40;
+        color: #ffc107;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .badge-type {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .badge-neglect {
+        background: #28a745;
+        color: white;
+    }
+    
+    .badge-danger {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .badge-mixed {
+        background: #fd7e14;
+        color: white;
+    }
+    
+    /* Alerte */
+    .warning-text {
+        background: #fff3cd;
+        border-right: 3px solid #ffc107;
+        padding: 12px;
+        border-radius: 10px;
+        margin: 20px 0;
+        font-size: 0.85rem;
+        color: #856404;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .warning-text i {
+        font-size: 1.1rem;
+    }
+    
+    /* Boutons */
+    .delete-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 25px;
+    }
+    
+    .btn-delete-confirm {
+        background: #dc3545;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        color: white;
+        cursor: pointer;
+        flex: 1;
+    }
+    
+    .btn-delete-confirm:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        flex: 1;
+        color: white;
+        display: inline-block;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        color: white;
+    }
+    
+    /* Modal */
+    .confirm-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    
+    .confirm-modal {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        max-width: 350px;
+        width: 90%;
+        text-align: center;
+        animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .confirm-modal i {
+        margin-bottom: 15px;
+    }
+    
+    .confirm-modal h4 {
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+    
+    .confirm-modal p {
+        margin-bottom: 20px;
+        color: #6c757d;
+    }
+    
+    .confirm-modal .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+    }
+    
+    .confirm-modal .modal-actions button {
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+    }
+    
+    .confirm-modal .modal-confirm {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .confirm-modal .modal-confirm:hover {
+        background: #c82333;
+    }
+    
+    .confirm-modal .modal-cancel {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .confirm-modal .modal-cancel:hover {
+        background: #5a6268;
+    }
+    
+    /* Responsive */
+    @media (max-width: 576px) {
+        .delete-main-container {
+            padding: 20px 15px;
+        }
+        
+        .page-header h2 {
+            font-size: 1.4rem;
+        }
+        
+        .delete-card-body {
+            padding: 20px;
+        }
+        
+        .delete-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .info-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        
+        .delete-card-header h3 {
+            font-size: 1.2rem;
+        }
+        
+        .delete-icon-circle {
+            width: 65px;
+            height: 65px;
+        }
+        
+        .delete-icon-circle i {
+            font-size: 2rem;
+        }
+        
+        .delete-message {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="delete-main-container">
+    <div style="width: 100%;">
+        <!-- En-tête de page -->
+        <div class="page-header">
+            <h2>
+                <i class="fas fa-trash-alt"></i>
+                حذف التدبير العاجل
+            </h2>
+            <div class="page-header-subtitle">
+                <i class="fas fa-arrow-down"></i>
+                <span>يرجى تأكيد عملية الحذف</span>
+                <i class="fas fa-arrow-down"></i>
+            </div>
+        </div>
+        
+        <!-- Carte de confirmation -->
+        <div class="delete-card">
+            <div class="delete-card-header">
+                <h3>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    تأكيد الحذف
+                </h3>
+            </div>
+            
+            <div class="delete-card-body">
+                <div class="delete-icon-wrapper">
+                    <div class="delete-icon-circle">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                </div>
+                
+                <div class="delete-message">
+                    هل أنت متأكد من حذف هذا التدبير؟
+                </div>
+                
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-hashtag"></i> رقم التدبير:
+                        </span>
+                        <span class="info-value">
+                            <span class="badge-order">{{ mesure.order }}</span>
+                        </span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-tag"></i> نوع التدبير:
+                        </span>
+                        <span class="info-value">
+                            {% if mesure.menace_type == 'neglect' %}
+                                <span class="badge-type badge-neglect">
+                                    <i class="fas fa-hand-holding-heart"></i> إهمال وتشرد
+                                </span>
+                            {% elif mesure.menace_type == 'danger' %}
+                                <span class="badge-type badge-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> خطر ملم
+                                </span>
+                            {% else %}
+                                <span class="badge-type badge-mixed">
+                                    <i class="fas fa-balance-scale"></i> مختلط
+                                </span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-user"></i> الطفل:
+                        </span>
+                        <span class="info-value">
+                            {{ mesure.child.first_name }} {{ mesure.child.last_name }}
+                        </span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-bell"></i> رقم الإشعار:
+                        </span>
+                        <span class="info-value">
+                            {{ mesure.notification.notifier_number }}
+                        </span>
+                    </div>
+                    
+                    {% if mesure.urgent_measure_neglect_date %}
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-calendar-alt"></i> تاريخ (إهمال):
+                        </span>
+                        <span class="info-value">
+                            {{ mesure.urgent_measure_neglect_date|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if mesure.urgent_measure_danger_date %}
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-calendar-alt"></i> تاريخ (خطر ملم):
+                        </span>
+                        <span class="info-value">
+                            {{ mesure.urgent_measure_danger_date|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-clock"></i> تاريخ الإنشاء:
+                        </span>
+                        <span class="info-value">
+                            {{ mesure.created_at|date:"d/m/Y H:i" }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="warning-text">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <strong>تنبيه:</strong> هذا الإجراء لا يمكن التراجع عنه.
+                        <small>سيتم حذف التدبير بشكل نهائي.</small>
+                    </div>
+                </div>
+                
+                <div class="delete-actions">
+                    <button type="button" class="btn-delete-confirm" id="confirmDeleteBtn">
+                        <i class="fas fa-trash-alt"></i> نعم، احذف
+                    </button>
+                    <a href="{% url 'mesure_urgente_list' %}" class="btn-cancel">
+                        <i class="fas fa-times"></i> إلغاء
+                    </a>
+                </div>
+                
+                <form id="deleteForm" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation supplémentaire -->
+<div id="confirmModal" class="confirm-modal-overlay">
+    <div class="confirm-modal">
+        <i class="fas fa-question-circle fa-3x" style="color: #ffc107;"></i>
+        <h4>تأكيد نهائي</h4>
+        <p>هل أنت متأكد تماماً من حذف هذا التدبير؟</p>
+        <div class="modal-actions">
+            <button id="finalConfirmBtn" class="modal-confirm">
+                <i class="fas fa-check"></i> نعم
+            </button>
+            <button id="cancelModalBtn" class="modal-cancel">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const finalConfirmBtn = document.getElementById('finalConfirmBtn');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const deleteForm = document.getElementById('deleteForm');
+        
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirmModal) {
+                    confirmModal.style.display = 'flex';
+                }
+            });
+        }
+        
+        if (finalConfirmBtn) {
+            finalConfirmBtn.addEventListener('click', function() {
+                if (deleteForm) {
+                    deleteForm.submit();
+                }
+            });
+        }
+        
+        if (cancelModalBtn) {
+            cancelModalBtn.addEventListener('click', function() {
+                if (confirmModal) {
+                    confirmModal.style.display = 'none';
+                }
+            });
+        }
+        
+        if (confirmModal) {
+            confirmModal.addEventListener('click', function(e) {
+                if (e.target === confirmModal) {
+                    confirmModal.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

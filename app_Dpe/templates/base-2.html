@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}لوحة التحكم{% endblock %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <style>
+        body { margin:0; font-family: "Arial", sans-serif; }
+.top_bar {
+    position: fixed;   /* Fixe en haut */
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f2f2f2; /* couleur de fond */
+    color: #ffffff;
+    padding: 10px 20px;
+    font-weight: bold;
+    background: #002a4e;
+    z-index: 9999;     /* Toujours au-dessus */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* optionnel: ombre */
+}        header { background:#f8f9fa; padding:10px 20px; position:fixed; top:50px; width:100%; z-index:999; }
+        .logout_btn { background:#ef5350; color:white; padding:5px 10px; text-decoration:none; border-radius:3px; }
+        .logout_btn:hover { background:#ca4745; }
+        .sidebar { background:#2171b1; position:fixed; top:100px; right:0; width:250px; height:100%; padding-top:20px; }
+        .sidebar a { display:block; color:white; padding:15px; text-decoration:none; }
+        .sidebar a:hover { background:#3498db; }
+        .content { margin-right:260px; margin-top:120px; padding:20px; }
+        table { width:100%; border-collapse:collapse; }
+        th, td { padding:10px; border:1px solid #ddd; text-align:center; }
+        th { background:#3498db; color:white; }
+        a.btn { padding:5px 10px; border-radius:3px; color:white; text-decoration:none; }
+        a.btn-edit { background:#f39c12; }
+        a.btn-delete { background:#e74c3c; margin-left:5px; }
+        a.btn-add { background:#3498db; padding:10px 20px; margin-bottom:15px; display:inline-block; }
+     body {
+        direction: rtl;
+        text-align: right;
+        background: #f5f7fa;
+    }
+
+    .section-title {
+        background: linear-gradient(90deg, #003161, #00508a);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px 8px 0 0;
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    .card-custom {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        border: none;
+        margin-bottom: 30px;
+        background: white;
+    }
+
+    .nav-pills .nav-link {
+        color: #003161;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 10px 18px;
+        transition: 0.3s;
+    }
+
+    .nav-pills .nav-link:hover {
+        background: #e8f0ff;
+    }
+
+    .nav-pills .nav-link.active {
+        background: #003161 !important;
+        color: white !important;
+        transform: translateY(-2px);
+    }
+
+    .form-control, select {
+        border-radius: 10px !important;
+        padding: 10px !important;
+    }
+
+    label {
+        font-weight: 600;
+        color: #003161;
+    }
+
+    .btn-save {
+        border-radius: 12px;
+        padding: 12px 40px;
+        font-size: 1.2rem;
+    }
+
+    </style>
+</head>
+<body>
+
+<div class="top_bar" >    
+    <h5>
+        <b>
+            المنظومة المعلوماتية الخاصة بالمندوبيات الجهوية
+        </b>
+    </h5>
+</div>
+
+<!--
+<div class="sidebar" style="top:43px">
+    <a href="{% url 'tableauboard' %}"><i class="fas fa-tachometer-alt"></i> المعطيات العامة</a>
+    <a href="{% url 'enfant_list' %}"><i class="fas fa-users"></i> الأطفال الجانحين</a>
+</div>
+-->
+<div class="content">
+    {% block content %}
+    {% endblock content %}
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

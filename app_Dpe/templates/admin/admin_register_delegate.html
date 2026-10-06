@@ -1,0 +1,510 @@
+{% extends "admin/base_admin.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}استمارة إدخال مندوب{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Styles spécifiques au formulaire d'enregistrement */
+:root {
+    --primary       : #1a1a1a;
+    --primary-light : #2c2c2c;
+    --success       : #10b981;
+    --success-light : #d1fae5;
+    --danger        : #ef4444;
+    --warning       : #f59e0b;
+    --gold          : #b8860b;
+    --gold-light    : #d4a520;
+    --bg            : #f5f5f5;
+    --text          : #2c2c2c;
+    --radius        : 12px;
+    --shadow        : 0 4px 18px rgba(0,0,0,.08);
+}
+
+/* Messages alerts */
+.messages-wrapper {
+    max-width: 800px;
+    margin: 0 auto 20px;
+    padding: 0 15px;
+}
+
+.alert-custom {
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    animation: slideDown 0.4s ease-out;
+    border-right: 4px solid;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-custom.alert-error {
+    background: linear-gradient(135deg, #fef2f2 0%, #fff 100%);
+    border-right-color: var(--danger);
+    color: #991b1b;
+}
+
+.alert-custom.alert-success {
+    background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+    border-right-color: var(--success);
+    color: #065f46;
+}
+
+.alert-custom.alert-warning {
+    background: linear-gradient(135deg, #fffbeb 0%, #fff 100%);
+    border-right-color: var(--warning);
+    color: #92400e;
+}
+
+.alert-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.alert-error .alert-icon { color: var(--danger); }
+.alert-success .alert-icon { color: var(--success); }
+.alert-warning .alert-icon { color: var(--warning); }
+
+.alert-content {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: opacity 0.2s;
+}
+
+.alert-close:hover { opacity: 1; }
+
+/* Form Card */
+.form-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 25px;
+    margin-top: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #e0e0e0;
+}
+
+.form-header {
+    background: #1a1a1a;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    border-radius: var(--radius) var(--radius) 0 0;
+    margin: -25px -25px 25px -25px;
+    border-bottom: 3px solid var(--gold);
+    font-family: "Times New Roman", serif !important;
+}
+
+.form-section {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background: #f8f8f8;
+    transition: all 0.3s ease;
+    border: 1px solid #e8e8e8;
+}
+
+.form-section:hover {
+    background: #f0f0f0;
+    transform: translateX(-3px);
+    border-color: var(--gold);
+}
+
+.form-section:nth-child(odd) {
+    background: #f5f5f5;
+}
+
+.form-section:nth-child(odd):hover {
+    background: #e8e8e8;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    text-align: right;
+    color: var(--text);
+    font-family: "Times New Roman", serif !important;
+}
+
+.input-icon {
+    position: relative;
+}
+
+.input-icon i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+}
+
+.form-control, .form-select {
+    height: 45px;
+    padding-right: 40px;
+    border-radius: 8px;
+    text-align: right;
+    transition: all 0.3s ease;
+    border: 1px solid #d0d0d0;
+    font-family: "Times New Roman", serif !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 .2rem rgba(184,134,11,.25);
+}
+
+#unique_id_preview {
+    background: #e8e8e8 !important;
+    font-weight: 600;
+    color: #2c2c2c;
+}
+
+/* ====== BOUTON تسجيل - GRIS/DORÉ ====== */
+.btn-submit {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    color: #fff;
+    border: 2px solid var(--gold);
+    padding: 14px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 10px;
+    font-family: "Times New Roman", serif !important;
+}
+
+.btn-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(184,134,11,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    border-color: var(--gold-light);
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+.btn-submit:hover::before {
+    left: 100%;
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-submit i {
+    color: var(--gold);
+    margin-left: 8px;
+}
+
+/* Loading spinner */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: var(--gold);
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Texte d'aide */
+.form-text {
+    color: #666 !important;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-card {
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    .form-header {
+        margin: -20px -20px 20px -20px;
+        font-size: 1.2rem;
+    }
+    
+    .messages-wrapper {
+        padding: 0 10px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Messages Alerts -->
+<div class="messages-wrapper">
+    {% if messages %}
+        {% for message in messages %}
+            {% if request.resolver_match.url_name != 'register_delegate' or message.tags != 'success' %}
+            <div class="alert-custom alert-{{ message.tags|default:'error' }}">
+                <div class="alert-icon">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle"></i>
+                    {% elif message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="alert-content">
+                    {{ message }}
+                </div>
+                <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="form-card">
+    <div class="form-header">
+        <i class="fas fa-user-plus ml-2"></i> استمارة إدخال مندوب
+    </div>
+
+    <form method="post" id="delegateForm" onsubmit="return handleSubmit(event)">
+        {% csrf_token %}
+        <div class="row">
+
+            <!-- الولاية -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">الولاية *</label>
+                <div class="input-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <select id="wilaya" name="wilaya" class="form-select" required>
+                        <option value="">اختر الولاية</option>
+                        <option value="01">تونس</option>
+                        <option value="02">أريانة</option>
+                        <option value="03">بن عروس</option>
+                        <option value="04">منوبة</option>
+                        <option value="05">نابل</option>
+                        <option value="06">زغوان</option>
+                        <option value="07">بنزرت</option>
+                        <option value="08">جندوبة</option>
+                        <option value="09">الكاف</option>
+                        <option value="10">سليانة</option>
+                        <option value="11">القيروان</option>
+                        <option value="12">القصرين</option>
+                        <option value="13">سيدي بوزيد</option>
+                        <option value="14">سوسة</option>
+                        <option value="15">المنستير</option>
+                        <option value="16">المهدية</option>
+                        <option value="17">صفاقس</option>
+                        <option value="18">قابس</option>
+                        <option value="19">مدنين</option>
+                        <option value="20">تطاوين</option>
+                        <option value="21">قبلي</option>
+                        <option value="22">توزر</option>
+                        <option value="23">قفصة</option>
+                        <option value="24">باجة</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- الصفة -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">الصفة *</label>
+                <div class="input-icon">
+                    <i class="fas fa-user-tag"></i>
+                    <select name="role" class="form-select role-select" required>
+                        <option value="">اختر الصفة</option>
+                        <option value="central">المندوب العام </option>
+                        <option value="regional">مندوب حماية الطفولة </option>
+                        <option value="chef de bureau">Admin</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- الرمز (auto-incrémenté affiché) -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">الرمز</label>
+                <div class="input-icon">
+                    <i class="fas fa-barcode"></i>
+                    <input type="text" id="unique_id_preview" class="form-control" readonly>
+                </div>
+                <small class="form-text">يتم توليد هذا الرمز تلقائياً عند اختيار الولاية</small>
+            </div>
+
+            <!-- المعرف الوحيد (saisie manuelle) -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">المعرّف الوحيد * </label>
+                <div class="input-icon">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" name="delegate_code" id="delegate_code" class="form-control" required maxlength="10" placeholder="أدخل 10 أرقام">
+                </div>
+            </div>
+
+            <!-- الاسم -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">الاسم *</label>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="first_name" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- اللقب -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">اللقب *</label>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="last_name" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- الهاتف -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">الهاتف</label>
+                <div class="input-icon">
+                    <i class="fas fa-phone"></i>
+                    <input type="text" name="phone" id="phone" class="form-control">
+                </div>
+            </div>
+
+            <!-- البريد -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">البريد الإلكتروني</label>
+                <div class="input-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" class="form-control">
+                </div>
+            </div>
+
+            <!-- كلمة السر -->
+            <div class="col-md-6 form-section">
+                <label class="form-label">كلمة السر *</label>
+                <div class="input-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+            </div>
+
+        </div><!-- /row -->
+
+        <div class="mt-4">
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <i class="fas fa-save"></i>
+                <span>تسجيل المندوب</span>
+            </button>
+        </div>
+    </form>
+</div><!-- /form-card -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const wilayaSelect = document.getElementById('wilaya');
+    const previewInput = document.getElementById('unique_id_preview');
+    const delegateCodeInput = document.getElementById('delegate_code');
+    const phoneInput = document.getElementById('phone');
+
+    // Quand on change de wilaya, récupérer le prochain code
+    wilayaSelect.addEventListener('change', function () {
+        const wilaya = this.value;
+        if (!wilaya) {
+            previewInput.value = '';
+            return;
+        }
+
+        fetch("{% url 'ajax_next_delegate_id' %}?wilaya=" + encodeURIComponent(wilaya))
+        .then(resp => resp.json())
+        .then(data => {
+            previewInput.value = data.next_id || '';
+        })
+        .catch(err => {
+            previewInput.value = "خطأ في الشبكة";
+        });
+    });
+
+    // Validation téléphone (8 chiffres)
+    phoneInput.addEventListener('input', e => {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 8);
+    });
+
+    // Validation delegate_code (10 chiffres uniquement)
+    delegateCodeInput.addEventListener('input', e => {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+    });
+    
+    // Auto-remove messages after 6 seconds
+    setTimeout(() => {
+        const messages = document.querySelectorAll('.alert-custom');
+        messages.forEach(msg => {
+            msg.style.opacity = '0';
+            msg.style.transform = 'translateY(-10px)';
+            setTimeout(() => msg.remove(), 400);
+        });
+    }, 6000);
+});
+
+// Gestion de la soumission avec état de chargement
+function handleSubmit(event) {
+    const btn = document.getElementById('submitBtn');
+    
+    // Désactiver le bouton et montrer le chargement
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> جاري التسجيل...';
+    
+    // Permettre la soumission normale du formulaire
+    return true;
+}
+</script>
+{% endblock %}

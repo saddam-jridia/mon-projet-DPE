@@ -1,0 +1,785 @@
+<!-- app_Dpe/templates/app_Dpe/child_list_threat_assessment.html -->
+
+{% extends 'account/Header.html' %}
+{% load dict_extras %}
+{% load static %}
+{% load widget_tweaks %} 
+
+{% block content %}
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+    .main-content {
+        margin-right: 20px;
+        padding: 5px;
+    }
+    .btn-gray {
+        background-color: #8c8f90;
+        color: #fff;
+        border: none;
+    }
+    .btn-gray:hover {
+        background-color: #767677;
+        color: #fff;
+    }
+    .btn-dark-blue {
+        background-color: #070707;
+        border-color: #030303;
+    }
+    .btn-dark-blue:hover {
+        background-color: #131313;
+        border-color: #0c0c0c;
+    }
+    form {
+        direction: rtl;
+        text-align: right;
+    }
+    form label {
+        display: block;
+        text-align: right;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    form input[type="text"],
+    form input[type="date"],
+    form textarea,
+    form select {
+        text-align: right;
+        direction: rtl;
+    }
+    form input[type="radio"],
+    form input[type="checkbox"] {
+        float: right;
+        margin-left: 10px;
+    }
+    .card-body p {
+        text-align: right;
+    }
+    .card-body div > label {
+        display: inline-block;
+        margin-right: 5px;
+        text-align: right;
+    }
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    table input[type="radio"] {
+        appearance: auto !important;
+        -webkit-appearance: radio !important;
+        opacity: 1 !important;
+        position: static !important;
+        display: inline-block !important;
+        margin: auto !important;
+        float: none !important;
+        width: 16px;
+        height: 16px;
+    }
+    table thead th {
+        background-color: #090909 !important;
+        color: #d4a520 !important;
+        text-align: center;
+    }
+    table th, table td {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+    .success-modal {
+        z-index: 1060 !important;
+    }
+    .success-modal .modal-content {
+        border: 3px solid #d4a520;
+    }
+    .success-modal .modal-header {
+        background-color: #000000;
+        color: #d4a520;
+    }
+    .success-modal .modal-footer {
+        background-color: #000000;
+    }
+    .section-title {
+        background-color: #070707;
+        color: white;
+        padding: 8px 15px;
+        margin: 20px 0 10px 0;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .section-title i {
+        margin-left: 8px;
+    }
+    .btn-submit {
+        background-color: #000000;
+        color: #d4a520;
+        border: 2px solid #d4a520;
+        padding: 10px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        margin-top: 15px;
+    }
+    .btn-submit:hover {
+        background-color: #d4a520;
+        color: #000000;
+    }
+    .decision-group {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    .decision-group h6 {
+        color: #090909;
+        font-weight: bold;
+        margin-bottom: 12px;
+        border-bottom: 2px solid #d4a520;
+        padding-bottom: 8px;
+    }
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 5px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+    .checkbox-item:hover {
+        background-color: #e9ecef;
+    }
+    .checkbox-item input[type="checkbox"] {
+        float: none;
+        margin-left: 10px;
+        margin-right: 0;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+    .checkbox-item label {
+        margin-bottom: 0;
+        cursor: pointer;
+        font-weight: 500;
+    }
+    .auto-info {
+        background-color: #f6d784;
+        border: 1px solid #d4a520;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .auto-info .info-row {
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+    .auto-info .info-label {
+        font-weight: bold;
+        color: #0a0a0a;
+    }
+    .required-field::after {
+        content: " *";
+        color: #dc3545;
+    }
+    .hint-text {
+        color: #6c757d;
+        font-size: 13px;
+        font-style: italic;
+    }
+</style>
+
+<div class="content">
+    <div class="mb-3" style="text-align: left;">
+        <a href="{% url 'child_list_threat_assessment' %}" 
+           class="btn btn-sm" 
+           style="background-color: #d4a520; color: #000000; border-color: #d4a520;">
+            <i class="fas fa-arrow-right me-2"></i>
+            العودة إلى قائمة تقدير جدية الإشعار 
+        </a>
+    </div>
+    
+    <h2 class="text-center" style="font-family:'Amiri'; font-weight:900;">
+        تقدير جدية الإشعار </h2>
+    
+      <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;">
+        <form action="{% url 'recherche_threat_assessment_list' %}" method="get" class="d-flex align-items-center">
+            <input type="text" name="uid" placeholder="أدخل المعرف الوحيد" class="form-control"
+                   style="width:200px; height: 30px;" value="{{ uid_query|default:'' }}">
+            <button type="submit" class="btn btn-dark text-white fw-bold" style="margin-left:5px; width:50px; height: 30px;">
+                بحث
+            </button>
+        </form>
+    </div>
+    
+    <br>
+    
+    <table class="table table-bordered text-center">
+        <thead style="background:#c4c0c0;">
+            <tr>
+                <th>المعرف الوحيد</th>
+                <th>الاسم و اللقب </th>
+                <th>عدد الإشعارات</th>
+                <th>قائمة الاشعارات </th>
+                <th>تقدير جدية الإشعار</th>
+                <th>قائمة تقدير جدية الإشعار</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for item in children_with_notifications %}
+            <tr>
+                <td>{{ item.child.uid }}</td>
+                <td>{{ item.child.first_name }} {{ item.child.last_name }}</td>
+                <td>{{ item.notifications.count }}</td>
+
+                <td>
+                    <a href="{% url 'list_notification' item.child.id %}" style="font-weight: bold; color: #040404;">
+                        قائمة الإشعارات
+                    </a>
+                </td>
+
+                <td>
+                    <select class="form-select form-select-sm" 
+                            id="notifSelect{{ item.child.uid }}"
+                            style="background-color: #060606; color: #d4a520; border-color: #000;">
+                        <option value="" selected disabled style="background-color: #050505; color: #d4a520;">
+                           تقدير جدية الإشعار
+                        </option>
+                        {% for notif in item.notifications %}
+                            <option value="{{ notif.id }}" style="background-color: #0a0a0a; color: #d4a520;">
+                                تقدير جدية الإشعار على الاشعار رقم ({{ notif.notifier_number }})
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    {% for notif in item.notifications %}
+                        <!-- Modal de تقدير جدية التهديد -->
+                        <div class="modal fade"
+                             id="threatAssessmentModal{{ notif.id }}"
+                             tabindex="-1"
+                             aria-labelledby="threatAssessmentModalLabel{{ notif.id }}"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header text-white" style="background:#003154">
+                                        <h5 class="modal-title" id="threatAssessmentModalLabel{{ notif.id }}">بيانات تقدير جدية الإشعار</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body text-end">
+                                        <div class="card">
+                                            <div class="btn btn-dark text-white fw-bold">
+                                                <h2>تقدير جدية الإشعار</h2>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <form method="post" 
+                                                      action="{% url 'create_threat_assessment' notif.id %}"
+                                                      id="form{{ notif.id }}"
+                                                      data-notif-id="{{ notif.id }}">
+                                                    {% csrf_token %}
+
+                                                    <!-- معلومات أساسية تظهر آليا -->
+                                                    <div class="section-title">
+                                                        <i class="fas fa-info-circle"></i>
+                                                        معلومات الإشعار
+                                                    </div>
+                                                    <div class="auto-info">
+                                                        <div class="row">
+                                                            <div class="col-md-6 info-row">
+                                                                <span class="info-label">رقم الإشعار:</span> {{ notif.notifier_number }}
+                                                            </div>
+                                                            <div class="col-md-6 info-row">
+                                                                <span class="info-label">المعرف الوحيد:</span> {{ item.child.uid }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 info-row">
+                                                                <span class="info-label">الاسم:</span> {{ item.child.first_name }}
+                                                            </div>
+                                                            <div class="col-md-6 info-row">
+                                                                <span class="info-label">اللقب:</span> {{ item.child.last_name }}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+
+                                                    <!-- تاريخ تقدير حالة التهديد -->
+                                                    <div class="section-title required-field">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                        تاريخ تقدير حالة التهديد
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="date" name="assessment_date" class="form-control"
+                                                               value="{% if notif.threat_assessment and notif.threat_assessment.assessment_date %}{{ notif.threat_assessment.assessment_date|date:'Y-m-d' }}{% endif %}"
+                                                               required>
+                                                    </div>
+
+                                                    <!-- القرار المتخذ -->
+                                                    <div class="section-title required-field">
+    <i class="fas fa-gavel"></i>
+    القرار المتخذ
+</div>
+
+<select class="form-select" id="decisionType{{ notif.id }}" name="decision_type">
+    <option value="">-- اختر القرار --</option>
+
+    <option value="commitment"
+        {% if notif.threat_assessment and notif.threat_assessment.decision_type == "commitment" %}
+            selected
+        {% endif %}
+    >
+        التعهد بوضعية الطفل
+    </option>
+
+     <!-- رفع الأمر إلى قاضي الأسرة -->
+    <option value="family"
+        {% if notif.threat_assessment and notif.threat_assessment.decision_type == "family" %}
+            selected
+        {% endif %}
+    >
+        رفع الأمر إلى قاضي الأسرة
+    </option>
+
+
+    <option value="no_commitment"
+        {% if notif.threat_assessment and notif.threat_assessment.decision_type == "no_commitment" %}
+            selected
+        {% endif %}
+    >
+        عدم التعهد بوضعية الطفل
+    </option>
+</select>
+
+                                                    <!-- التعهد بوضعية الطفل -->
+                                                     <div id="commitmentBlock{{ notif.id }}" style="display:none;">
+                                                    <div class="decision-group">
+                                                        <h6><i class="fas fa-check-circle"></i> التعهد بوضعية الطفل بــــ</h6>
+                                                        <p class="hint-text">إمكانية وضع علامة على أكثر من خانة</p>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="decision_social_protection" id="decision_social_protection_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.decision_social_protection %}checked{% endif %}>
+                                                            <label for="decision_social_protection_{{ notif.id }}">توفير الحماية الاجتماعية</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="decision_family_judge" id="decision_family_judge_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.decision_family_judge %}checked{% endif %}>
+                                                            <label for="decision_family_judge_{{ notif.id }}">اعلام قاضي الأسرة</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="decision_public_prosecutor" id="decision_public_prosecutor_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.decision_public_prosecutor %}checked{% endif %}>
+                                                            <label for="decision_public_prosecutor_{{ notif.id }}">إعلام النيابة العمومية بوضعية الطفل</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="decision_violence_unit" id="decision_violence_unit_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.decision_violence_unit %}checked{% endif %}>
+                                                            <label for="decision_violence_unit_{{ notif.id }}">إحالة الوضعية على الوحدة المختصة بالبحث في جرائم العنف ضد المرأة والطفل</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="decision_relevant_services" id="decision_relevant_services_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.decision_relevant_services %}checked{% endif %}>
+                                                            <label for="decision_relevant_services_{{ notif.id }}">إعلام المصالح ذات الصلة بالوضعية</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="decision_trafficking_committee" id="decision_trafficking_committee_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.decision_trafficking_committee %}checked{% endif %}>
+                                                            <label for="decision_trafficking_committee_{{ notif.id }}">إعلام الهيئة الوطنية لمكافحة للإتجار بالاشخاص</label>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+<!-- رفع الأمر إلى قاضي الأسرة -->
+
+<!-- رفع الأمر إلى قاضي الأسرة -->
+
+<div id="familyBlock{{ notif.id }}" style="display:none;">
+
+    <div class="decision-group">
+
+       
+
+        <div class="checkbox-item">
+
+            <input
+                type="checkbox"
+                name="decision_family_referral"
+                id="decision_family_referral_{{ notif.id }}"
+                {% if notif.threat_assessment and notif.threat_assessment.decision_family_referral %}
+                    checked
+                {% endif %}
+            >
+
+            <label for="decision_family_referral_{{ notif.id }}">
+                رفع الأمر إلى قاضي الأسرة
+            </label>
+
+        </div>
+
+    </div>
+
+</div>
+
+                                                    <!-- عدم التعهد بوضعية الطفل -->
+                                                     <div id="noCommitmentBlock{{ notif.id }}" style="display:none;">
+                                                    <div class="decision-group">
+                                                        <h6><i class="fas fa-times-circle"></i> عدم التعهد بوضعية الطفل بسبب</h6>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_not_serious" id="reason_not_serious_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_not_serious %}checked{% endif %}>
+                                                            <label for="reason_not_serious_{{ notif.id }}">عدم جدية الإشعار</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_not_professional" id="reason_not_professional_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_not_professional %}checked{% endif %}>
+                                                            <label for="reason_not_professional_{{ notif.id }}">عدم الاختصاص المهني</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_not_territorial" id="reason_not_territorial_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_not_territorial %}checked{% endif %}>
+                                                            <label for="reason_not_territorial_{{ notif.id }}">عدم الاختصاص الترابي مع إحالة الوضعية لمندوب حماية الطفولة المختص ترابيا</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_age_18" id="reason_age_18_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_age_18 %}checked{% endif %}>
+                                                            <label for="reason_age_18_{{ notif.id }}">بلوغ سن 18 سنة</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_address_inaccurate" id="reason_address_inaccurate_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_address_inaccurate %}checked{% endif %}>
+                                                            <label for="reason_address_inaccurate_{{ notif.id }}">تعذر التوصل إلى الطفل والعائلة لعدم دقة العنوان</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_threat_removed" id="reason_threat_removed_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_threat_removed %}checked{% endif %}>
+                                                            <label for="reason_threat_removed_{{ notif.id }}">زوال التهديد أثناء فترة التقصي</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_child_death" id="reason_child_death_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_child_death %}checked{% endif %}>
+                                                            <label for="reason_child_death_{{ notif.id }}">وفاة الطفل</label>
+                                                        </div>
+
+                                                         <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_no_agreement_20_days" id="reason_no_agreement_20_days_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_no_agreement_20_days %}checked{% endif %}>
+                                                            <label for="reason_no_agreement_20_days_{{ notif.id }}">عدم الحصول على أي اتفاق في 20 يوما من تاريخ التعهد بالحالة</label>
+                                                        </div>
+                                                        
+                                                        <div class="checkbox-item">
+                                                            <input type="checkbox" name="reason_agreement_breached" id="reason_agreement_breached_{{ notif.id }}"
+                                                                   {% if notif.threat_assessment and notif.threat_assessment.reason_agreement_breached %}checked{% endif %}>
+                                                            <label for="reason_agreement_breached_{{ notif.id }}">نقض الاتفاق من قبل الطفل أو أبويه أو من ينوبه</label>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <!-- زر الحفظ -->
+                                                    <div class="text-center">
+                                                        <button type="submit" class="btn-submit">
+                                                            <i class="fas fa-save"></i>
+                                                           تسجيل
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Script pour le select -->
+                        <script>
+                            document.getElementById('notifSelect{{ item.child.uid }}').addEventListener('change', function() {
+                                var notifId = this.value;
+                                if (notifId) {
+                                    var modalEl = document.getElementById('threatAssessmentModal' + notifId);
+                                    var modal = new bootstrap.Modal(modalEl);
+                                    modal.show();
+                                    this.value = '';
+                                }
+                            });
+
+                       function toggleDecision{{ notif.id }}() {
+
+    let value = document.getElementById(
+        'decisionType{{ notif.id }}'
+    ).value;
+
+    let commit = document.getElementById(
+        'commitmentBlock{{ notif.id }}'
+    );
+
+    let noCommit = document.getElementById(
+        'noCommitmentBlock{{ notif.id }}'
+    );
+
+    let family = document.getElementById(
+        'familyBlock{{ notif.id }}'
+    );
+
+
+    // Cacher tous les blocs
+    commit.style.display = 'none';
+    noCommit.style.display = 'none';
+    family.style.display = 'none';
+
+
+    // Afficher le bloc correspondant
+    if (value === 'commitment') {
+
+        commit.style.display = 'block';
+
+    }
+    else if (value === 'family') {
+
+        family.style.display = 'block';
+
+    }
+    else if (value === 'no_commitment') {
+
+        noCommit.style.display = 'block';
+
+    }
+
+}
+
+// au changement
+document.getElementById('decisionType{{ notif.id }}')
+    .addEventListener('change', toggleDecision{{ notif.id }});
+
+// au chargement (préremplissage)
+document.addEventListener("DOMContentLoaded", function () {
+    toggleDecision{{ notif.id }}();
+});
+
+                        </script>
+                    {% endfor %}
+                </td>
+                
+                <td>
+                    <a href="{% url 'threat_assessment_list' item.child.id %}" 
+                       class="btn btn-sm" 
+                       style="background-color: #d4a520; color: #000000; border-color: #d4a520;">
+                        <i class="fas fa-search"></i>
+                        قائمة التقديرات
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+    <!-- ✅ MODAL ERREUR (quand l'enfant n'est pas trouvé) -->
+    {% if show_error_modal %}
+    <div class="modal fade show" id="errorModal" tabindex="-1" style="display: block;" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">خطأ</h5>
+                    </div>
+                <div class="modal-body text-center">
+                    <i class="fas fa-user-slash fa-3x text-danger mb-3"></i>
+                    <h5>{{ error_message }}</h5>
+                    <p class="text-muted">المعرف المبحوث عنه: <strong>{{ uid_query }}</strong></p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <a href="{% url 'child_create' %}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> إضافة طفل جديد
+                    </a>
+                    <button type="button" class="btn btn-secondary" onclick="closeErrorModal()">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+
+ <script>
+    function closeErrorModal() {
+        document.getElementById('errorModal').style.display = 'none';
+        document.querySelector('.modal-backdrop').remove();
+        document.body.classList.remove('modal-open');
+    }
+    </script>
+    {% endif %}
+
+
+
+    <!-- Modals de succès -->
+    {% for item in children_with_notifications %}
+        {% for notif in item.notifications %}
+            <div class="modal fade success-modal"
+                 id="successModal{{ notif.id }}"
+                 tabindex="-1"
+                 aria-labelledby="successModalLabel{{ notif.id }}"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title mx-auto" id="successModalLabel{{ notif.id }}">
+                                تمّت إضافة القرار بنجاح
+                            </h5>
+                        </div>
+                        <div class="modal-body text-center" style="background-color: #f8f9fa;">
+                            <p style="font-size: 18px; color: #333;">
+                                تم تسجيل تقدير جدية الإشعار على الإشعار رقم {{ notif.notifier_number }} بنجاح
+                            </p>
+                            <i class="fas fa-clipboard-check fa-3x" style="color: #d4a520;"></i>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <a href="{% url 'threat_assessment_list' item.child.id %}" class="btn" style="background-color: #d4a520; color: #000000; font-weight: bold;">
+                                <i class="fas fa-list me-2"></i>
+                                الذهاب إلى قائمة التقديرات
+                            </a>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #6c757d; color: white;">
+                                إغلاق
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Gestionnaire AJAX -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    const csrftoken = getCookie('csrftoken');
+    
+    document.querySelectorAll('form[id^="form"]').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const notifId = form.getAttribute('data-notif-id');
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.message || response.status); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour les champs
+                    const assessmentDateInput = form.querySelector('[name="assessment_date"]');
+                    if (assessmentDateInput) {
+                        assessmentDateInput.value = data.data.assessment_date || '';
+                    }
+                    
+                    // Mettre à jour les checkboxes
+                    const checkboxFields = [
+                        'decision_social_protection',
+                        'decision_family_judge',
+                        'decision_public_prosecutor',
+                        'decision_violence_unit',
+                        'decision_relevant_services',
+                        'decision_trafficking_committee',
+                        'reason_not_serious',
+                        'reason_not_professional',
+                        'reason_not_territorial',
+                        'reason_age_18',
+                        'reason_address_inaccurate',
+                        'reason_threat_removed',
+                        'reason_child_death'
+                    ];
+                    
+                    checkboxFields.forEach(function(field) {
+                        const checkbox = form.querySelector('[name="' + field + '"]');
+                        if (checkbox) {
+                            checkbox.checked = data.data[field] || false;
+                        }
+                    });
+                    
+                    // Mettre à jour les notes
+                    const notesInput = form.querySelector('[name="notes"]');
+                    if (notesInput) {
+                        notesInput.value = data.data.notes || '';
+                    }
+                    
+                    // Fermer le modal
+                    const threatModalEl = document.getElementById('threatAssessmentModal' + notifId);
+                    const threatModal = bootstrap.Modal.getInstance(threatModalEl);
+                    if (threatModal) {
+                        threatModal.hide();
+                    }
+                    
+                    // Afficher le modal de succès
+                    setTimeout(function() {
+                        const successModalEl = document.getElementById('successModal' + notifId);
+                        const successModal = new bootstrap.Modal(successModalEl);
+                        successModal.show();
+                    }, 300);
+                } else {
+                    alert('حدث خطأ أثناء الحفظ: ' + (data.message || 'خطأ غير معروف'));
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('حدث خطأ أثناء الاتصال بالخادم: ' + error.message);
+            });
+        });
+    });
+});
+
+ function closeErrorModal() {
+        document.getElementById('errorModal').style.display = 'none';
+        document.querySelector('.modal-backdrop').remove();
+        document.body.classList.remove('modal-open');
+    }
+</script>
+
+{% endblock %}

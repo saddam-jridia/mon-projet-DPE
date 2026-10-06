@@ -1,0 +1,1699 @@
+<!-- app_Dpe/templates/app_Dpe/child_list_institutions.html -->
+
+{% extends 'account/Header.html' %}
+{% load dict_extras %}
+ {% load static %}
+{% load widget_tweaks %} 
+
+{% block content %}
+ 
+
+
+
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+
+<style>
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+        
+    }
+
+
+ .main-content {
+      margin-right: 20px;
+     
+      padding: 5px;
+      
+     
+    }
+ 
+
+.btn-gray {
+    background-color: #151515;
+    color: #fff;
+    border: none;
+}
+.btn-gray:hover {
+    background-color: #0e0e0e;
+    color: #fff;
+}
+.btn-dark-blue {
+  background-color: #070707;
+  border-color: #0c0c0c;
+}
+.btn-dark-blue:hover {
+  background-color: #070707;
+  border-color: #0c0c0c;
+}
+
+
+ /* Formulaire en RTL */
+form {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Labels */
+form label {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Champs texte, date, select, textarea */
+form input[type="text"],
+form input[type="date"],
+form textarea,
+form select {
+    text-align: right;
+    direction: rtl;
+}
+
+/* Radios et checkboxes */
+form input[type="radio"],
+form input[type="checkbox"] {
+    float: right;      /* bouton à droite */
+    margin-left: 10px; /* espace entre bouton et label */
+}
+
+/* Paragraphes à l'intérieur des cartes */
+.card-body p {
+    text-align: right;
+}
+
+/* Options multiples dans les cards */
+.card-body div > label {
+    display: inline-block;
+    margin-right: 5px;
+    text-align: right;
+}
+
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+/* FORCE RADIO VISIBILITY */
+table input[type="radio"] {
+    appearance: auto !important;
+    -webkit-appearance: radio !important;
+    opacity: 1 !important;
+    position: static !important;
+    display: inline-block !important;
+    margin: auto !important;
+    float: none !important;
+    width: 16px;
+    height: 16px;
+}
+
+ table thead th {
+    background-color: #070707 !important;
+    color: #d4a520 !important;
+    text-align: center;
+}
+ 
+  table th,
+table td {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+</style>
+ 
+
+
+
+<div class="content">
+     <h2 class="text-center" style="font-family:'Amiri'; font-weight:900;">    قائمة الأطفال المهددين  بولاية {{ request.user.delegate_profile.get_wilaya_display }}
+        </h2>
+<div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;">
+
+    <!-- البحث بالمعرّف الوحيد -->
+    <form action="{% url 'recherche_child_list' %}" method="get" class="d-flex align-items-center">
+        <input type="text" name="uid" placeholder="أدخل المعرف الوحيد" class="form-control"
+               style="width:200px; height: 30px;" value="{{ uid_query }}">
+        <button type="submit" class="btn btn-dark-blue text-white fw-bold" style="margin-left:5px; width:50px; height: 30px;">
+            بحث
+        </button>
+    </form>
+  
+    <!-- تصدير Excel -->
+    <form action="{% url 'export_children_excel_institution' %}" method="get">
+        <input type="hidden" name="governorate" value="{{ selected_governorate }}">
+        <input type="hidden" name="gender" value="{{ selected_gender }}">
+        <button type="submit" class="btn btn-dark-blue text-white fw-bold" style="font-size: 12px;">
+            تصدير Excel
+        </button>
+    </form>
+
+</div>
+
+<!-- عدد الأطفال المسجلين (أسفل الأزرار مباشرة) -->
+<div style="background:#d4a520; padding:10px; border-right:4px solid #030303;
+            font-size:14px; font-weight:bold; text-align:right; margin-top:10px;">
+    عدد الأطفال المسجلين بالمنظومة:
+    <span style="color:#111111;">{{ total_children }}</span>
+</div>
+
+
+
+  <table class="table table-bordered text-end" style="text-align:center;">
+  <thead>
+            <tr style="background-color:#f0f0f0; font-size: 14px; font-weight: bold;">
+                <th>
+                    المندوب المتعهد
+                </th>
+                 <th>
+                   رقم الملف
+                </th>
+                <th>المعرف الوحيد</th>
+                <th>الاسم</th>
+                <th>اللقب</th>
+                <th>تاريخ الميلاد</th>
+                <th>الجنس</th>
+                <th> تاريخ التسجيل بالمنظومة</th>
+                <th>بيانات<br> عن الطفل </th>
+                <th>تحيين بيانات الطفل  </th>
+                <th>اضافة اشعار عن الطفل </th>
+                <th> قائمة الاشعارات عن الطفل </th>
+                <!--<th>حذف الطفل
+                </th> -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for child in children %}
+            <tr style="background-color:#f0f0f0; font-size: 14px; ">
+                
+                <td>{{ request.user.delegate_profile.unique_id }}</td>
+               <td>{{ child.numero_dossier }}</td>
+                <td>{{ child.uid }}</td>
+                <td>{{ child.first_name }}</td>
+                <td>{{ child.last_name }}</td>
+                <td>{{ child.birth_date|date:"d/m/Y" }}</td>
+                <td>{{ child.get_gender_display |default:"-"}}</td>
+                <td>{{ child.created_at|date:"d/m/Y H:i" }}</td>
+                
+                <td>
+     <button class="btn btn-gray fw-bold"
+        data-bs-toggle="modal"
+        data-bs-target="#childModal{{ child.id }}">
+    {{ child.uid }}
+</button>
+
+
+
+                </td>
+                   <td>
+  <!-- زر فتح المودال -->
+  <button type="button"
+          class="btn btn-secondary btn-sm"
+          data-bs-toggle="modal"
+          data-bs-target="#updateChildModal{{ child.id }}"
+          title="تحيين بيانات الطفل">
+      <i class="fas fa-edit"></i>
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade"
+       id="updateChildModal{{ child.id }}"
+       tabindex="-1"
+       aria-hidden="true">
+
+       <div class="modal-dialog modal-lg modal-dialog-centered" style="margin-top: 100px; margin-right: 300px;">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color:  #d4a520">
+          <h5 class="modal-title">
+            تحيين بيانات الطفل - {{ child.first_name }} {{ child.last_name }}
+          </h5>
+          
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body text-end">
+          <form method="post"
+                action="{% url 'child_update' child.id %}">
+            {% csrf_token %}
+
+            <!-- الاسم -->
+            <label>الاسم</label>
+            <input type="text" name="first_name"
+                   class="form-control mb-2"
+                   value="{{ child.first_name }}">
+
+            <!-- اللقب -->
+            <label>اللقب</label>
+            <input type="text" name="last_name"
+                   class="form-control mb-2"
+                   value="{{ child.last_name }}">
+
+            <!-- الجنس -->
+         
+       <label>الجنس</label>
+<select name="gender" class="form-select mb-2">
+  <option value="">---</option>
+  {% for v,l in child.GENDER_CHOICES %}
+
+    <option value="{{ v }}" {% if child.gender == v %}selected{% endif %}>{{ l }}</option>
+  {% endfor %}
+</select>
+<input type="date"
+       name="birth_date"
+       class="form-control mb-2"
+       value="{{ child.birth_date|date:'Y-m-d' }}"
+       max="{{ today|date:'Y-m-d' }}"
+       onkeydown="return false">
+
+
+<label>مكان الولادة</label>
+<select name="birth_place" id="birth_place_{{ child.id }}" class="form-select mb-2">
+  <option value="">---</option>
+  {% for v,l in child.BIRTH_PLACE_CHOICES %}
+    <option value="{{ v }}" {% if child.birth_place == v %}selected{% endif %}>{{ l }}</option>
+  {% endfor %}
+</select>
+
+<!-- الولاية -->
+<div id="gov_box_{{ child.id }}" style="display:none;color: #002547;">
+  <label>الولاية</label>
+  <select name="birth_governorate"
+        id="birth_governorate"
+        class="form-select mb-2">
+
+    <option value="">اختر الولاية</option>
+    {% for v,l in child.TUNISIA_GOVERNORATES %}
+
+      <option value="{{ v }}" {% if child.birth_governorate == v %}selected{% endif %}>{{ l }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+<!-- المعتمدية -->
+<div id="dept_box_{{ child.id }}" style="display:none;color: #002547;">
+  <label>المعتمدية</label>
+
+    <select name="birth_department"
+        class="form-select mb-2"
+        data-old="{{ child.birth_department }}">
+</select>
+
+
+    
+  </select>
+</div>
+<!-- الدولة (في حالة خارج البلاد) -->
+<div id="country_box_{{ child.id }}" style="display:none;color: #002547;">
+  <label>الدولة</label>
+  <select name="birth_country" class="form-select mb-2">
+<option value="TN" {% if child.birth_country == "TN" %}selected{% endif %}>تونس</option>   
+<option value="AF" {% if child.birth_country == "AF" %}selected{% endif %}>أفغانستان</option>
+<option value="AL" {% if child.birth_country == "AL" %}selected{% endif %}>ألبانيا</option>
+<option value="DZ" {% if child.birth_country == "DZ" %}selected{% endif %}>الجزائر</option>
+<option value="AD" {% if child.birth_country == "AD" %}selected{% endif %}>أندورا</option>
+<option value="AO" {% if child.birth_country == "AO" %}selected{% endif %}>أنغولا</option>
+<option value="AG" {% if child.birth_country == "AG" %}selected{% endif %}>أنتيغوا وباربودا</option>
+<option value="AR" {% if child.birth_country == "AR" %}selected{% endif %}>الأرجنتين</option>
+<option value="AM" {% if child.birth_country == "AM" %}selected{% endif %}>أرمينيا</option>
+<option value="AU" {% if child.birth_country == "AU" %}selected{% endif %}>أستراليا</option>
+<option value="AT" {% if child.birth_country == "AT" %}selected{% endif %}>النمسا</option>
+<option value="AZ" {% if child.birth_country == "AZ" %}selected{% endif %}>أذربيجان</option>
+
+<option value="BH" {% if child.birth_country == "BH" %}selected{% endif %}>البحرين</option>
+<option value="BD" {% if child.birth_country == "BD" %}selected{% endif %}>بنغلاديش</option>
+<option value="BB" {% if child.birth_country == "BB" %}selected{% endif %}>باربادوس</option>
+<option value="BE" {% if child.birth_country == "BE" %}selected{% endif %}>بلجيكا</option>
+<option value="BZ" {% if child.birth_country == "BZ" %}selected{% endif %}>بليز</option>
+<option value="BJ" {% if child.birth_country == "BJ" %}selected{% endif %}>بنين</option>
+<option value="BO" {% if child.birth_country == "BO" %}selected{% endif %}>بوليفيا</option>
+<option value="BR" {% if child.birth_country == "BR" %}selected{% endif %}>البرازيل</option>
+<option value="BG" {% if child.birth_country == "BG" %}selected{% endif %}>بلغاريا</option>
+
+<option value="CM" {% if child.birth_country == "CM" %}selected{% endif %}>الكاميرون</option>
+<option value="CA" {% if child.birth_country == "CA" %}selected{% endif %}>كندا</option>
+<option value="TD" {% if child.birth_country == "TD" %}selected{% endif %}>تشاد</option>
+<option value="CL" {% if child.birth_country == "CL" %}selected{% endif %}>تشيلي</option>
+<option value="CN" {% if child.birth_country == "CN" %}selected{% endif %}>الصين</option>
+<option value="CO" {% if child.birth_country == "CO" %}selected{% endif %}>كولومبيا</option>
+<option value="CR" {% if child.birth_country == "CR" %}selected{% endif %}>كوستاريكا</option>
+<option value="CI" {% if child.birth_country == "CI" %}selected{% endif %}>ساحل العاج</option>
+<option value="CU" {% if child.birth_country == "CU" %}selected{% endif %}>كوبا</option>
+
+<option value="DK" {% if child.birth_country == "DK" %}selected{% endif %}>الدنمارك</option>
+<option value="DJ" {% if child.birth_country == "DJ" %}selected{% endif %}>جيبوتي</option>
+<option value="DO" {% if child.birth_country == "DO" %}selected{% endif %}>جمهورية الدومينيكان</option>
+
+<option value="EG" {% if child.birth_country == "EG" %}selected{% endif %}>مصر</option>
+<option value="SV" {% if child.birth_country == "SV" %}selected{% endif %}>السلفادور</option>
+<option value="EE" {% if child.birth_country == "EE" %}selected{% endif %}>إستونيا</option>
+<option value="ET" {% if child.birth_country == "ET" %}selected{% endif %}>إثيوبيا</option>
+
+<option value="FI" {% if child.birth_country == "FI" %}selected{% endif %}>فنلندا</option>
+<option value="FR" {% if child.birth_country == "FR" %}selected{% endif %}>فرنسا</option>
+
+<option value="DE" {% if child.birth_country == "DE" %}selected{% endif %}>ألمانيا</option>
+<option value="GH" {% if child.birth_country == "GH" %}selected{% endif %}>غانا</option>
+<option value="GR" {% if child.birth_country == "GR" %}selected{% endif %}>اليونان</option>
+
+<option value="IN" {% if child.birth_country == "IN" %}selected{% endif %}>الهند</option>
+<option value="ID" {% if child.birth_country == "ID" %}selected{% endif %}>إندونيسيا</option>
+<option value="IR" {% if child.birth_country == "IR" %}selected{% endif %}>إيران</option>
+<option value="IQ" {% if child.birth_country == "IQ" %}selected{% endif %}>العراق</option>
+<option value="IE" {% if child.birth_country == "IE" %}selected{% endif %}>إيرلندا</option>
+<option value="IT" {% if child.birth_country == "IT" %}selected{% endif %}>إيطاليا</option>
+
+<option value="JP" {% if child.birth_country == "JP" %}selected{% endif %}>اليابان</option>
+<option value="JO" {% if child.birth_country == "JO" %}selected{% endif %}>الأردن</option>
+
+<option value="KW" {% if child.birth_country == "KW" %}selected{% endif %}>الكويت</option>
+
+<option value="LB" {% if child.birth_country == "LB" %}selected{% endif %}>لبنان</option>
+<option value="LY" {% if child.birth_country == "LY" %}selected{% endif %}>ليبيا</option>
+
+<option value="MA" {% if child.birth_country == "MA" %}selected{% endif %}>المغرب</option>
+<option value="MR" {% if child.birth_country == "MR" %}selected{% endif %}>موريتانيا</option>
+
+<option value="NL" {% if child.birth_country == "NL" %}selected{% endif %}>هولندا</option>
+<option value="NO" {% if child.birth_country == "NO" %}selected{% endif %}>النرويج</option>
+
+<option value="OM" {% if child.birth_country == "OM" %}selected{% endif %}>عُمان</option>
+
+<option value="PK" {% if child.birth_country == "PK" %}selected{% endif %}>باكستان</option>
+<option value="QA" {% if child.birth_country == "QA" %}selected{% endif %}>قطر</option>
+
+<option value="SA" {% if child.birth_country == "SA" %}selected{% endif %}>السعودية</option>
+<option value="SN" {% if child.birth_country == "SN" %}selected{% endif %}>السنغال</option>
+<option value="SO" {% if child.birth_country == "SO" %}selected{% endif %}>الصومال</option>
+
+<option value="ES" {% if child.birth_country == "ES" %}selected{% endif %}>إسبانيا</option>
+<option value="SD" {% if child.birth_country == "SD" %}selected{% endif %}>السودان</option>
+<option value="SE" {% if child.birth_country == "SE" %}selected{% endif %}>السويد</option>
+<option value="CH" {% if child.birth_country == "CH" %}selected{% endif %}>سويسرا</option>
+<option value="SY" {% if child.birth_country == "SY" %}selected{% endif %}>سوريا</option>
+
+
+<option value="TR" {% if child.birth_country == "TR" %}selected{% endif %}>تركيا</option>
+
+<option value="AE" {% if child.birth_country == "AE" %}selected{% endif %}>الإمارات</option>
+<option value="GB" {% if child.birth_country == "GB" %}selected{% endif %}>المملكة المتحدة</option>
+<option value="US" {% if child.birth_country == "US" %}selected{% endif %}>الولايات المتحدة</option>
+<option value="YE" {% if child.birth_country == "YE" %}selected{% endif %}>اليمن</option>
+
+  </select>
+</div>
+
+
+        <!-- التسجيل -->
+<label>الترسيم بدفاتر الحالة المدنية</label>
+<select name="registration_type"
+        id="registration_type_{{ child.id }}"
+        class="form-select mb-2">
+  {% for v,l in child.REGISTRATION_CHOICES %}
+    <option value="{{ v }}"
+            {% if child.registration_type == v %}selected{% endif %}>
+      {{ l }}
+    </option>
+  {% endfor %}
+</select>
+
+<!-- عدد الرسم -->
+<div id="registration_number_box_{{ child.id }}" style="display:none;">
+  <label>عدد الرسم</label>
+  <input type="text"
+         name="registration_number"
+         class="form-control mb-2"
+         value="{{ child.registration_number }}">
+</div>
+
+<!-- تاريخ الرسم -->
+<div id="registration_date_box_{{ child.id }}" style="display:none;">
+  <label>تاريخ الرسم</label>
+  <input type="date"
+         name="registration_date"
+         class="form-control mb-2"
+         value="{{ child.registration_date|date:'Y-m-d' }}">
+</div>
+
+            <!-- الجنسية -->
+         <!-- الجنسية -->
+<label>جنسية الطفل</label>
+<select name="nationality"
+        id="nationality_{{ child.id }}"
+        class="form-select mb-2">
+  {% for v,l in child.NATIONALITY_CHOICES %}
+    <option value="{{ v }}"
+            {% if child.nationality == v %}selected{% endif %}>
+      {{ l }}
+    </option>
+  {% endfor %}
+</select>
+
+<!-- الطفل الأجنبي -->
+<div id="foreign_fields_{{ child.id }}"
+     style="display:none;
+            background-color:#f2f2f2;
+            padding:15px;
+            border-radius:8px;
+            border:1px solid #ddd;
+            margin-top:15px;">
+
+  <h6 style="color:#d4a520; font-weight:bold; margin-bottom:15px;">
+    معلومات عن الطفل الاجنبي
+  </h6>
+
+ <label>الدولة</label>
+<select name="foreign_country" class="form-select mb-2">
+ 
+<option value="AF" {% if child.foreign_country == "AF" %}selected{% endif %}>أفغانستان</option>
+<option value="AL" {% if child.foreign_country == "AL" %}selected{% endif %}>ألبانيا</option>
+<option value="DZ" {% if child.foreign_country == "DZ" %}selected{% endif %}>الجزائر</option>
+<option value="AD" {% if child.foreign_country == "AD" %}selected{% endif %}>أندورا</option>
+<option value="AO" {% if child.foreign_country == "AO" %}selected{% endif %}>أنغولا</option>
+<option value="AG" {% if child.foreign_country == "AG" %}selected{% endif %}>أنتيغوا وباربودا</option>
+<option value="AR" {% if child.foreign_country == "AR" %}selected{% endif %}>الأرجنتين</option>
+<option value="AM" {% if child.foreign_country == "AM" %}selected{% endif %}>أرمينيا</option>
+<option value="AU" {% if child.foreign_country == "AU" %}selected{% endif %}>أستراليا</option>
+<option value="AT" {% if child.foreign_country == "AT" %}selected{% endif %}>النمسا</option>
+<option value="AZ" {% if child.foreign_country == "AZ" %}selected{% endif %}>أذربيجان</option>
+
+<option value="BH" {% if child.foreign_country == "BH" %}selected{% endif %}>البحرين</option>
+<option value="BD" {% if child.foreign_country == "BD" %}selected{% endif %}>بنغلاديش</option>
+<option value="BB" {% if child.foreign_country == "BB" %}selected{% endif %}>باربادوس</option>
+<option value="BE" {% if child.foreign_country == "BE" %}selected{% endif %}>بلجيكا</option>
+<option value="BZ" {% if child.foreign_country == "BZ" %}selected{% endif %}>بليز</option>
+<option value="BJ" {% if child.foreign_country == "BJ" %}selected{% endif %}>بنين</option>
+<option value="BO" {% if child.foreign_country == "BO" %}selected{% endif %}>بوليفيا</option>
+<option value="BR" {% if child.foreign_country == "BR" %}selected{% endif %}>البرازيل</option>
+<option value="BG" {% if child.foreign_country == "BG" %}selected{% endif %}>بلغاريا</option>
+
+<option value="CM" {% if child.foreign_country == "CM" %}selected{% endif %}>الكاميرون</option>
+<option value="CA" {% if child.foreign_country == "CA" %}selected{% endif %}>كندا</option>
+<option value="TD" {% if child.foreign_country == "TD" %}selected{% endif %}>تشاد</option>
+<option value="CL" {% if child.foreign_country == "CL" %}selected{% endif %}>تشيلي</option>
+<option value="CN" {% if child.foreign_country == "CN" %}selected{% endif %}>الصين</option>
+<option value="CO" {% if child.foreign_country == "CO" %}selected{% endif %}>كولومبيا</option>
+<option value="CR" {% if child.foreign_country == "CR" %}selected{% endif %}>كوستاريكا</option>
+<option value="CI" {% if child.foreign_country == "CI" %}selected{% endif %}>ساحل العاج</option>
+<option value="CU" {% if child.foreign_country == "CU" %}selected{% endif %}>كوبا</option>
+
+<option value="DK" {% if child.foreign_country == "DK" %}selected{% endif %}>الدنمارك</option>
+<option value="DJ" {% if child.foreign_country == "DJ" %}selected{% endif %}>جيبوتي</option>
+<option value="DO" {% if child.foreign_country == "DO" %}selected{% endif %}>جمهورية الدومينيكان</option>
+
+<option value="EG" {% if child.foreign_country == "EG" %}selected{% endif %}>مصر</option>
+<option value="SV" {% if child.foreign_country == "SV" %}selected{% endif %}>السلفادور</option>
+<option value="EE" {% if child.foreign_country == "EE" %}selected{% endif %}>إستونيا</option>
+<option value="ET" {% if child.foreign_country == "ET" %}selected{% endif %}>إثيوبيا</option>
+
+<option value="FI" {% if child.foreign_country == "FI" %}selected{% endif %}>فنلندا</option>
+<option value="FR" {% if child.foreign_country == "FR" %}selected{% endif %}>فرنسا</option>
+
+<option value="DE" {% if child.foreign_country == "DE" %}selected{% endif %}>ألمانيا</option>
+<option value="GH" {% if child.foreign_country == "GH" %}selected{% endif %}>غانا</option>
+<option value="GR" {% if child.foreign_country == "GR" %}selected{% endif %}>اليونان</option>
+
+<option value="IN" {% if child.foreign_country == "IN" %}selected{% endif %}>الهند</option>
+<option value="ID" {% if child.foreign_country == "ID" %}selected{% endif %}>إندونيسيا</option>
+<option value="IR" {% if child.foreign_country == "IR" %}selected{% endif %}>إيران</option>
+<option value="IQ" {% if child.foreign_country == "IQ" %}selected{% endif %}>العراق</option>
+<option value="IE" {% if child.foreign_country == "IE" %}selected{% endif %}>إيرلندا</option>
+<option value="IT" {% if child.foreign_country == "IT" %}selected{% endif %}>إيطاليا</option>
+
+<option value="JP" {% if child.foreign_country == "JP" %}selected{% endif %}>اليابان</option>
+<option value="JO" {% if child.foreign_country == "JO" %}selected{% endif %}>الأردن</option>
+
+<option value="KW" {% if child.foreign_country == "KW" %}selected{% endif %}>الكويت</option>
+
+<option value="LB" {% if child.foreign_country == "LB" %}selected{% endif %}>لبنان</option>
+<option value="LY" {% if child.foreign_country == "LY" %}selected{% endif %}>ليبيا</option>
+
+<option value="MA" {% if child.foreign_country == "MA" %}selected{% endif %}>المغرب</option>
+<option value="MR" {% if child.foreign_country == "MR" %}selected{% endif %}>موريتانيا</option>
+
+<option value="NL" {% if child.foreign_country == "NL" %}selected{% endif %}>هولندا</option>
+<option value="NO" {% if child.foreign_country == "NO" %}selected{% endif %}>النرويج</option>
+
+<option value="OM" {% if child.foreign_country == "OM" %}selected{% endif %}>عُمان</option>
+
+<option value="PK" {% if child.foreign_country == "PK" %}selected{% endif %}>باكستان</option>
+<option value="QA" {% if child.foreign_country == "QA" %}selected{% endif %}>قطر</option>
+
+<option value="SA" {% if child.foreign_country == "SA" %}selected{% endif %}>السعودية</option>
+<option value="SN" {% if child.foreign_country == "SN" %}selected{% endif %}>السنغال</option>
+<option value="SO" {% if child.foreign_country == "SO" %}selected{% endif %}>الصومال</option>
+
+<option value="ES" {% if child.foreign_country == "ES" %}selected{% endif %}>إسبانيا</option>
+<option value="SD" {% if child.foreign_country == "SD" %}selected{% endif %}>السودان</option>
+<option value="SE" {% if child.foreign_country == "SE" %}selected{% endif %}>السويد</option>
+<option value="CH" {% if child.foreign_country == "CH" %}selected{% endif %}>سويسرا</option>
+<option value="SY" {% if child.foreign_country == "SY" %}selected{% endif %}>سوريا</option>
+
+<option value="TN" {% if child.foreign_country == "TN" %}selected{% endif %}>تونس</option>
+<option value="TR" {% if child.foreign_country == "TR" %}selected{% endif %}>تركيا</option>
+
+<option value="AE" {% if child.foreign_country == "AE" %}selected{% endif %}>الإمارات</option>
+<option value="GB" {% if child.foreign_country == "GB" %}selected{% endif %}>المملكة المتحدة</option>
+<option value="US" {% if child.foreign_country == "US" %}selected{% endif %}>الولايات المتحدة</option>
+<option value="YE" {% if child.foreign_country == "YE" %}selected{% endif %}>اليمن</option>
+
+
+</select>
+
+
+  <label>وثائق الهوية</label>
+  <select name="identity_documents_available" class="form-select mb-2">
+   
+    <option value="True" {% if child.identity_documents_available %}selected{% endif %}>متوفرة</option>
+    <option value="False" {% if child.identity_documents_available == False %}selected{% endif %}>غير متوفرة</option>
+  </select>
+
+  <label>الوضعية العائلية للطفل الأجنبي</label>
+  <select name="foreign_family_status" class="form-select mb-2">
+    {% for v,l in child.FOREIGN_FAMILY_CHOICES %}
+      <option value="{{ v }}"
+              {% if child.foreign_family_status == v %}selected{% endif %}>
+        {{ l }}
+      </option>
+    {% endfor %}
+  </select>
+
+
+
+
+
+</div>
+<!-- الولادة -->
+<label>الولادة</label>
+<select name="birth_status"
+        id="birth_status_{{ child.id }}"
+        class="form-select mb-2">
+  {% for v,l in child.BIRTH_STATUS_CHOICES %}
+    <option value="{{ v }}"
+            {% if child.birth_status == v %}selected{% endif %}>
+      {{ l }}
+    </option>
+  {% endfor %}
+</select>
+
+<!-- قسم الأطفال خارج إطار الزواج -->
+<div id="unmarried_box_{{ child.id }}"
+     style="display:none;
+            background-color:#f2f2f2;
+            padding:15px;
+            border-radius:8px;
+            border:1px solid #ddd;
+            margin-top:15px;">
+
+  <h6 style="color:#d4a520; font-weight:bold; margin-bottom:15px;">
+    معلومات عن الطفل خارج إطار الزواج
+  </h6>
+
+  <!-- هوية الطفل -->
+  <label>هوية الطفل</label>
+  <select name="child_identity_type" class="form-select mb-2">
+    {% for v,l in child.CHILD_IDENTITY_CHOICES %}
+      <option value="{{ v }}"
+              {% if child.child_identity_type == v %}selected{% endif %}>
+        {{ l }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <!-- إثبات الهوية -->
+  <label>إثبات الهوية</label>
+  <select name="identity_proof" class="form-select mb-2">
+     {% for v,l in child.IDENTITY_PROOF_CHOICES %}
+      <option value="{{ v }}"
+              {% if child.identity_proof == v %}selected{% endif %}>
+        {{ l }}
+      </option>
+    {% endfor %}
+
+  </select>
+
+  <!-- سن الأم عند الولادة -->
+  <label>سن الأم عند الولادة</label>
+<select name="mother_age_at_birth" class="form-select mb-2">
+
+  {% for v,l in child.MOTHER_AGE_STATUS_CHOICES %}
+    <option value="{{ v }}"
+      {% if child.mother_age_at_birth == v %}selected{% endif %}>
+      {{ l }}
+    </option>
+  {% endfor %}
+</select>
+
+
+ <!-- مكان الولادة التفصيلي -->
+<label>مكان الانجاب</label>
+<select name="birth_place_detail" class="form-select mb-2">
+
+ 
+
+  {% for v,l in child.DETAIL_BIRTH_PLACE_CHOICES %}
+    <option value="{{ v }}"
+            {% if child.birth_place_detail == v %}selected{% endif %}>
+      {{ l }}
+    </option>
+  {% endfor %}
+
+</select>
+
+
+  <!-- عدد الإخوة خارج إطار الزواج -->
+  <label>عدد الإخوة خارج إطار الزواج</label>
+  <input type="number"
+         name="siblings_outside_marriage"
+         class="form-control mb-2"
+         min="0"
+         value="{{ child.siblings_outside_marriage }}">
+
+  <!-- عدد الإخوة في حالة اصطحاب -->
+  <label>عدد الإخوة في صحبة الام</label>
+  <input type="number"
+         name="siblings_outside"
+         class="form-control mb-2"
+         min="0"
+         value="{{ child.siblings_outside }}">
+
+  <!-- عدد الإخوة في حالة تخلي -->
+  <label>عدد الإخوة المتخلي عنهم</label>
+  <input type="number"
+         name="siblings_out"
+         class="form-control mb-2"
+         min="0"
+         value="{{ child.siblings_out }}">
+
+    <h5 class="mb-3 text-primary">الموقف الأولي من الطفل عند الولادة</h5>
+<div class="row text-center">
+    {% for p in persons %}
+    <div class="col-md-4 mb-3">
+        <label class="fw-bold d-block mb-2">{{ p }}</label>
+
+        <select name="initial_{{ p }}" class="form-select">
+            <option value="">---</option>
+
+            {% for val, txt in zip_values %}
+            <option value="{{ val }}"
+                {% if child.initial_status_at_birth|get_item:p == val %}
+                    selected
+                {% endif %}>
+                {{ txt }}
+            </option>
+            {% endfor %}
+
+        </select>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="d-flex justify-content-center gap-3 mt-4">
+  
+  <button type="submit"
+          class="btn btn-success w-25"
+          style="background-color:#d4a520">
+   تسجيل التغييرات
+  </button>
+
+  <button type="button"
+          class="btn btn-secondary w-25"
+          data-bs-dismiss="modal">
+    إغلاق
+  </button>
+
+</div>
+
+          </form>
+        </div>
+
+    
+
+      </div>
+    </div>
+  </div>
+</td>
+
+                <td>
+                    <a href="{% url 'new_notification' child.id %}" style=" font-weight: bold; color: #003154;"
+                      >
+                        اضافة اشعار
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'list_notification' child.id %}" style=" font-weight: bold; color: #003154;"
+                      >
+                       قائمة الإشعارات
+                    </a>
+                </td>
+         <!--  <td>
+    <form method="POST" action="{% url 'child_delete' child.pk %}" class="delete-form" data-child-id="{{ child.pk }}">
+        {% csrf_token %}
+        <button type="button" class="show-delete-modal" style="border: none; background: none; color: #003154; cursor: pointer;">
+            <i class="bi bi-trash-fill fs-5"></i>
+        </button>
+    </form>
+</td>-->
+
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="12">لا توجد بيانات</td>
+            </tr>
+            {% endfor %}
+             
+        </tbody>
+    </table>
+</div>
+
+
+
+{% for child in children %}
+<div class="modal fade" id="childModal{{ child.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg"style="margin-top:120px; margin-right: 300px;">
+    <div class="modal-content">
+<div id="printArea{{ child.id }}">
+
+
+
+
+
+        <div class="modal-header" style="background: #d4a520; color:white; text-align:center; font-size:28px;">
+        <h5 class="modal-title" id="childModal{{ child.id }}">بيانات عن الطفل  {{ child.first_name }} {{ child.last_name }}</h5>
+      </div>
+
+      <div class="modal-body" style="text-align:right; font-size:16px;">
+        <table class="table table-bordered">
+            <tbody>
+                <tr><th> تاريخ التسجيل بالمنظومة</th><td>{{ child.created_at|date:"d/m/Y H:i" }}</td></tr>
+                <tr><th>رقم الملف</th><td>{{ child.numero_dossier }}</td></tr>
+                <tr><th>المعرف الوحيد</th><td>{{ child.uid }}</td></tr>
+                <tr><th>الاسم</th><td>{{ child.first_name }}</td></tr>
+                <tr><th>اللقب</th><td>{{ child.last_name }}</td></tr>
+                <tr><th>الجنس</th><td>{{ child.get_gender_display |default:"-"}}</td></tr>
+                <tr><th>تاريخ الميلاد</th><td>{{ child.birth_date|date:"d/m/Y" |default:"-" }}</td></tr>
+                <tr><th>مكان الولادة</th><td>{{ child.get_birth_place_display |default:"-"}}</td></tr>
+                {% if child.birth_place == "IN_COUNTRY" %}
+                <tr><th>الولاية</th><td>{{ child.get_birth_governorate_display |default:"-"}}</td></tr>
+                <tr><th>المعتمدية</th><td>{{ child.birth_department |default:"-"}}</td></tr>
+
+                {% endif %}
+
+{% if child.birth_place == "ABROAD" %}
+                <tr>
+    <th>الدولة</th>
+    <td>
+        {% if child.birth_country %}
+            {% if child.birth_country == "AF" %}أفغانستان
+            {% elif child.birth_country == "AL" %}ألبانيا
+            {% elif child.birth_country == "DZ" %}الجزائر
+            {% elif child.birth_country == "AD" %}أندورا
+            {% elif child.birth_country == "AO" %}أنغولا
+            {% elif child.birth_country == "AG" %}أنتيغوا وباربودا
+            {% elif child.birth_country == "AR" %}الأرجنتين
+            {% elif child.birth_country == "AM" %}أرمينيا
+            {% elif child.birth_country == "AU" %}أستراليا
+            {% elif child.birth_country == "AT" %}النمسا
+            {% elif child.birth_country == "AZ" %}أذربيجان
+            {% elif child.birth_country == "BH" %}البحرين
+            {% elif child.birth_country == "BD" %}بنغلاديش
+            {% elif child.birth_country == "BB" %}باربادوس
+            {% elif child.birth_country == "BE" %}بلجيكا
+            {% elif child.birth_country == "BZ" %}بليز
+            {% elif child.birth_country == "BJ" %}بنين
+            {% elif child.birth_country == "BO" %}بوليفيا
+            {% elif child.birth_country == "BR" %}البرازيل
+            {% elif child.birth_country == "BG" %}بلغاريا
+            {% elif child.birth_country == "CM" %}الكاميرون
+            {% elif child.birth_country == "CA" %}كندا
+            {% elif child.birth_country == "TD" %}تشاد
+            {% elif child.birth_country == "CL" %}تشيلي
+            {% elif child.birth_country == "CN" %}الصين
+            {% elif child.birth_country == "CO" %}كولومبيا
+            {% elif child.birth_country == "CR" %}كوستاريكا
+            {% elif child.birth_country == "CI" %}ساحل العاج
+            {% elif child.birth_country == "CU" %}كوبا
+            {% elif child.birth_country == "DK" %}الدنمارك
+            {% elif child.birth_country == "DJ" %}جيبوتي
+            {% elif child.birth_country == "DO" %}جمهورية الدومينيكان
+            {% elif child.birth_country == "EG" %}مصر
+            {% elif child.birth_country == "SV" %}السلفادور
+            {% elif child.birth_country == "EE" %}إستونيا
+            {% elif child.birth_country == "ET" %}إثيوبيا
+            {% elif child.birth_country == "FI" %}فنلندا
+            {% elif child.birth_country == "FR" %}فرنسا
+            {% elif child.birth_country == "DE" %}ألمانيا
+            {% elif child.birth_country == "GH" %}غانا
+            {% elif child.birth_country == "GR" %}اليونان
+            {% elif child.birth_country == "IN" %}الهند
+            {% elif child.birth_country == "ID" %}إندونيسيا
+            {% elif child.birth_country == "IR" %}إيران
+            {% elif child.birth_country == "IQ" %}العراق
+            {% elif child.birth_country == "IE" %}إيرلندا
+            {% elif child.birth_country == "IT" %}إيطاليا
+            {% elif child.birth_country == "JP" %}اليابان
+            {% elif child.birth_country == "JO" %}الأردن
+            {% elif child.birth_country == "KW" %}الكويت
+            {% elif child.birth_country == "LB" %}لبنان
+            {% elif child.birth_country == "LY" %}ليبيا
+            {% elif child.birth_country == "MA" %}المغرب
+            {% elif child.birth_country == "MR" %}موريتانيا
+            {% elif child.birth_country == "NL" %}هولندا
+            {% elif child.birth_country == "NO" %}النرويج
+            {% elif child.birth_country == "OM" %}عُمان
+            {% elif child.birth_country == "PK" %}باكستان
+            {% elif child.birth_country == "QA" %}قطر
+            {% elif child.birth_country == "SA" %}السعودية
+            {% elif child.birth_country == "SN" %}السنغال
+            {% elif child.birth_country == "SO" %}الصومال
+            {% elif child.birth_country == "ES" %}إسبانيا
+            {% elif child.birth_country == "SD" %}السودان
+            {% elif child.birth_country == "SE" %}السويد
+            {% elif child.birth_country == "CH" %}سويسرا
+            {% elif child.birth_country == "SY" %}سوريا
+            {% elif child.birth_country == "TN" %}تونس
+            {% elif child.birth_country == "TR" %}تركيا
+            {% elif child.birth_country == "AE" %}الإمارات
+            {% elif child.birth_country == "GB" %}المملكة المتحدة
+            {% elif child.birth_country == "US" %}الولايات المتحدة
+            {% elif child.birth_country == "YE" %}اليمن
+            {% else %}-{% endif %}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>
+
+{% endif %}
+
+                <tr><th>الترسيم بدفاتر الحالة المدنية</th><td>{{ child.get_registration_type_display |default:"-" }}</td></tr>
+                {% if child.registration_type == "REGISTERED" %}
+<tr>
+    <th>عدد الرسم</th>
+    <td>{{ child.registration_number|default:"-" }}</td>
+</tr>
+<tr>
+    <th>تاريخ الرسم</th>
+    <td>{{ child.registration_date|date:"d/m/Y"|default:"-" }}</td>
+</tr>
+{% endif %}
+
+                <tr><th>جنسية الطفل</th><td>{{ child.get_nationality_display |default:"-" }}</td></tr>
+                 {% if child.nationality == "FOREIGN" %}
+<tr>
+    <th>الدولة</th>
+    <td>
+        {% if child.foreign_country %}
+            {% if child.foreign_country == "AF" %}أفغانستان
+            {% elif child.foreign_country == "AL" %}ألبانيا
+            {% elif child.foreign_country == "DZ" %}الجزائر
+            {% elif child.foreign_country == "AD" %}أندورا
+            {% elif child.foreign_country == "AO" %}أنغولا
+            {% elif child.foreign_country == "AG" %}أنتيغوا وباربودا
+            {% elif child.foreign_country == "AR" %}الأرجنتين
+            {% elif child.foreign_country == "AM" %}أرمينيا
+            {% elif child.foreign_country == "AU" %}أستراليا
+            {% elif child.foreign_country == "AT" %}النمسا
+            {% elif child.foreign_country == "AZ" %}أذربيجان
+            {% elif child.foreign_country == "BH" %}البحرين
+            {% elif child.foreign_country == "BD" %}بنغلاديش
+            {% elif child.foreign_country == "BB" %}باربادوس
+            {% elif child.foreign_country == "BE" %}بلجيكا
+            {% elif child.foreign_country == "BZ" %}بليز
+            {% elif child.foreign_country == "BJ" %}بنين
+            {% elif child.foreign_country == "BO" %}بوليفيا
+            {% elif child.foreign_country == "BR" %}البرازيل
+            {% elif child.foreign_country == "BG" %}بلغاريا
+            {% elif child.foreign_country == "CM" %}الكاميرون
+            {% elif child.foreign_country == "CA" %}كندا
+            {% elif child.foreign_country == "TD" %}تشاد
+            {% elif child.foreign_country == "CL" %}تشيلي
+            {% elif child.foreign_country == "CN" %}الصين
+            {% elif child.foreign_country == "CO" %}كولومبيا
+            {% elif child.foreign_country == "CR" %}كوستاريكا
+            {% elif child.foreign_country == "CI" %}ساحل العاج
+            {% elif child.foreign_country == "CU" %}كوبا
+            {% elif child.foreign_country == "DK" %}الدنمارك
+            {% elif child.foreign_country == "DJ" %}جيبوتي
+            {% elif child.foreign_country == "DO" %}جمهورية الدومينيكان
+            {% elif child.foreign_country == "EG" %}مصر
+            {% elif child.foreign_country == "SV" %}السلفادور
+            {% elif child.foreign_country == "EE" %}إستونيا
+            {% elif child.foreign_country == "ET" %}إثيوبيا
+            {% elif child.foreign_country == "FI" %}فنلندا
+            {% elif child.foreign_country == "FR" %}فرنسا
+            {% elif child.foreign_country == "DE" %}ألمانيا
+            {% elif child.foreign_country == "GH" %}غانا
+            {% elif child.foreign_country == "GR" %}اليونان
+            {% elif child.foreign_country == "IN" %}الهند
+            {% elif child.foreign_country == "ID" %}إندونيسيا
+            {% elif child.foreign_country == "IR" %}إيران
+            {% elif child.foreign_country == "IQ" %}العراق
+            {% elif child.foreign_country == "IE" %}إيرلندا
+            {% elif child.foreign_country == "IT" %}إيطاليا
+            {% elif child.foreign_country == "JP" %}اليابان
+            {% elif child.foreign_country == "JO" %}الأردن
+            {% elif child.foreign_country == "KW" %}الكويت
+            {% elif child.foreign_country == "LB" %}لبنان
+            {% elif child.foreign_country == "LY" %}ليبيا
+            {% elif child.foreign_country == "MA" %}المغرب
+            {% elif child.foreign_country == "MR" %}موريتانيا
+            {% elif child.foreign_country == "NL" %}هولندا
+            {% elif child.foreign_country == "NO" %}النرويج
+            {% elif child.foreign_country == "OM" %}عُمان
+            {% elif child.foreign_country == "PK" %}باكستان
+            {% elif child.foreign_country == "QA" %}قطر
+            {% elif child.foreign_country == "SA" %}السعودية
+            {% elif child.foreign_country == "SN" %}السنغال
+            {% elif child.foreign_country == "SO" %}الصومال
+            {% elif child.foreign_country == "ES" %}إسبانيا
+            {% elif child.foreign_country == "SD" %}السودان
+            {% elif child.foreign_country == "SE" %}السويد
+            {% elif child.foreign_country == "CH" %}سويسرا
+            {% elif child.foreign_country == "SY" %}سوريا
+            {% elif child.foreign_country == "TN" %}تونس
+            {% elif child.foreign_country == "TR" %}تركيا
+            {% elif child.foreign_country == "AE" %}الإمارات
+            {% elif child.foreign_country == "GB" %}المملكة المتحدة
+            {% elif child.foreign_country == "US" %}الولايات المتحدة
+            {% elif child.foreign_country == "YE" %}اليمن
+            {% else %}-{% endif %}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>
+
+<tr>
+    <th>وثائق الهوية</th>
+    <td>{{ child.get_identity_documents_available_display|default:"-" }}</td>
+</tr>
+
+<tr>
+    <th>الوضعية العائلية للطفل الأجنبي</th>
+    <td>{{ child.get_foreign_family_status_display|default:"-" }}</td>
+</tr>
+
+
+{% endif %}
+
+           
+                <tr><th>الولادة</th><td>{{ child.get_birth_status_display |default:"-"}}</td></tr>
+
+
+                {% if child.birth_status == "UNMARRIED" %}
+<tr>
+    <th>هوية الطفل</th>
+    <td>{{ child.get_child_identity_type_display|default:"-" }}</td>
+</tr>
+<tr>
+    <th>إثبات الهوية</th>
+    <td>{{ child.get_identity_proof_display|default:"-" }}</td>
+</tr>
+<tr>
+    <th>سن الأم عند الولادة</th>
+    <td>{{ child.get_mother_age_at_birth_display|default:"-" }}</td>
+</tr>
+<tr>
+    <th>مكان الانجاب</th>
+    <td>{{ child.get_birth_place_detail_display|default:"-" }}</td>
+</tr>
+<tr>
+    <th>عدد الإخوة خارج إطار الزواج</th>
+    <td>{{ child.siblings_outside_marriage|default:"-" }}</td>
+</tr>
+
+<tr>
+    <th>عدد الإخوة في صحبة الام</th>
+    <td>{{ child.siblings_outside|default:"-" }}</td>
+</tr>
+<tr>
+    <th>عدد الإخوة المتخلي عنهم</th>
+    <td>{{ child.siblings_out|default:"-" }}</td>
+</tr>
+<tr>
+    <th>الموقف الأولي من الطفل عند الولادة</th>
+    <td>
+        {% if child.initial_status_at_birth %}
+            {% for person, status in child.initial_status_at_birth.items %}
+                {{ person }} : 
+                {% if status == "accompany" %}اصطحاب
+                {% elif status == "temp_abandon" %}تخلي مؤقت
+                {% elif status == "final_abandon" %}تخلي نهائي
+                {% else %}
+                -
+                {% endif %}
+                {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>
+
+
+
+
+
+
+{% endif %}
+
+
+
+            </tbody>
+        </table>
+      </div>
+</div>
+      <div class="modal-footer">
+       <button class="btn text-white"
+        style="background-color:#d4a520;"
+        data-bs-toggle="modal"
+        data-bs-target="#sendChildModal{{ child.id }}">
+    📧 إرسال بالبريد
+</button>
+
+       
+        <button class="btn btn-primary"
+            onclick="printChild('printArea{{ child.id }}')">
+        🖨️ طباعة
+    </button>
+     <button class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+
+      </div>
+
+   
+  </div> 
+
+    </div>
+  </div>
+   
+  
+<!-- Modal إرسال الطفل بالبريد -->
+<div class="modal fade"
+     id="sendChildModal{{ child.id }}"
+     tabindex="-1"
+     aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header text-white"
+           style="background-color:#d4a520;">
+        <h5 class="modal-title">📧 إرسال بيانات الطفل</h5>
+        
+      </div>
+
+      <form method="post"  id="sendChildForm{{ child.id }}"
+            action="{% url 'send_child_by_email' child.id %}">
+        {% csrf_token %}
+
+        <div class="modal-body text-end">
+
+          <label class="fw-bold mb-2">
+            اختيار المندوب المستلم
+          </label>
+
+          <select name="email"
+                  class="form-select"
+                  required>
+
+            <option value="">-- اختر المندوب --</option>
+
+            {% for delegate in delegates %}
+              {% if delegate.email %}
+                <option value="{{ delegate.email }}">
+                  {{ delegate.first_name }} {{ delegate.last_name }}
+                  – {{ delegate.get_wilaya_display }}
+                </option>
+              {% endif %}
+            {% endfor %}
+
+          </select>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button type="submit"
+                  class="btn text-white"
+                  style="background-color:#003154;">
+            📧 إرسال
+          </button>
+
+       <button type="button"
+        class="btn btn-secondary"
+        onclick="closeSendChildModalAndOpenChildModal({{ child.id }})">
+  إغلاق
+</button>
+
+
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+  
+</div>
+
+
+
+
+
+
+{% endfor %}
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header" style="background-color:#003154; color:white;">
+        <h5 class="modal-title">تنبيه</h5>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body text-center">
+        <p id="errorModalMessage" style="font-weight:600;">
+          {{ error_message }}
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer justify-content-center">
+        <a href="{% url 'child_create' %}"
+           class="btn text-white"
+           style="background-color:#003154;">
+          ➕ إضافة طفل جديد
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- Modal حذف الطفل -->
+<div class="modal fade" id="deleteChildModal" tabindex="-1" aria-labelledby="deleteChildModalLabel" aria-hidden="true">
+
+
+        <div class="modal-dialog modal-lg"style="margin-top:120px; margin-right: 300px;">
+    <div class="modal-content">
+
+        <div class="modal-header" style="background: #d4a520; color:white;">
+
+
+
+        <h5 class="modal-title" id="deleteChildModalLabel">تأكيد الحذف</h5>
+      </div>
+      <div class="modal-body">
+        هل أنت متأكد أنك تريد حذف هذا الطفل؟
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">حذف</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEPARTMENTS = {{ DEPARTMENTS|safe }};
+</script>
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+{% if show_success_modal %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // غلق أي مودال مفتوح (مودال التحيين)
+    let openedModal = document.querySelector(".modal.show");
+    if (openedModal) {
+        let m = bootstrap.Modal.getInstance(openedModal);
+        if (m) m.hide();
+    }
+
+    // فتح مودال النجاح
+    let successModalEl = document.getElementById("successModal");
+    if (successModalEl) {
+        let successModal = new bootstrap.Modal(successModalEl);
+        successModal.show();
+    }
+
+    // ⏳ تحويل بعد 4 ثواني
+    setTimeout(() => {
+        location.href = "{% url 'child_list_institutions' %}";
+    }, 4000);
+
+});
+</script>
+{% endif %}
+
+{% if show_error_modal %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    errorModal.show();
+  });
+</script>
+{% endif %}
+
+<script>
+{% for child in children %}
+  document.getElementById('sendChildForm{{ child.id }}').addEventListener('submit', function(e){
+      e.preventDefault(); // منع POST العادي
+
+      const form = this;
+      const url = form.action;
+      const formData = new FormData(form);
+
+      fetch(url, {
+          method: 'POST',
+          headers: {'X-CSRFToken': formData.get('csrfmiddlewaretoken')},
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          if(data.success){
+              // اغلاق مودال الإرسال
+              const sendModal = bootstrap.Modal.getInstance(document.getElementById('sendChildModal{{ child.id }}'));
+              sendModal.hide();
+
+              // فتح مودال بيانات الطفل
+              const childModal = new bootstrap.Modal(document.getElementById('childModal{{ child.id }}'));
+              childModal.show();
+
+              // فتح مودال النجاح
+              const successM = new bootstrap.Modal(document.getElementById('successM'));
+              successM.show();
+              setTimeout(() => {
+        location.href = "{% url 'child_list_institutions' %}";
+    }, 4000);
+          } else {
+              alert(data.message);
+          }
+      })
+      .catch(err => console.error(err));
+  });
+{% endfor %}
+</script>
+
+
+<script>
+  function closeSendChildModalAndOpenChildModal(childId) {
+    // أغلق مودال الإرسال
+    const sendModal = bootstrap.Modal.getInstance(
+      document.getElementById('sendChildModal' + childId)
+    );
+    if (sendModal) sendModal.hide();
+
+    // افتح مودال بيانات الطفل
+    const childModal = new bootstrap.Modal(
+      document.getElementById('childModal' + childId)
+    );
+    childModal.show();
+  }
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let formToDelete = null;  // سيحتفظ بالفورم الذي نريد حذفه
+
+    // اختيار كل أزرار الحذف
+    const deleteButtons = document.querySelectorAll('.show-delete-modal');
+
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            formToDelete = this.closest('.delete-form'); // تخزين الفورم
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteChildModal'));
+            deleteModal.show();
+        });
+    });
+
+    // زر التأكيد داخل الـ modal
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (formToDelete) {
+            formToDelete.submit();  // إرسال الفورم المحفوظ
+        }
+    });
+});
+
+document.addEventListener("shown.bs.modal", function (event) {
+
+  const modal = event.target;
+
+  if (!modal.id.startsWith("updateChildModal")) return;
+
+  const childId = modal.id.replace("updateChildModal", "");
+
+  /* =========================
+     ELEMENTS
+  ========================= */
+  const birthPlace = modal.querySelector("#birth_place_" + childId);
+
+  const govBox = modal.querySelector("#gov_box_" + childId);
+  const deptBox = modal.querySelector("#dept_box_" + childId);
+  const countryBox = modal.querySelector("#country_box_" + childId);
+
+  const govSelect = modal.querySelector("#birth_governorate_" + childId);
+  const deptSelect = modal.querySelector("#birth_department_" + childId);
+
+  const registrationSelect = modal.querySelector("#registration_type_" + childId);
+  const regNumberBox = modal.querySelector("#registration_number_box_" + childId);
+  const regDateBox = modal.querySelector("#registration_date_box_" + childId);
+
+  const nationalitySelect = modal.querySelector("#nationality_" + childId);
+  const foreignBox = modal.querySelector("#foreign_fields_" + childId);
+
+  const birthStatusSelect = modal.querySelector("#birth_status_" + childId);
+  const unmarriedBox = modal.querySelector("#unmarried_box_" + childId);
+
+  /* =========================
+     BIRTH PLACE LOGIC
+  ========================= */
+  function toggleBirthPlace() {
+    if (!birthPlace) return;
+
+    if (birthPlace.value === "IN_COUNTRY") {
+      govBox && (govBox.style.display = "block");
+      countryBox && (countryBox.style.display = "none");
+      updateDepartments();
+    }
+
+    else if (birthPlace.value === "ABROAD") {
+      govBox && (govBox.style.display = "none");
+      deptBox && (deptBox.style.display = "none");
+      countryBox && (countryBox.style.display = "block");
+    }
+
+    else {
+      govBox && (govBox.style.display = "none");
+      deptBox && (deptBox.style.display = "none");
+      countryBox && (countryBox.style.display = "none");
+    }
+  }
+
+  function updateDepartments() {
+    if (!govSelect || !deptSelect || !deptBox) return;
+
+    const oldDept = deptSelect.dataset.old || "";
+
+    deptSelect.innerHTML = '<option value="">اختر المعتمدية</option>';
+
+    const gov = govSelect.value;
+
+    if (gov && DEPARTMENTS[gov]) {
+      deptBox.style.display = "block";
+
+      DEPARTMENTS[gov].forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+
+        if (d === oldDept) opt.selected = true;
+
+        deptSelect.appendChild(opt);
+      });
+    } else {
+      deptBox.style.display = "none";
+    }
+  }
+
+  birthPlace && birthPlace.addEventListener("change", toggleBirthPlace);
+  govSelect && govSelect.addEventListener("change", updateDepartments);
+
+  toggleBirthPlace();
+
+  /* =========================
+     REGISTRATION
+  ========================= */
+  function toggleRegistration() {
+    if (!registrationSelect) return;
+
+    if (registrationSelect.value === "REGISTERED") {
+      regNumberBox && (regNumberBox.style.display = "block");
+      regDateBox && (regDateBox.style.display = "block");
+    } else {
+      regNumberBox && (regNumberBox.style.display = "none");
+      regDateBox && (regDateBox.style.display = "none");
+    }
+  }
+
+  registrationSelect &&
+    registrationSelect.addEventListener("change", toggleRegistration);
+
+  toggleRegistration();
+
+  /* =========================
+     NATIONALITY
+  ========================= */
+  function toggleForeign() {
+    if (!nationalitySelect || !foreignBox) return;
+
+    if (nationalitySelect.value === "FOREIGN") {
+      foreignBox.style.display = "block";
+    } else {
+      foreignBox.style.display = "none";
+    }
+  }
+
+  nationalitySelect &&
+    nationalitySelect.addEventListener("change", toggleForeign);
+
+  toggleForeign();
+
+  /* =========================
+     BIRTH STATUS
+  ========================= */
+  function toggleUnmarried() {
+    if (!birthStatusSelect || !unmarriedBox) return;
+
+    if (birthStatusSelect.value === "UNMARRIED") {
+      unmarriedBox.style.display = "block";
+    } else {
+      unmarriedBox.style.display = "none";
+    }
+  }
+
+  birthStatusSelect &&
+    birthStatusSelect.addEventListener("change", toggleUnmarried);
+
+  toggleUnmarried();
+
+});
+
+function printChild(divId) {
+    const printArea = document.getElementById(divId);
+
+    if (!printArea) {
+        alert("خطأ: منطقة الطباعة غير موجودة");
+        return;
+    }
+
+    const printWindow = window.open('', '', 'width=900,height=650');
+
+    printWindow.document.write(`
+        <html lang="ar" dir="rtl">
+        <head>
+            <title>طباعة بيانات الطفل</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    direction: rtl;
+                    text-align: right;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                table, th, td {
+                    border: 1px solid #000;
+                }
+                th, td {
+                    padding: 6px;
+                }
+                h4 {
+                    margin-bottom: 10px;
+                    text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+            ${printArea.innerHTML}
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+}
+
+  
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // نلقاو جميع الـ modals متاع التحيين
+    const modals = document.querySelectorAll('[id^="updateChildModal"]');
+
+    modals.forEach(function(modal) {
+
+        const childId = modal.id.replace("updateChildModal", "");
+
+        const health = document.getElementById("health_status_" + childId);
+        const type = document.getElementById("disability_type_" + childId);
+
+        const typeField = document.getElementById("disability_type_field_" + childId);
+        const degreeField = document.getElementById("disability_degree_field_" + childId);
+
+        function toggleType() {
+            if (health && health.value === "DISABLED") {
+                typeField.style.display = "block";
+            } else {
+                typeField.style.display = "none";
+                degreeField.style.display = "none";
+            }
+        }
+
+        function toggleDegree() {
+            if (type && type.value) {
+                degreeField.style.display = "block";
+            } else {
+                degreeField.style.display = "none";
+            }
+        }
+
+        // 🔁 عند تغيير القيم
+        if (health) {
+            health.addEventListener("change", toggleType);
+        }
+
+        if (type) {
+            type.addEventListener("change", toggleDegree);
+        }
+
+        // ⭐ عند فتح الـ modal (الحل الأساسي)
+        modal.addEventListener("shown.bs.modal", function () {
+            toggleType();
+            toggleDegree();
+        });
+
+    });
+
+});
+</script>
+
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+
+      <!-- Header -->
+      <div class="modal-header text-white"
+           style="background: linear-gradient(135deg, #003154, #0059a8);">
+        <h5 class="modal-title">
+          ✔️ تمّ تحيين معطيات الطفل بنجاح
+        </h5>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body text-center"
+           style="background-color:#f4f8fb;">
+
+        <i class="bi bi-check-circle-fill"
+           style="font-size:40px; color:#198754;"></i>
+
+        <h4 class="mt-3 text-dark">
+          تم تسجيل التغييرات بنجاح
+        </h4>
+
+    
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="successM" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+
+      <!-- Header -->
+      <div class="modal-header text-white"
+           style="background: linear-gradient(135deg, #003154, #0059a8);">
+        <h5 class="modal-title">
+          ✔️ إرسال بيانات الطفل 
+         
+          
+        </h5>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body text-center"
+           style="background-color:#f4f8fb;">
+
+        <i class="bi bi-check-circle-fill"
+           style="font-size:30px; color:#198754;"></i>
+
+        <h4 class="mt-3 text-dark">
+تم إرسال بيانات الطفل بنجاح        </h4>
+
+    
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

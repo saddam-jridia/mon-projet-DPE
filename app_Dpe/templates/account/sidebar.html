@@ -1,0 +1,305 @@
+<div class="sidebar">
+    <!-- Logo / Brand -->
+    <div class="sidebar-brand">
+        <i class="fas fa-child"></i>
+        <span>حماية الطفولة</span>
+    </div>
+
+    <!-- Navigation principale -->
+    <div class="sidebar-nav">
+        <!-- Dashboard -->
+        <div class="sidebar-section">
+            <a href="{% url 'tableauboard' %}" class="{% if request.resolver_match.url_name == 'tableauboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>الصفحة الرئيسية</span>
+            </a>
+        </div>
+
+          <!-- Section: Tableaux de bord supplémentaires (optionnel) -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">إحصائيات </div>
+            <a href="{% url 'echarts_dashboard' %}" class="{% if request.resolver_match.url_name == 'echarts_dashboard' %}active{% endif %}">
+                <i class="fas fa-chart-bar"></i>
+                <span>إحصائيات الاطفال المهددون </span>
+            </a>
+            <a href=# class="{% if request.resolver_match.url_name == 'echarts_dashboard' %}active{% endif %}">
+                <i class="fas fa-chart-bar"></i>
+                <span>إحصائيات الاطفال  في خلاف مع القانون</span>
+            </a>
+            
+        </div>
+
+        <!-- Gestion des enfants -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">الاطفال حسب الوضعيات</div>
+            <a href="{% url 'central_enfants_menaces' %}" class="{% if request.resolver_match.url_name == 'central_enfants_menaces' %}active{% endif %}">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>الأطفال المهددون</span>
+            </a>
+            <a href="{% url 'central_enfants_juveniles' %}" class="{% if request.resolver_match.url_name == 'central_enfants_juveniles' %}active{% endif %}">
+                <i class="fas fa-gavel"></i>
+                <span>الأطفال الجانحون</span>
+            </a>
+            <a href="{% url 'central_enfants_etrangers' %}" class="{% if request.resolver_match.url_name == 'central_enfants_etrangers' %}active{% endif %}">
+                <i class="fas fa-globe"></i>
+                <span>الأطفال الأجانب</span>
+            </a>
+            <a href="{% url 'central_enfants_hors_mariage' %}" class="{% if request.resolver_match.url_name == 'central_enfants_hors_mariage' %}active{% endif %}">
+                <i class="fas fa-heart-broken"></i>
+                <span>خارج إطار الزواج</span>
+            </a>
+        </div>
+
+        
+
+        <!-- Section: Statistiques Centrales -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">الاحصائيات </div>
+            
+            <!-- Lien vers le dashboard des agressions sexuelles -->
+            <a href="#" class="{% if request.resolver_match.url_name == 'sexual_abuse_dashboard' %}active{% endif %}">
+                <i class="fas fa-shield-alt"></i>
+                <span>إحصائيات الاعتداءات الجنسية</span>
+            </a>
+        </div>
+
+      
+
+        <!-- Déconnexion -->
+        <div class="sidebar-section">
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>تسجيل الخروج</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Sidebar principal */
+.sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+    color: #fff;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    border-left: 1px solid rgba(184, 134, 11, 0.2);
+}
+
+/* Brand / Logo */
+.sidebar-brand {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.3);
+    margin-bottom: 1rem;
+}
+
+.sidebar-brand i {
+    font-size: 2rem;
+    color: #b8860b;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-brand span {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #b8860b;
+}
+
+/* Navigation */
+.sidebar-nav {
+    padding: 0 1rem;
+}
+
+.sidebar-section {
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #b8860b;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    border-right: 3px solid #b8860b;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+}
+
+/* Liens de navigation */
+.sidebar-section a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    color: #c0c0c0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 0.15rem;
+    font-size: 0.9rem;
+}
+
+.sidebar-section a i {
+    width: 24px;
+    font-size: 1.1rem;
+    color: #b8860b;
+    transition: all 0.3s ease;
+}
+
+.sidebar-section a span {
+    transition: all 0.3s ease;
+}
+
+/* Hover */
+.sidebar-section a:hover {
+    background: rgba(184, 134, 11, 0.1);
+    color: #ffffff;
+    transform: translateX(-5px);
+}
+
+.sidebar-section a:hover i {
+    color: #d4a520;
+}
+
+/* Active */
+.sidebar-section a.active {
+    background: linear-gradient(90deg, rgba(184, 134, 11, 0.2), transparent);
+    color: #b8860b;
+    border-right: 3px solid #b8860b;
+}
+
+.sidebar-section a.active i {
+    color: #b8860b;
+}
+
+/* Bouton de déconnexion */
+.logout-btn {
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(184, 134, 11, 0.2);
+    padding-top: 1rem !important;
+    color: #dc3545 !important;
+}
+
+.logout-btn i {
+    color: #dc3545 !important;
+}
+
+.logout-btn:hover {
+    background: rgba(220, 53, 69, 0.1) !important;
+    color: #dc3545 !important;
+    transform: translateX(-5px);
+}
+
+/* Scrollbar personnalisée */
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #2c2c2c;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #b8860b;
+    border-radius: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #d4a520;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 80px;
+    }
+    
+    .sidebar-brand span {
+        display: none;
+    }
+    
+    .sidebar-title {
+        display: none;
+    }
+    
+    .sidebar-section a span {
+        display: none;
+    }
+    
+    .sidebar-section a {
+        justify-content: center;
+        padding: 0.7rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .sidebar-section a i {
+        margin: 0;
+        font-size: 1.3rem;
+        width: auto;
+    }
+    
+    .sidebar-brand i {
+        font-size: 1.8rem;
+    }
+    
+    .sidebar-section a:hover {
+        transform: none;
+    }
+    
+    .logout-btn {
+        justify-content: center !important;
+    }
+}
+
+/* Responsive - Très petit écran */
+@media (max-width: 576px) {
+    .sidebar {
+        width: 60px;
+    }
+    
+    .sidebar-brand {
+        padding: 0.8rem;
+    }
+    
+    .sidebar-brand i {
+        font-size: 1.4rem;
+    }
+    
+    .sidebar-section a {
+        padding: 0.5rem;
+    }
+    
+    .sidebar-section a i {
+        font-size: 1.1rem;
+    }
+}
+
+/* Animation d'ouverture/fermeture */
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar.collapsed .sidebar-brand span,
+.sidebar.collapsed .sidebar-title,
+.sidebar.collapsed .sidebar-section a span {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-section a {
+    justify-content: center;
+    padding: 0.7rem;
+}
+
+.sidebar.collapsed .sidebar-section a i {
+    margin: 0;
+    font-size: 1.3rem;
+}
+</style>

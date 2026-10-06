@@ -1,0 +1,125 @@
+{% extends "account/base-login.html" %}
+{% load static %}
+
+{% block title %}لوحة Power BI - الإدارة المركزية{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --ink: #15181b;
+        --gold: #b8860b;
+        --gold-light: #d4a520;
+        --gold-pale: #f4e8c9;
+        --paper: #f6f5f2;
+        --line: #e4e1da;
+        --muted: #6f7278;
+    }
+
+    body { background: var(--paper) !important; }
+
+    .pbi-wrap { direction: rtl; max-width: 1360px; margin: 0 auto; }
+
+    .pbi-letterhead {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        flex-wrap: wrap; gap: 16px;
+        border-bottom: 3px solid var(--gold);
+        padding-bottom: 18px; margin-bottom: 22px;
+    }
+    .pbi-letterhead .eyebrow {
+        font-size: 11px; letter-spacing: 2px; color: var(--gold);
+        font-weight: 700; text-transform: uppercase; margin-bottom: 6px;
+        font-family: 'Tajawal', sans-serif;
+    }
+    .pbi-letterhead h1 {
+        font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 1.85rem;
+        color: var(--ink); margin: 0;
+    }
+
+    .pbi-panel {
+        background: #fff; border: 1px solid var(--line); border-radius: 14px;
+        overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .pbi-panel-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px; border-bottom: 2px solid var(--gold-pale);
+    }
+    .pbi-panel-header h6 {
+        margin: 0; font-family: 'Tajawal', sans-serif; font-weight: 700;
+        color: var(--ink); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+    }
+    .pbi-panel-header h6 i { color: var(--gold); }
+
+    .pbi-iframe-holder {
+        width: 100%;
+        height: 75vh;
+        min-height: 500px;
+        background: #fafafa;
+    }
+
+    .pbi-iframe-holder iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .pbi-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 75vh;
+        min-height: 400px;
+        text-align: center;
+        color: var(--muted);
+        padding: 2rem;
+    }
+
+    .pbi-empty i {
+        font-size: 3rem;
+        color: var(--gold);
+        margin-bottom: 1rem;
+        opacity: 0.6;
+    }
+
+    .pbi-empty h5 {
+        font-family: 'Tajawal', sans-serif;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="pbi-wrap">
+
+    <div class="pbi-letterhead">
+        <div>
+            <div class="eyebrow">  إدارة مركزية</div>
+            <h1><i class="fas fa-chart-pie" style="color:var(--gold);"></i> لوحة Power BI</h1>
+        </div>
+    </div>
+
+    <div class="pbi-panel">
+        <div class="pbi-panel-header">
+            <h6><i class="fas fa-external-link-alt"></i>التقرير التفاعلي</h6>
+        </div>
+
+        {% if powerbi_url %}
+            <div class="pbi-iframe-holder">
+                <iframe
+                    src="{{ powerbi_url }}"
+                    allowfullscreen
+                    title="Power BI Dashboard">
+                </iframe>
+            </div>
+        {% else %}
+            <div class="pbi-empty">
+                <i class="fas fa-chart-pie"></i>
+                <h5>لا يوجد رابط تقرير Power BI مُعدّ حالياً</h5>
+                <p>يرجى إعداد رابط تضمين صالح في إعدادات لوحة Power BI.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

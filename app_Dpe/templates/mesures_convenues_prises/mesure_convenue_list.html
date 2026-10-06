@@ -1,0 +1,1071 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+{% include 'account/sidebar_jihawi.html' with child=child has_child=has_child %}
+
+<style>
+    :root {
+        --primary-dark: #1a1a1a;
+        --primary-light: #2c2c2c;
+        --gold: #d4a520;
+        --gold-dark: #b8860b;
+        --success: #28a745;
+        --danger: #dc3545;
+        --info: #17a2b8;
+        --warning: #ffc107;
+    }
+
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+    
+    .content {
+        padding: 20px;
+        min-height: 100vh;
+        margin-right: 270px;
+    }
+    
+    .btn-gold {
+        background-color: #d4a520;
+        color: #000000;
+        border-color: #d4a520;
+    }
+    .btn-gold:hover {
+        background-color: #b8860b;
+        color: #ffffff;
+    }
+    .btn-dark-custom {
+        background-color: #000000;
+        color: #d4a520;
+        border: 2px solid #d4a520;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    .btn-dark-custom:hover {
+        background-color: #d4a520;
+        color: #000000;
+        transform: translateY(-2px);
+    }
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background-color: #5a6268;
+        color: white;
+    }
+    .btn-edit {
+        background: #ffc107;
+        color: #000;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        text-decoration: none;
+        margin: 0 2px;
+    }
+    .btn-edit:hover {
+        background: #e0a800;
+        color: #000;
+    }
+    .btn-delete {
+        background: #dc3545;
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        text-decoration: none;
+        margin: 0 2px;
+    }
+    .btn-delete:hover {
+        background: #c82333;
+        color: #fff;
+    }
+    .btn-save-status {
+        background: #28a745;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-save-status:hover {
+        background: #218838;
+    }
+    .btn-cancel-status {
+        background: #6c757d;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-cancel-status:hover {
+        background: #5a6268;
+    }
+    
+    /* Styles pour la barre de recherche */
+    .search-container {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    .search-input-wrapper i {
+        position: absolute;
+        right: 15px;
+        color: var(--gold);
+        font-size: 1.4rem;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(212, 165, 32, 0.1);
+    }
+    
+    .search-input::placeholder {
+        color: #999;
+        font-size: 0.85rem;
+    }
+    
+    .search-stats {
+        margin-top: 10px;
+        font-size: 1.1rem;
+        color: #666;
+    }
+    
+    .search-stats strong {
+        color: var(--gold);
+        font-weight: bold;
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        margin: 20px;
+    }
+    
+    .no-results i {
+        font-size: 4rem;
+        color: var(--gold);
+        margin-bottom: 15px;
+    }
+    
+    .no-results p {
+        color: #666;
+        font-size: 1.9rem;
+    }
+    
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+        color: var(--gold);
+        padding: 16px 20px;
+        cursor: pointer;
+        border-bottom: 2px solid var(--gold);
+        transition: all 0.3s ease;
+    }
+    .card-header:hover {
+        background: linear-gradient(135deg, #2c2c2c 0%, #3c3c3c 100%);
+    }
+    
+    .badge-status {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .badge-status:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+    .badge-success { background: var(--success); color: #fff; }
+    .badge-warning { background: var(--warning); color: #000; }
+    .badge-info { background: var(--info); color: #fff; }
+    .badge-danger { background: var(--danger); color: #fff; }
+    .badge-secondary { background: #6c757d; color: #fff; }
+    .badge-hebergement { background: #e8f4f8; color: #0066cc; }
+    .badge-depot { background: #fce4d6; color: #cc6600; }
+    
+    .table thead th {
+        background: #090909 !important;
+        color: var(--gold) !important;
+        text-align: center;
+        padding: 10px 6px;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+    .table td {
+        text-align: center;
+        padding: 8px 6px;
+        font-size: 1rem;
+        vertical-align: middle;
+    }
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .child-stats {
+        background: #f6d784;
+        padding: 10px 20px;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 1rem;
+    }
+    .child-stats span { font-weight: bold; color: #333; }
+    
+    .empty-state { 
+        text-align: center; 
+        padding: 40px; 
+        color: #999;
+        background: white;
+        border-radius: 12px;
+        margin: 20px;
+    }
+    
+    .notif-card {
+        margin: 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: white;
+        transition: all 0.3s ease;
+    }
+    .notif-card:hover {
+        border-color: var(--gold);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .notif-card-header {
+        background: #f8f9fa;
+        padding: 12px 20px;
+        cursor: pointer;
+        border-right: 4px solid var(--gold);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        transition: background 0.3s ease;
+    }
+    .notif-card-header:hover {
+        background: #f0f0f0;
+    }
+    .notif-card-header .notif-title { 
+        font-weight: bold; 
+        color: var(--primary-dark); 
+        font-size: 1rem;
+    }
+    .notif-card-header .notif-date { 
+        font-size: 1.6rem; 
+        color: #666; 
+    }
+    .notif-card-header .toggle-icon-notif { 
+        transition: transform 0.3s ease; 
+    }
+    .notif-card-header .toggle-icon-notif.rotated { 
+        transform: rotate(180deg); 
+    }
+    .notif-card-body { 
+        display: none; 
+        padding: 15px; 
+        background: white;
+    }
+    .notif-card-body.show { 
+        display: block; 
+    }
+    
+    .child-card-body { 
+        display: none; 
+        background: #f8f9fa;
+    }
+    .child-card-body.show { 
+        display: block; 
+    }
+    
+    .toggle-icon { 
+        transition: transform 0.3s ease; 
+    }
+    .toggle-icon.rotated { 
+        transform: rotate(180deg); 
+    }
+    
+    .type-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+    .type-hebergement { 
+        background: #e8f4f8; 
+        color: #0066cc; 
+    }
+    .type-depot { 
+        background: #fce4d6; 
+        color: #cc6600; 
+    }
+    
+    .table tfoot td {
+        background: #f8f9fa;
+        padding: 12px;
+    }
+    
+    .status-select {
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px solid var(--gold);
+        font-size: 0.7rem;
+        font-family: inherit;
+        background: white;
+        cursor: pointer;
+    }
+    .status-select:focus {
+        outline: none;
+        border-color: var(--gold-dark);
+        box-shadow: 0 0 0 2px rgba(184,134,11,0.2);
+    }
+    
+    .commitment-decisions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: center;
+    }
+    
+    .badge-decision {
+        display: inline-block;
+        background: linear-gradient(135deg, #e8f4e8 0%, #d4edda 100%);
+        color: #155724;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-align: center;
+        margin: 0.1rem 0;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .badge-decision i {
+        color: #28a745;
+        font-size: 0.65rem;
+        margin-left: 0.25rem;
+    }
+    
+    @keyframes fadeOut {
+        0% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+    .save-success {
+        animation: fadeOut 2s ease forwards;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--success);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        z-index: 1000;
+        font-weight: bold;
+    }
+    .save-error {
+        animation: fadeOut 2s ease forwards;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--danger);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        z-index: 1000;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+        .content { 
+            padding: 15px;
+            margin-right: 0;
+        }
+        .table thead th, .table td {
+            font-size: 0.65rem;
+            padding: 4px;
+        }
+        .notif-card-header {
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .search-container {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="content">
+    <div class="mb-3 text-start">
+        <a href="{% url 'child_list_institutions' %}" class="btn btn-back">
+            <i class="fas fa-arrow-right me-2"></i> العودة إلى قائمة الإشعارات
+        </a>
+    </div>
+
+    <div class="text-center mb-4">
+        <h2 style="font-family:'Amiri'; font-weight:900; color: var(--primary-dark);">
+            <i class="fas fa-handshake" style="color: var(--gold);"></i> التدابير الاتفاقية المتخذة
+        </h2>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="search-container">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" 
+                   id="searchInput" 
+                   class="search-input" 
+                   placeholder=" بحث بالاسم، المعرف الوحيد، رقم الإشعار، أو نوع التدبير..."
+                   autocomplete="off">
+        </div>
+        <div class="search-stats">
+            
+        </div>
+    </div>
+
+    <div id="childrenContainer">
+        {% for child_data in children_with_data %}
+        <div class="card searchable-card" id="child-{{ child_data.child.id }}" 
+             data-child-name="{{ child_data.child.first_name }} {{ child_data.child.last_name|lower }}"
+             data-child-uid="{{ child_data.child.uid|lower }}"
+             data-notif-numbers="{% for notif in child_data.notifications %}{{ notif.notifier_number }} {% endfor %}"
+             data-mesure-types="{% for notif in child_data.notifications %}{% if notif.mesure_convenue %}{{ notif.mesure_convenue.agreement_type }} {% endif %}{% endfor %}">
+            
+            <div class="card-header" onclick="toggleChild(this)">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <i class="fas fa-child me-2"></i>
+                        <strong>{{ child_data.child.first_name }} {{ child_data.child.last_name }}</strong>
+                        <span class="badge-status badge-secondary ms-2">
+                            <i class="fas fa-id-card"></i> المعرف الوحيد: {{ child_data.child.uid }}
+                        </span>
+                    </div>
+                    <div class="mt-2 mt-sm-0">
+                        <span class="badge-status badge-info me-2">
+                            <i class="fas fa-bell"></i> {{ child_data.notifications.count }} إشعار
+                        </span>
+                        <span class="badge-status badge-success me-2">
+                            <i class="fas fa-handshake"></i> {{ child_data.mesures_count }} تدبير اتفاقي
+                        </span>
+                        <i class="fas fa-chevron-down toggle-icon ms-2"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="child-card-body">
+                <div class="child-stats">
+                    <span><i class="fas fa-bell"></i> عدد الإشعارات: {{ child_data.notifications.count }}</span>
+                    <span><i class="fas fa-handshake"></i> عدد التدابير الاتفاقية: {{ child_data.mesures_count }}</span>
+                </div>
+
+                {% for notif in child_data.notifications %}
+                <div class="notif-card searchable-notif" id="notif-{{ notif.id }}"
+                     data-notif-number="{{ notif.notifier_number|lower }}">
+                    <div class="notif-card-header" onclick="toggleNotif(this)">
+                        <div>
+                            <span class="notif-title">
+                                <i class="fas fa-bell" style="color: var(--gold);"></i> 
+                                إشعار رقم: {{ notif.notifier_number }}
+                            </span>
+                            <span class="notif-date me-3">
+                                <i class="fas fa-calendar-alt"></i> 
+                                تاريخ الإشعار: {{ notif.notification_date|date:"d/m/Y"|default:"-" }}
+                            </span>
+                        </div>
+                        <div>
+                            {% if notif.mesure_convenue %}
+                                <span class="badge-status badge-success">
+                                    <i class="fas fa-check-circle"></i> تدبير اتفاقي موجود
+                                </span>
+                            {% else %}
+                                <span class="badge-status badge-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> بدون تدبير اتفاقي
+                                </span>
+                            {% endif %}
+                            <i class="fas fa-chevron-down toggle-icon-notif ms-2"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="notif-card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10%">تاريخ التدبير</th>
+                                        <th style="width: 18%">نوع التدبير الاتفاقي</th>
+                                        <th style="width: 22%">القرارات المتخذة</th>  
+                                        <th style="width: 12%">مكان الإيواء</th>
+                                        <th style="width: 12%">مكان الإيداع</th>
+                                        <th style="width: 10%">تاريخ توعية العائلة</th>
+                                        <th style="width: 10%">حالة المتابعة</th>
+                                        <th style="width: 6%">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% with notif.mesure_convenue as mesure %}
+                                    {% if mesure %}
+                                    <tr id="mesure-row-{{ mesure.id }}">
+                                        <!-- Colonne 1: تاريخ التدبير -->
+                                        <td>
+                                            {% if mesure.measure_date %}
+                                                <span class="badge-status" style="background:#e9ecef; color:#333;">
+                                                    <i class="fas fa-calendar-day"></i> {{ mesure.measure_date|date:"d/m/Y" }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Colonne 2: نوع التدبير الاتفاقي -->
+                                        <td>
+                                            {% if mesure.agreement_type == "keep_in_family_commitment" %}
+                                                إبقاء الطفل مع إلتزام الأبوين
+                                            {% elif mesure.agreement_type == "keep_in_family_social_support" %}
+                                                إبقاء الطفل مع تدخل اجتماعي
+                                            {% elif mesure.agreement_type == "keep_in_family_prevent_contact" %}
+                                                إبقاء الطفل مع منع الاتصال
+                                            {% elif mesure.agreement_type == "temporary_placement" %}
+                                                إيداع الطفل مؤقتا
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Colonne 3: القرارات المتخذة -->
+                                        <td>
+                                            {% if notif.commitment_decisions %}
+                                                <div class="commitment-decisions">
+                                                    {% for decision in notif.commitment_decisions %}
+                                                        <span class="badge-decision">
+                                                            <i class="fas fa-check-circle"></i> {{ decision }}
+                                                        </span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Colonne 4: مكان الإيواء -->
+                                        <td>
+                                            {% if mesure.placement_type %}
+                                                <span class="type-badge type-hebergement">
+                                                    <i class="fas fa-home"></i>
+                                                </span>
+                                                <div class="mt-1">
+                                                    {% if mesure.placement_type == "family_nuclear" %}لدى العائلة النواة
+                                                    {% elif mesure.placement_type == "family_extended" %}لدى العائلة الموسعة
+                                                    {% else %}{{ mesure.placement_type }}
+                                                    {% endif %}
+                                                </div>
+                                            {% elif mesure.placement_location %}
+                                                <span class="type-badge type-hebergement">
+                                                    <i class="fas fa-home"></i>
+                                                </span>
+                                                <div class="mt-1">
+                                                    {% if mesure.placement_location == "family_extended" %}لدى العائلة الموسعة
+                                                    {% elif mesure.placement_location == "foster_family" %}عائلة استقبال
+                                                    {% elif mesure.placement_location == "children_villages" %}قرى الأطفال س و س
+                                                    {% elif mesure.placement_location == "inpe" %}المعهد الوطني لرعاية الطفولة
+                                                    {% elif mesure.placement_location == "social_care_center" %}مركز رعاية الاجتماعية
+                                                    {% elif mesure.placement_location == "social_support_center" %}مركز الإحاطة الاجتماعية
+                                                    {% elif mesure.placement_location == "association" %}جمعية / وحدة عيش
+                                                    {% elif mesure.placement_location == "youth_center" %}مركز مندمج للشباب
+                                                    {% elif mesure.placement_location == "women_shelter" %}مركز إيواء النساء والأطفال
+                                                    {% elif mesure.placement_location == "hospital" %}مؤسسة استشفائية
+                                                    {% elif mesure.placement_location == "migrant_center" %}مراكز إيواء الأطفال المهاجرين
+                                                    {% elif mesure.placement_location == "other" %}
+                                                        {{ mesure.other_placement_location|default:"أخرى" }}
+                                                    {% else %}{{ mesure.placement_location }}
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Colonne 5: مكان الإيداع -->
+                                        <td>
+                                            {% if mesure.placement_location_danger %}
+                                                <span class="type-badge type-depot">
+                                                    <i class="fas fa-building"></i>
+                                                </span>
+                                                <div class="mt-1">
+                                                    {% if mesure.placement_location_danger == "juvenile_center" %}مركز إيداع الأحداث
+                                                    {% elif mesure.placement_location_danger == "police_custody" %}حراسة الشرطة
+                                                    {% elif mesure.placement_location_danger == "penal_institution" %}مؤسسة إصلاحية
+                                                    {% elif mesure.placement_location_danger == "rehabilitation_center" %}مركز إعادة التأهيل
+                                                    {% elif mesure.placement_location_danger == "other_danger" %}
+                                                        {{ mesure.other_placement_location_danger|default:"أخرى" }}
+                                                    {% else %}{{ mesure.placement_location_danger }}
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Colonne 6: تاريخ توعية العائلة -->
+                                        <td>
+                                            {% if mesure.family_awareness_date %}
+                                                <span class="badge-status" style="background:#e9ecef; color:#333;">
+                                                    <i class="fas fa-calendar-alt"></i> {{ mesure.family_awareness_date|date:"d/m/Y" }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Colonne 7: Statut de suivi -->
+                                        <td id="status-cell-{{ mesure.id }}">
+                                            <div class="status-display" data-mesure-id="{{ mesure.id }}">
+                                                {% if mesure.follow_up_status == "continue" %}
+                                                    <span class="badge-status badge-success status-badge" style="cursor:pointer;" onclick="editStatus('{{ mesure.id }}', 'continue')">
+                                                        <i class="fas fa-play-circle"></i> مواصلة التنفيذ
+                                                    </span>
+                                                {% elif mesure.follow_up_status == "review" %}
+                                                    <span class="badge-status badge-info status-badge" style="cursor:pointer;" onclick="editStatus('{{ mesure.id }}', 'review')">
+                                                        <i class="fas fa-sync-alt"></i> مراجعة
+                                                    </span>
+                                                {% elif mesure.follow_up_status == "refuse_proposal" %}
+                                                    <span class="badge-status badge-danger status-badge" style="cursor:pointer;" onclick="editStatus('{{ mesure.id }}', 'refuse_proposal')">
+                                                        <i class="fas fa-gavel"></i> رفع للقاضي (رفض)
+                                                    </span>
+                                                {% elif mesure.follow_up_status == "child_violation" %}
+                                                    <span class="badge-status badge-danger status-badge" style="cursor:pointer;" onclick="editStatus('{{ mesure.id }}', 'child_violation')">
+                                                        <i class="fas fa-child"></i> رفع للقاضي (نقض طفل)
+                                                    </span>
+                                                {% elif mesure.follow_up_status == "parents_violation" %}
+                                                    <span class="badge-status badge-danger status-badge" style="cursor:pointer;" onclick="editStatus('{{ mesure.id }}', 'parents_violation')">
+                                                        <i class="fas fa-users"></i> رفع للقاضي (نقض أبوين)
+                                                    </span>
+                                                {% elif mesure.follow_up_status == "judge_request" %}
+                                                    <span class="badge-status badge-danger status-badge" style="cursor:pointer;" onclick="editStatus('{{ mesure.id }}', 'judge_request')">
+                                                        <i class="fas fa-gavel"></i> رفع للقاضي (طلب منه)
+                                                    </span>
+                                                {% elif mesure.follow_up_status == "file_closed" %}
+                                                    <span class="badge-status badge-secondary status-badge" style="cursor:pointer;" onclick="editStatus('{{ mesure.id }}', 'file_closed')">
+                                                        <i class="fas fa-archive"></i> ملف محفوظ
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge-status badge-secondary status-badge" style="cursor:pointer;" onclick="editStatus('{{ mesure.id }}', '')">
+                                                        <i class="fas fa-question-circle"></i> غير محدد
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="status-edit" data-mesure-id="{{ mesure.id }}" style="display:none;">
+                                                <select id="status-select-{{ mesure.id }}" class="status-select">
+                                                    <option value="">-- اختر حالة المتابعة --</option>
+                                                    <option value="continue" {% if mesure.follow_up_status == "continue" %}selected{% endif %}>مواصلة تنفيذ التدبير الاتفاقي المتخذ</option>
+                                                    <option value="review" {% if mesure.follow_up_status == "review" %}selected{% endif %}>مراجعة التدبير الاتفاقي</option>
+                                                    <option value="refuse_proposal" {% if mesure.follow_up_status == "refuse_proposal" %}selected{% endif %}>رفع الأمر لقاضي الأسرة (رفض التدبير)</option>
+                                                    <option value="child_violation" {% if mesure.follow_up_status == "child_violation" %}selected{% endif %}>رفع الأمر لقاضي الأسرة (نقض طفل)</option>
+                                                    <option value="parents_violation" {% if mesure.follow_up_status == "parents_violation" %}selected{% endif %}>رفع الأمر لقاضي الأسرة (نقض أبوين)</option>
+                                                    <option value="judge_request" {% if mesure.follow_up_status == "judge_request" %}selected{% endif %}>رفع الأمر لقاضي الأسرة (بطلب منه)</option>
+                                                    <option value="file_closed" {% if mesure.follow_up_status == "file_closed" %}selected{% endif %}>حفظ الملف لزوال موجب التعهد</option>
+                                                </select>
+                                                <div class="mt-2">
+                                                    <button class="btn-save-status" onclick="saveStatus('{{ mesure.id }}')">
+                                                        <i class="fas fa-save"></i>تسجيل
+                                                    </button>
+                                                    <button class="btn-cancel-status" onclick="cancelEdit('{{ mesure.id }}')">
+                                                        <i class="fas fa-times"></i> إلغاء
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Colonne 8: Actions -->
+                                        <td>
+                                            <a href="{% url 'mesure_convenue_edit' mesure.id %}" class="btn-edit" title="تعديل">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'mesure_convenue_delete' mesure.id %}" class="btn-delete" title="حذف" onclick="return confirm('هل أنت متأكد من حذف هذا التدبير؟')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            <i class="fas fa-info-circle fa-2x mb-2 d-block"></i>
+                                            لا توجد تدابير اتفاقية لهذا الإشعار
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endwith %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            {% if not notif.mesure_convenue %}
+                                                {% if child_data.child.id and notif.id %}
+                                                    <a href="{% url 'mesure_convenue_create' child_data.child.id notif.id %}" class="btn-dark-custom">
+                                                        <i class="fas fa-plus-circle"></i> إضافة تدبير اتفاقي جديد
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-muted">⚠️ معلومات غير مكتملة لإضافة تدبير</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                    <p>لا توجد إشعارات مسجلة لهذا الطفل</p>
+                    <a href="{% url 'notification_new' child_data.child.id %}" class="btn-gold mt-2">
+                        <i class="fas fa-plus-circle"></i> إضافة إشعار جديد
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fas fa-info-circle fa-4x mb-3 d-block" style="color: var(--gold);"></i>
+            <h5 style="color: var(--primary-dark);">لا يوجد أطفال لديهم إشعارات في النظام</h5>
+            <p class="text-muted">قم بإضافة إشعارات للأطفال من خلال قائمة الإشعارات</p>
+            <a href="{% url 'child_list_Investigation' %}" class="btn-gold mt-3">
+                <i class="fas fa-arrow-left"></i> الذهاب إلى قائمة الإشعارات
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Fonction pour toggler les enfants
+    function toggleChild(element) {
+        const card = element.closest('.card');
+        const body = card.querySelector('.child-card-body');
+        const icon = element.querySelector('.toggle-icon');
+        if (body && icon) {
+            if (body.style.display === 'none' || body.style.display === '') {
+                body.style.display = 'block';
+                icon.classList.add('rotated');
+            } else {
+                body.style.display = 'none';
+                icon.classList.remove('rotated');
+            }
+        }
+    }
+    
+    // Fonction pour toggler les notifications
+    function toggleNotif(element) {
+        const body = element.nextElementSibling;
+        const icon = element.querySelector('.toggle-icon-notif');
+        if (body && icon) {
+            if (body.style.display === 'none' || body.style.display === '') {
+                body.style.display = 'block';
+                icon.classList.add('rotated');
+            } else {
+                body.style.display = 'none';
+                icon.classList.remove('rotated');
+            }
+        }
+    }
+    
+    // Fonction pour éditer le statut
+    function editStatus(mesureId, currentStatus) {
+        const displayDiv = document.querySelector(`.status-display[data-mesure-id="${mesureId}"]`);
+        const editDiv = document.querySelector(`.status-edit[data-mesure-id="${mesureId}"]`);
+        
+        if (displayDiv && editDiv) {
+            displayDiv.style.display = 'none';
+            editDiv.style.display = 'block';
+        }
+    }
+    
+    // Fonction pour annuler l'édition du statut
+    function cancelEdit(mesureId) {
+        const displayDiv = document.querySelector(`.status-display[data-mesure-id="${mesureId}"]`);
+        const editDiv = document.querySelector(`.status-edit[data-mesure-id="${mesureId}"]`);
+        
+        if (displayDiv && editDiv) {
+            displayDiv.style.display = 'block';
+            editDiv.style.display = 'none';
+        }
+    }
+    
+    // Fonction pour sauvegarder le statut
+    function saveStatus(mesureId) {
+        const select = document.getElementById(`status-select-${mesureId}`);
+        const newStatus = select.value;
+        
+        if (!newStatus) {
+            showNotification('الرجاء اختيار حالة المتابعة', 'error');
+            return;
+        }
+        
+        const saveBtn = document.querySelector(`.status-edit[data-mesure-id="${mesureId}"] .btn-save-status`);
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+        saveBtn.disabled = true;
+        
+        fetch(`/mesure-convenue-update-status/${mesureId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                follow_up_status: newStatus
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('✅ تم تحديث حالة المتابعة بنجاح', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showNotification('❌ خطأ: ' + (data.error || 'حدث خطأ غير متوقع'), 'error');
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('❌ خطأ في الاتصال بالخادم', 'error');
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        });
+    }
+    
+    // Fonction pour récupérer le cookie CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Fonction pour afficher les notifications
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = type === 'success' ? 'save-success' : 'save-error';
+        notification.innerHTML = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 2000);
+    }
+    
+    // Fonction de recherche (ouvre automatiquement les résultats trouvés)
+    function searchChildren() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.searchable-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const childName = card.getAttribute('data-child-name') || '';
+            const childUid = card.getAttribute('data-child-uid') || '';
+            const notifNumbers = card.getAttribute('data-notif-numbers') || '';
+            const mesureTypes = card.getAttribute('data-mesure-types') || '';
+
+            const matchesSearch = searchTerm === '' ||
+                childName.includes(searchTerm) ||
+                childUid.includes(searchTerm) ||
+                notifNumbers.includes(searchTerm) ||
+                mesureTypes.includes(searchTerm);
+
+            const childBody = card.querySelector('.child-card-body');
+            const childIcon = card.querySelector('.toggle-icon');
+
+            if (matchesSearch) {
+                card.style.display = '';
+                visibleCount++;
+
+                const notifs = card.querySelectorAll('.searchable-notif');
+
+                if (searchTerm !== '') {
+                    // Ouvrir automatiquement la carte enfant
+                    if (childBody) childBody.style.display = 'block';
+                    if (childIcon) childIcon.classList.add('rotated');
+
+                    notifs.forEach(notif => {
+                        notif.style.display = '';
+                        const notifBody = notif.querySelector('.notif-card-body');
+                        const notifIcon = notif.querySelector('.toggle-icon-notif');
+                        // Ouvrir automatiquement toutes les notifications de l'enfant trouvé
+                        if (notifBody) notifBody.style.display = 'block';
+                        if (notifIcon) notifIcon.classList.add('rotated');
+                    });
+                } else {
+                    // Recherche vide -> tout refermer comme à l'état initial
+                    if (childBody) childBody.style.display = 'none';
+                    if (childIcon) childIcon.classList.remove('rotated');
+
+                    notifs.forEach(notif => {
+                        notif.style.display = '';
+                        const notifBody = notif.querySelector('.notif-card-body');
+                        const notifIcon = notif.querySelector('.toggle-icon-notif');
+                        if (notifBody) notifBody.style.display = 'none';
+                        if (notifIcon) notifIcon.classList.remove('rotated');
+                    });
+                }
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const totalCount = cards.length;
+        const visibleCountEl = document.getElementById('visibleCount');
+        const totalCountEl = document.getElementById('totalCount');
+        if (visibleCountEl) visibleCountEl.textContent = visibleCount;
+        if (totalCountEl) totalCountEl.textContent = totalCount;
+
+        let noResultsDiv = document.getElementById('noResultsMessage');
+        if (visibleCount === 0 && searchTerm !== '') {
+            if (!noResultsDiv) {
+                noResultsDiv = document.createElement('div');
+                noResultsDiv.id = 'noResultsMessage';
+                noResultsDiv.className = 'no-results';
+                noResultsDiv.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <h5>لا توجد نتائج مطابقة</h5>
+                    <p>لم يتم العثور على أطفال أو إشعارات تطابق "<strong>${searchTerm}</strong>"</p>
+                `;
+                const container = document.getElementById('childrenContainer');
+                container.appendChild(noResultsDiv);
+            } else {
+                noResultsDiv.style.display = 'block';
+                const strong = noResultsDiv.querySelector('strong');
+                if (strong) strong.textContent = searchTerm;
+            }
+        } else if (noResultsDiv) {
+            noResultsDiv.style.display = 'none';
+        }
+    }
+    
+    // Écouteur d'événement pour la recherche avec debounce
+    let searchTimeout;
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(searchChildren, 300);
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. D'abord initialiser toutes les cartes comme fermées
+        document.querySelectorAll('.child-card-body').forEach(body => {
+            body.style.display = 'none';
+        });
+        document.querySelectorAll('.notif-card-body').forEach(body => {
+            body.style.display = 'none';
+        });
+
+        // 2. Ensuite ouvrir un enfant spécifique si demandé par le backend
+        const openChildId = '{{ open_child_id }}';
+        if (openChildId) {
+            const childCard = document.getElementById('child-' + openChildId);
+            if (childCard) {
+                const header = childCard.querySelector('.card-header');
+                if (header) {
+                    const body = childCard.querySelector('.child-card-body');
+                    const icon = header.querySelector('.toggle-icon');
+                    if (body) body.style.display = 'block';
+                    if (icon) icon.classList.add('rotated');
+                }
+            }
+        }
+
+        // 3. Ouvrir une notification spécifique si demandée par le backend
+        const openNotifId = '{{ selected_notif_id }}';
+        if (openNotifId) {
+            const notifCard = document.getElementById('notif-' + openNotifId);
+            if (notifCard) {
+                const header = notifCard.querySelector('.notif-card-header');
+                if (header) {
+                    const body = notifCard.querySelector('.notif-card-body');
+                    const icon = header.querySelector('.toggle-icon-notif');
+                    if (body) body.style.display = 'block';
+                    if (icon) icon.classList.add('rotated');
+                }
+            }
+        }
+
+        // 4. Enfin, lancer la recherche pour initialiser les compteurs (aucun impact car champ vide)
+        searchChildren();
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

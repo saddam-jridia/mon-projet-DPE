@@ -1,100 +1,225 @@
 {% extends "account/base.html" %}
 {% block content %}
 
- {% if request.user.delegate_profile %}
-    <div role="alert" style="font-size:18px;">
-        المندوب الجهوي بولاية 
-        <strong>{{ request.user.delegate_profile.get_wilaya_display }}</strong> - 
-         <strong>{{ request.user.delegate_profile.first_name }}</strong> - 
-         <strong>{{ request.user.delegate_profile.last_name }}</strong> - 
-         <strong>{{ request.user.delegate_profile.unique_id }}</strong>
+<section class="impact-hero">
+    <div class="impact-wave">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0,64L60,69.3C120,75,240,85,360,90.7C480,96,600,96,720,85.3C840,75,960,53,1080,48C1200,43,1320,53,1380,58.7L1440,64V120H0Z"></path>
+        </svg>
     </div>
-    {% else %}
-    <div class="alert alert-warning text-start" role="alert">
-        لم يتم تعيين بيانات المندوب لهذا المستخدم.
+</section>
+
+<div class="cards-container">
+    <div class="cards-grid">  
+        <a href="{% url 'tableauboard_mandoub_jihawi' %}" class="card-link">
+            <div class="professional-card">
+                
+                <h4>طفل مهدد</h4>
+            </div>
+        </a>
+
+        <a href="{% url 'enfant_list' %}" class="card-link">
+            <div class="professional-card">
+               
+                <h4>طفل في خلاف مع القانون</h4>
+            </div>
+        </a>
+
+        <a href="{% url 'recherche_enfants' %}" class="card-link">
+            <div class="professional-card">
+               
+                <h4>البحث</h4>
+            </div>
+        </a>
     </div>
-    {% endif %}
-<div class="container mb-5">
-
-    
-   
-
-</div>
-
-<div class="content"> 
-  <div class="container">
-    <div class="row justify-content-center">
-
-`
- <div class="col-md-4 mb-4">
-  <a  style="text-decoration:none;">
-    <div class="card-menu animate__animated animate__fadeInUp animate__slow" style="background:#89bee0;">
-      <i class="fas fa-child fa-2x mb-3"></i><br>
-    طفل مهدد
-    </div>
-  </a>
-</div>
-
-<div class="col-md-4 mb-4">
-  <a  style="text-decoration:none;">
-    <div class="card-menu animate__animated animate__fadeInUp animate__slow" style="background:#198754;">
-      <i class="fas fa-users fa-2x mb-3"></i><br>
-       طفل جانح
-
-    </div>
-  </a>
-</div>
-
-<div class="col-md-4 mb-4">
-  <a  style="text-decoration:none;">
-    <div class="card-menu animate__animated animate__fadeInUp animate__slow" style="background:#ffc107;">
-      <i class="fas fa-baby fa-2x mb-3"></i><br>
-      الاتجار
-    </div>
-  </a>
-</div>
-
-<div class="col-md-4 mb-4">
-  <a  style="text-decoration:none;">
-    <div class="card-menu animate__animated animate__fadeInUp animate__slow" style="background:#0dcaf0; min-height:180px;">
-      <i class="fas fa-globe fa-2x mb-3"></i><br>
-        البحث والتقصي
-    </div>
-  </a>
-</div>
-
-
-</div>
-```
-
-  </div>
 </div>
 
 <style>
-.card-menu {
-    color: white;
-    padding: 40px 20px;
-    border-radius: 14px;
+/* ====== PROPOSITION 2 : BEIGE/GRÈGE ÉLÉGANT ====== */
+body {
+    font-family: "Times New Roman", serif !important;
+    background: #f5f0e8; /* Beige chaud élégant */
+    min-height: 100vh;
+    margin: 0;
+}
+
+.impact-hero {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    padding-top: 80px;
+    padding-bottom: 150px;
+    position: relative;
+    border-bottom: 3px solid #b8860b;
+}
+
+.impact-wave {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    line-height: 0;
+}
+.impact-wave svg {
+    display: block;
+    width: 100%;
+    height: 80px;
+}
+.impact-wave path {
+    fill: #f5f0e8; /* Match body background */
+}
+
+.cards-container {
+    max-width: 1100px;
+    margin: -100px auto 50px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.card-link { 
+    text-decoration: none; 
+    color: inherit; 
+    display: block;
+}
+
+/* ====== CARTES NOIR/DORÉ AVEC EFFET VERRE ====== */
+.professional-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    padding: 50px 30px;
+    border-radius: 16px;
     text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-    transition: 0.3s ease-in-out;
-    min-height: 180px;
+    color: #fff;
+    min-height: 240px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
+    transition: all 0.4s ease;
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    border: 2px solid #b8860b;
+    position: relative;
+    overflow: hidden;
 }
-.card-blue { background: #005c99; }      
-.card-green { background: #2e8540; }     
-.card-red { background: #c62828; }       
-.card-purple { background: #6a1b9a; }    
-.card-menu:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+/* Effet de brillance dorée au hover */
+.professional-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(184,134,11,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
-.no-decoration {
-    text-decoration: none;
+
+.professional-card:hover::before {
+    opacity: 1;
+}
+
+.professional-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 
+        0 20px 50px rgba(0,0,0,0.3),
+        0 0 30px rgba(184,134,11,0.2);
+    border-color: #d4a520;
+}
+
+/* ICÔNES DORÉES AVEC EFFET LUMINEUX */
+.card-icon {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 25px;
+    border: 3px solid #b8860b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+    background: linear-gradient(135deg, rgba(184,134,11,0.15) 0%, rgba(184,134,11,0.05) 100%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.card-icon i {
+    font-size: 42px;
+    color: #d4a520;
+    text-shadow: 0 0 10px rgba(184,134,11,0.5);
+    transition: all 0.4s ease;
+}
+
+.professional-card:hover .card-icon {
+    transform: scale(1.15) rotate(5deg);
+    border-color: #d4a520;
+    background: linear-gradient(135deg, rgba(184,134,11,0.3) 0%, rgba(184,134,11,0.1) 100%);
+    box-shadow: 0 0 30px rgba(184,134,11,0.4);
+}
+
+.professional-card:hover .card-icon i {
+    color: #f0c674;
+    text-shadow: 0 0 20px rgba(240,198,116,0.8);
+}
+
+/* TEXTE AVEC EFFET SUBTIL */
+.professional-card h4 {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+    color: #ffffff;
+    letter-spacing: 1px;
+    font-family: "Times New Roman", serif !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+}
+
+/* Ligne décorative dorée sous le titre */
+.professional-card h4::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: #b8860b;
+    margin: 10px auto 0;
+    transition: width 0.4s ease;
+}
+
+.professional-card:hover h4::after {
+    width: 80px;
+    background: #d4a520;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    .cards-container {
+        margin-top: -60px;
+    }
+    .professional-card {
+        min-height: 200px;
+        padding: 40px 25px;
+    }
+    .card-icon {
+        width: 75px;
+        height: 75px;
+        margin-bottom: 20px;
+    }
+    .card-icon i {
+        font-size: 36px;
+    }
+    .professional-card h4 {
+        font-size: 26px;
+    }
 }
 </style>
+
 {% endblock %}

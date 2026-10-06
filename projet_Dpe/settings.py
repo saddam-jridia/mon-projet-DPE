@@ -9,6 +9,10 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+XHTML2PDF_DEFAULT_OPTIONS = {
+    'encoding': 'UTF-8',
+    'font-size': 12,
+}
 
 from pathlib import Path
 import os
@@ -28,8 +32,17 @@ SECRET_KEY = 'django-insecure-(!0u(5gxtx8zahe44w51jq)q6bcrk#^pz17qhc^!wzjx59@m(v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    ".trycloudflare.com",
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.trycloudflare.com",
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
 
@@ -41,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'widget_tweaks',
 ]
 
@@ -87,6 +101,20 @@ DATABASES = {
         'PORT': '5432',   # Port par défaut PostgreSQL
     }
 }
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+EMAIL_HOST_USER = 'dpe.mffes@maff.state.tn'
+EMAIL_HOST_PASSWORD = 'DPE+2026+'
+
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = "المنظومة المعلوماتية الخاصة بالمكاتب الجهوية لمندوبي حماية الطفولة<dpe.mffes@maff.state.tn>"
 
 
 

@@ -1,0 +1,383 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+
+<style>
+    body { background: #f4f6f9; font-family: "Times New Roman", serif; }
+    .section-title {
+        background: #000;
+        color: #d4a520;
+        padding: 10px 15px;
+        margin: 20px 0 15px;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+    .btn-submit {
+        background: #000;
+        color: #d4a520;
+        border: 2px solid #d4a520;
+        padding: 10px 30px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    .btn-submit:hover { background: #d4a520; color: #000; transform: translateY(-2px); }
+    .alert-info-custom {
+        background: #f6d784;
+        border-right: 5px solid #d4a520;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .checkbox-group {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .checkbox-group label {
+        margin-right: 20px;
+        font-weight: normal;
+        display: block;
+        margin-bottom: 8px;
+    }
+    .sub-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        color: #333;
+        border-right: 3px solid #d4a520;
+        padding-right: 10px;
+    }
+    .radio-group-vertical label {
+        display: block;
+        margin-bottom: 8px;
+    }
+    .disabled-section {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    .warning-box {
+        background: #fff3cd;
+        border-right: 4px solid #ffc107;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+    .choice-radio {
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    .choice-radio label {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="content">
+    <div class="mb-3 text-start">
+        <a href="{% url 'mesure_convenue_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right me-2"></i> العودة إلى القائمة
+        </a>
+    </div>
+
+    <h2 class="text-center">
+        <i class="fas fa-handshake"></i> {% if mesure %}تعديل تدبير اتفاقي{% else %}تدابير اتفاقية متخذة{% endif %}
+    </h2>
+
+    <div class="card">
+        <div class="card-body">
+            <!-- Informations -->
+            <div class="alert-info-custom">
+                <div class="row">
+                    <div class="col-md-3"><strong>رقم الإشعار:</strong> {{ notification.notifier_number }}</div>
+                    <div class="col-md-3"><strong>المعرف الوحيد:</strong> {{ child.uid }}</div>
+                    <div class="col-md-3"><strong>الاسم:</strong> {{ child.first_name }}</div>
+                    <div class="col-md-3"><strong>اللقب:</strong> {{ child.last_name }}</div>
+                </div>
+            </div>
+
+            <form method="post" action="
+                {% if mesure %}{% url 'mesure_convenue_edit' mesure.id %}
+                {% else %}{% url 'mesure_convenue_create' child.id notification.id %}{% endif %}" id="mesureForm">
+                {% csrf_token %}
+
+                <!-- Champ caché pour stocker le choix exclusif -->
+                <input type="hidden" name="placement_choice_selected" id="placement_choice_selected" value="">
+
+                <!-- ==================== توعية وتوجيه العائلة ==================== -->
+                <div class="section-title"><i class="fas fa-users"></i> توعية وتوجيه العائلة</div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>تاريخ توعية وتوجيه العائلة</label>
+                                <input type="date" name="family_awareness_date" class="form-control"
+                                       value="{{ mesure.family_awareness_date|date:'Y-m-d'|default:'' }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== اتخاذ تدبير اتفاقي ==================== -->
+                <div class="section-title"><i class="fas fa-file-signature"></i> اتخاذ تدبير اتفاقي</div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label>تاريخ اتخاذ التدبير <span class="text-danger">*</span></label>
+                                <input type="date" name="measure_date" class="form-control" required 
+                                       value="{{ mesure.measure_date|date:'Y-m-d'|default:'' }}">
+                            </div>
+                        </div>
+
+                        <!-- Type de mesure conventionnelle -->
+                        <div class="form-group mb-4">
+                            <label>نوع التدبير الاتفاقي <span class="text-danger">*</span></label>
+                            <select name="agreement_type" class="form-control" required id="agreementType">
+                                <option value="">اختر نوع التدبير</option>
+                                <option value="keep_in_family_commitment" {% if mesure.agreement_type == "keep_in_family_commitment" %}selected{% endif %}>
+                                    إبقاء الطفل في عائلته مع إلتزام الأبوين باتخاذ الإجراءات اللازمة لرفع الخطر المحدق به وذلك في آجال محددة ورهن رقابة دورية من مندوب حماية الطفولة
+                                </option>
+                                <option value="keep_in_family_social_support" {% if mesure.agreement_type == "keep_in_family_social_support" %}selected{% endif %}>
+                                    إبقاء الطفل في عائلته مع تنظيم طرق التدخل الاجتماعي الملائم وذلك بالتعاون مع الهيئة المعنية بتقديم الخدمات والمساعدة الاجتماعية اللازمة للطفل ولعائلته
+                                </option>
+                                <option value="keep_in_family_prevent_contact" {% if mesure.agreement_type == "keep_in_family_prevent_contact" %}selected{% endif %}>
+                                    إبقاء الطفل في عائلته مع اخذ الاحتياطات اللازمة لمنع كل اتصال بينه وبين الأشخاص الذين من شأنهم ان يتسببوا له فيما يهدد صحته أو سلامته البدنية أو المعنوية
+                                </option>
+                                <option value="temporary_placement" {% if mesure.agreement_type == "temporary_placement" %}selected{% endif %}>
+                                    إيداع الطفل مؤقتا لدى عائلة أو أيهيئة أو مؤسسة اجتماعية أو تربوية أخرى ملائمة عمومية كانت او خاصة وعند الاقتضاء بمؤسسة استشفائية وذلك طبقا للقواعد المعمول بها
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- ============================================================ -->
+                        <!-- CHOIX EXCLUSIF : RADIOS PRINCIPAUX -->
+                        <!-- ============================================================ -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="choice-radio">
+                                    <label style="margin-left: 30px;">
+                                        <input type="radio" name="placement_main_choice" value="hebergement" id="radio_hebergement"
+                                               {% if mesure.placement_type or mesure.placement_location %}checked{% endif %}>
+                                        <i class="fas fa-home" style="color: #0066cc;"></i> <strong>مكان الإيواء</strong>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="placement_main_choice" value="depot" id="radio_depot"
+                                               {% if mesure.placement_location_danger %}checked{% endif %}>
+                                        <i class="fas fa-building" style="color: #cc6600;"></i> <strong>مكان الإيداع</strong>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ============================================================ -->
+                        <!-- SECTION : مكان الإيواء -->
+                        <!-- ============================================================ -->
+                        <div id="hebergementSection">
+                            <div class="sub-title" style="background: #e8f4f8; padding: 8px; border-radius: 5px; margin-top: 0;">
+                                <i class="fas fa-home"></i> مكان الإيواء
+                            </div>
+                            <div class="checkbox-group">
+                                <div style="margin-bottom: 15px;">
+                                    <label><input type="radio" name="placement_type" value="family_nuclear" {% if mesure.placement_type == "family_nuclear" %}checked{% endif %} class="hebergement-radio"> لدى العائلة النواة</label>
+                                    <label><input type="radio" name="placement_type" value="family_extended" {% if mesure.placement_type == "family_extended" %}checked{% endif %} class="hebergement-radio"> لدى العائلة الموسعة</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ============================================================ -->
+                        <!-- SECTION : مكان الإيداع -->
+                        <!-- ============================================================ -->
+                        <div id="depotSection">
+                            <div class="sub-title" style="background: #fce4d6; padding: 8px; border-radius: 5px;">
+                                <i class="fas fa-building"></i> مكان الإيداع
+                            </div>
+                            <div class="checkbox-group">
+                                <label><input type="radio" name="placement_location" value="family_extended" {% if mesure.placement_location == "family_extended" %}checked{% endif %} class="depot-radio"> لدى العائلة الموسعة</label>
+                                <label><input type="radio" name="placement_location" value="foster_family" {% if mesure.placement_location == "foster_family" %}checked{% endif %} class="depot-radio"> عائلة استقبال</label>
+                                <label><input type="radio" name="placement_location" value="children_villages" {% if mesure.placement_location == "children_villages" %}checked{% endif %} class="depot-radio"> قرى الأطفال س و س</label>
+                                <label><input type="radio" name="placement_location" value="inpe" {% if mesure.placement_location == "inpe" %}checked{% endif %} class="depot-radio"> المعهد الوطني لرعاية الطفولة</label>
+                                <label><input type="radio" name="placement_location" value="social_care_center" {% if mesure.placement_location == "social_care_center" %}checked{% endif %} class="depot-radio"> مركز رعاية الاجتماعية للأطفال</label>
+                                <label><input type="radio" name="placement_location" value="social_support_center" {% if mesure.placement_location == "social_support_center" %}checked{% endif %} class="depot-radio"> مركز الإحاطة الاجتماعية</label>
+                                <label><input type="radio" name="placement_location" value="association" {% if mesure.placement_location == "association" %}checked{% endif %} class="depot-radio"> جمعية / وحدة عيش</label>
+                                <label><input type="radio" name="placement_location" value="youth_center" {% if mesure.placement_location == "youth_center" %}checked{% endif %} class="depot-radio"> مركز مندمج للشباب والطفولة</label>
+                                <label><input type="radio" name="placement_location" value="women_shelter" {% if mesure.placement_location == "women_shelter" %}checked{% endif %} class="depot-radio"> مركز لإيواء النساء والأطفال ضحايا العنف</label>
+                                <label><input type="radio" name="placement_location" value="hospital" {% if mesure.placement_location == "hospital" %}checked{% endif %} class="depot-radio"> مؤسسة استشفائية</label>
+                                <label><input type="radio" name="placement_location" value="migrant_center" {% if mesure.placement_location == "migrant_center" %}checked{% endif %} class="depot-radio"> المراكز المخصصة لإيواء الأطفال المهاجرين التابعين للمنظمات الدولية أو للجمعيات الناشطة</label>
+                                <label><input type="radio" name="placement_location" value="other" {% if mesure.placement_location == "other" %}checked{% endif %} class="depot-radio"> أخرى (إضافة مكان إيداع)</label>
+                            </div>
+                            <div id="otherPlacementDiv" style="display: {% if mesure.placement_location == 'other' %}block{% else %}none{% endif %}; margin-top: -15px; margin-bottom: 15px; margin-right: 25px;">
+                                <label>تحديد مكان إيداع آخر :</label>
+                                <input type="text" name="other_placement_location" class="form-control" value="{{ mesure.other_placement_location|default:'' }}" placeholder="اكتب مكان الإيداع...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== متابعة التدبير ==================== -->
+                <!-- ❌ SUPPRIMÉ - Le champ follow_up_status n'apparaît plus dans le formulaire -->
+                <!-- Il reste uniquement dans la liste (mesure_convenue_list.html) -->
+
+                <!-- Boutons -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i> {% if mesure %}تحديث{% else %}حفظ{% endif %} التدبير الاتفاقي
+                    </button>
+                    <a href="{% url 'mesure_convenue_list' %}" class="btn btn-secondary ms-2">إلغاء</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // LOGIQUE DE CHOIX EXCLUSIF : مكان الإيواء OU مكان الإيداع
+    // ============================================================
+    
+    (function() {
+        // Éléments principaux
+        const radioHebergement = document.getElementById('radio_hebergement');
+        const radioDepot = document.getElementById('radio_depot');
+        
+        const hebergementSection = document.getElementById('hebergementSection');
+        const depotSection = document.getElementById('depotSection');
+        
+        const otherPlacementDiv = document.getElementById('otherPlacementDiv');
+        
+        // Tous les radios des deux sections
+        const hebergementRadios = document.querySelectorAll('.hebergement-radio');
+        const depotRadios = document.querySelectorAll('.depot-radio');
+        
+        // Fonction pour activer/désactiver une section
+        function setSectionActive(section, radios, active, clearValues = true) {
+            if (section) {
+                if (active) {
+                    section.classList.remove('disabled-section');
+                } else {
+                    section.classList.add('disabled-section');
+                }
+            }
+            
+            radios.forEach(radio => {
+                radio.disabled = !active;
+                if (!active && clearValues) {
+                    radio.checked = false;
+                }
+            });
+        }
+        
+        // Fonction pour cacher les champs "autre"
+        function hideOtherFields() {
+            if (otherPlacementDiv) otherPlacementDiv.style.display = 'none';
+        }
+        
+        // Mettre à jour le champ caché
+        function updateHiddenChoice() {
+            const hidden = document.getElementById('placement_choice_selected');
+            if (hidden) {
+                if (radioHebergement && radioHebergement.checked) {
+                    hidden.value = 'hebergement';
+                } else if (radioDepot && radioDepot.checked) {
+                    hidden.value = 'depot';
+                } else {
+                    hidden.value = '';
+                }
+            }
+        }
+        
+        // Fonction principale de mise à jour
+        function updateExclusiveChoice() {
+            const isHebergementActive = radioHebergement && radioHebergement.checked;
+            const isDepotActive = radioDepot && radioDepot.checked;
+            
+            if (isHebergementActive && isDepotActive) {
+                if (radioDepot) radioDepot.checked = false;
+                setSectionActive(depotSection, depotRadios, false, true);
+                setSectionActive(hebergementSection, hebergementRadios, true, false);
+            } 
+            else if (isHebergementActive) {
+                setSectionActive(hebergementSection, hebergementRadios, true, false);
+                setSectionActive(depotSection, depotRadios, false, true);
+            } 
+            else if (isDepotActive) {
+                setSectionActive(hebergementSection, hebergementRadios, false, true);
+                setSectionActive(depotSection, depotRadios, true, false);
+            } 
+            else {
+                setSectionActive(hebergementSection, hebergementRadios, false, true);
+                setSectionActive(depotSection, depotRadios, false, true);
+            }
+            
+            hideOtherFields();
+            updateHiddenChoice();
+        }
+        
+        // Événements
+        if (radioHebergement) {
+            radioHebergement.addEventListener('change', updateExclusiveChoice);
+        }
+        if (radioDepot) {
+            radioDepot.addEventListener('change', updateExclusiveChoice);
+        }
+        
+        // Gestion du champ "أخرى" pour مكان الإيداع
+        const otherRadio = document.querySelector('input[name="placement_location"][value="other"]');
+        if (otherRadio) {
+            otherRadio.addEventListener('change', function() {
+                if (this.checked && radioDepot && radioDepot.checked) {
+                    otherPlacementDiv.style.display = 'block';
+                } else {
+                    otherPlacementDiv.style.display = 'none';
+                }
+            });
+        }
+        
+        // Pour les autres radios de la section dépôt, cacher "autre"
+        depotRadios.forEach(radio => {
+            if (radio.value !== 'other') {
+                radio.addEventListener('change', function() {
+                    if (otherPlacementDiv) otherPlacementDiv.style.display = 'none';
+                });
+            }
+        });
+        
+        // État initial
+        updateExclusiveChoice();
+        
+        // Nettoyer les champs avant soumission
+        const form = document.getElementById('mesureForm');
+        if (form) {
+            form.addEventListener('submit', function() {
+                const isHebergementActive = radioHebergement && radioHebergement.checked;
+                const isDepotActive = radioDepot && radioDepot.checked;
+                
+                if (isHebergementActive && !isDepotActive) {
+                    depotRadios.forEach(radio => {
+                        radio.disabled = true;
+                    });
+                }
+                
+                if (isDepotActive && !isHebergementActive) {
+                    hebergementRadios.forEach(radio => {
+                        radio.disabled = true;
+                    });
+                }
+                
+                const otherInput = document.querySelector('input[name="other_placement_location"]');
+                if (otherInput && otherInput.value.trim() === '') {
+                    otherInput.disabled = true;
+                }
+            });
+        }
+    })();
+</script>
+{% endblock %}

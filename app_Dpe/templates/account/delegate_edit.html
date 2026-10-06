@@ -1,0 +1,551 @@
+{% extends "account/base-login.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}تعديل بيانات المندوب{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===============================
+   Styles spécifiques à la page
+   (hérite de base-login pour sidebar)
+================================= */
+
+/* Container principal - centré dans la zone de contenu */
+.edit-wrapper {
+    min-height: calc(100vh - 150px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem;
+    background: #f8fafc;
+}
+
+/* Carte du formulaire */
+.form-card {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 900px;
+    border: 1px solid #e5e7eb;
+}
+
+/* En-tête de la page */
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 3px solid #005a9e;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #003154;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.page-title i {
+    color: #005a9e;
+}
+
+/* Sections du formulaire */
+.form-section {
+    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.form-section:hover {
+    border-color: #005a9e;
+    box-shadow: 0 2px 8px rgba(0, 90, 158, 0.08);
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.form-label::after {
+    content: ' *';
+    color: #ef4444;
+}
+
+.form-label:not([required])::after {
+    content: '';
+}
+
+/* Inputs avec icônes */
+.input-icon {
+    position: relative;
+}
+
+.input-icon i {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-size: 1rem;
+    z-index: 10;
+}
+
+.form-control, .form-select {
+    height: 48px;
+    padding-right: 42px;
+    border-radius: 10px;
+    border: 2px solid #d1d5db;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #005a9e;
+    box-shadow: 0 0 0 4px rgba(0, 90, 158, 0.1);
+    outline: none;
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+.form-control[readonly] {
+    background: #f3f4f6;
+    cursor: not-allowed;
+}
+
+/* Info text */
+.form-text {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Bouton submit */
+.btn-submit {
+    background: linear-gradient(135deg, #005a9e, #0075c9);
+    color: #fff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 90, 158, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 90, 158, 0.4);
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Messages */
+.messages-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.alert-custom {
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideDown 0.4s ease-out;
+    border-right: 4px solid;
+    position: relative;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-success {
+    background: #f0fdf4;
+    border-right-color: #10b981;
+    color: #065f46;
+}
+
+.alert-error, .alert-danger {
+    background: #fef2f2;
+    border-right-color: #ef4444;
+    color: #991b1b;
+}
+
+.alert-warning {
+    background: #fffbeb;
+    border-right-color: #f59e0b;
+    color: #92400e;
+}
+
+.close-btn {
+    margin-right: auto;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .edit-wrapper {
+        padding: 1rem;
+        min-height: calc(100vh - 100px);
+    }
+    
+    .form-card {
+        padding: 1.5rem;
+    }
+    
+    .page-title {
+        font-size: 1.4rem;
+    }
+    
+    .form-section {
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-wrapper" dir="rtl">
+    <div class="form-card">
+        
+        <!-- En-tête -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-user-edit"></i>
+                تعديل بيانات المندوب
+            </h1>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages-wrapper" id="messagesContainer">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-custom alert-{{ message.tags|default:'info' }}">
+                        {% if message.tags == 'success' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% elif message.tags == 'error' or message.tags == 'danger' %}
+                            <i class="fas fa-exclamation-circle"></i>
+                        {% elif message.tags == 'warning' %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle"></i>
+                        {% endif %}
+                        <div>{{ message }}</div>
+                        <button type="button" class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Formulaire -->
+        <form method="POST" id="delegateForm" novalidate>
+            {% csrf_token %}
+
+            <div class="row">
+                <!-- Wilaya -->
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label">الولاية</label>
+                        <div class="input-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <select name="wilaya" id="wilaya" class="form-select" required>
+                                <option value="">اختر الولاية</option>
+                                {% for code, name in wilayas %}
+                                    <option value="{{ code }}" {% if delegate.wilaya == code %}selected{% endif %}>
+                                        {{ code }} - {{ name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role -->
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label">الصفة</label>
+                        <div class="input-icon">
+                            <i class="fas fa-user-tag"></i>
+                            <select name="role" class="form-select" required>
+                                <option value="">اختر الصفة</option>
+                                {% for key, label in roles %}
+                                    <option value="{{ key }}" {% if delegate.role == key %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Unique ID (readonly) -->
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label" style="color: #6b7280;">الرمز التلقائي</label>
+                        <div class="input-icon">
+                            <i class="fas fa-barcode"></i>
+                            <input type="text" id="unique_id_preview" class="form-control" 
+                                   value="{{ delegate.unique_id }}" readonly>
+                        </div>
+                        <small class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            يتم تحديث هذا الرمز تلقائياً عند تغيير الولاية
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Delegate Code -->
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label">المعرّف الوحيد</label>
+                        <div class="input-icon">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" name="delegate_code" id="delegate_code" 
+                                   class="form-control" value="{{ delegate.delegate_code }}" 
+                                   maxlength="10" required pattern="\d{10}" inputmode="numeric">
+                        </div>
+                        <small class="form-text">
+                            <i class="fas fa-keyboard"></i>
+                            يمكن تعديل المعرف الوحيد (10 أرقام)
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- First Name -->
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label">الاسم</label>
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" name="first_name" class="form-control" 
+                                   value="{{ delegate.first_name }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label">اللقب</label>
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" name="last_name" class="form-control" 
+                                   value="{{ delegate.last_name }}" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Phone -->
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label" style="color: #6b7280;">الهاتف</label>
+                        <div class="input-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" name="phone" id="phone" class="form-control" 
+                                   value="{{ delegate.phone|default:'' }}" maxlength="8" inputmode="numeric">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label" style="color: #6b7280;">البريد الإلكتروني</label>
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" name="email" class="form-control" 
+                                   value="{{ delegate.email|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-section">
+                        <label class="form-label" style="color: #6b7280;">كلمة السر الجديدة</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" name="password" id="password" 
+                                   class="form-control" placeholder="اترك فارغاً إذا لم ترد التغيير" 
+                                   minlength="6">
+                        </div>
+                        <small class="form-text" id="password-hint" style="display: none; color: #10b981;">
+                            <i class="fas fa-check-circle"></i>
+                            تم إدخال كلمة سر جديدة
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <i class="fas fa-save"></i>
+               تسجبل التعديلات
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const wilayaSelect = document.getElementById('wilaya');
+    const previewInput = document.getElementById('unique_id_preview');
+    const phoneInput = document.getElementById('phone');
+    const delegateCodeInput = document.getElementById('delegate_code');
+    const passwordInput = document.getElementById('password');
+    const passwordHint = document.getElementById('password-hint');
+    const form = document.getElementById('delegateForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Mise à jour du prévisualisation unique_id
+    wilayaSelect.addEventListener('change', function() {
+        const wilaya = this.value;
+        if (!wilaya) {
+            previewInput.value = '{{ delegate.unique_id }}';
+            return;
+        }
+
+        fetch("{% url 'ajax_next_delegate_id' %}?wilaya=" + encodeURIComponent(wilaya))
+        .then(resp => resp.json())
+        .then(data => {
+            previewInput.value = data.next_id || '{{ delegate.unique_id }}';
+        })
+        .catch(err => {
+            console.error('Erreur:', err);
+            previewInput.value = '{{ delegate.unique_id }}';
+        });
+    });
+
+    // Validation téléphone (8 chiffres max)
+    phoneInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 8);
+    });
+    
+    // Validation delegate_code (10 chiffres)
+    delegateCodeInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+        e.target.style.borderColor = e.target.value.length === 10 ? '#10b981' : '';
+    });
+    
+    // Indicateur de changement de mot de passe
+    passwordInput.addEventListener('input', function(e) {
+        passwordHint.style.display = e.target.value.length > 0 ? 'flex' : 'none';
+    });
+    
+    // Validation avant soumission
+    form.addEventListener('submit', function(e) {
+        const code = delegateCodeInput.value;
+        const firstName = document.querySelector('input[name="first_name"]').value.trim();
+        const lastName = document.querySelector('input[name="last_name"]').value.trim();
+        const wilaya = wilayaSelect.value;
+        const role = document.querySelector('select[name="role"]').value;
+        
+        let errors = [];
+        
+        if (!wilaya) errors.push('الولاية مطلوبة');
+        if (!role) errors.push('الصفة مطلوبة');
+        if (!firstName) errors.push('الاسم مطلوب');
+        if (!lastName) errors.push('اللقب مطلوب');
+        
+        if (code.length !== 10) {
+            errors.push('المعرف الوحيد يجب أن يحتوي على 10 أرقام بالضبط');
+            delegateCodeInput.classList.add('is-invalid');
+        } else {
+            delegateCodeInput.classList.remove('is-invalid');
+        }
+        
+        if (errors.length > 0) {
+            e.preventDefault();
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'alert-custom alert-error';
+            errorDiv.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <div>${errors.join('<br>')}</div>
+                <button type="button" class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            const container = document.getElementById('messagesContainer');
+            container.insertBefore(errorDiv, container.firstChild);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            return false;
+        }
+        
+        if (!confirm('هل أنت متأكد من تسجيل التعديلات على المندوب {{ delegate.first_name }} {{ delegate.last_name }}؟')) {
+            e.preventDefault();
+            return false;
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+    });
+    
+    // Auto-supprimer les messages après 5 secondes
+    setTimeout(function() {
+        document.querySelectorAll('.alert-custom').forEach(alert => {
+            alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 5000);
+});
+</script>
+{% endblock %}

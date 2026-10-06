@@ -1,0 +1,485 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>{% block title %}DPE - Dashboard Admin{% endblock %}</title>
+
+  <!-- Bootstrap RTL -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #1a1a1a;
+      --primary-light: #2c2c2c;
+      --gold: #b8860b;
+      --gold-light: #d4a520;
+      --secondary: #2d5a3d;
+      --danger: #dc3545;
+      --warning: #f59e0b;
+      --info: #6f42c1;
+      --text: #2c2c2c;
+      --bg: #f5f5f5;
+      --card-bg: #ffffff;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { 
+      min-height: 100vh; 
+      margin: 0; 
+      font-family: "Times New Roman", serif !important;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(100, 100, 100, .03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(150, 150, 150, .04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+      color: var(--text); 
+      display: flex; 
+      flex-direction: column;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ====== TOP BAR - NOIR/DORÉ ====== */
+    .top_bar {
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 15px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1030;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-bottom: 3px solid var(--gold);
+    }
+
+    /* ====== HEADER - BLANC ====== */
+    header {
+      position: fixed;
+      top: 58px;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      z-index: 1020;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      padding-right: 280px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      margin-right: auto;
+      margin-left: 0;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info i {
+      color: var(--gold) !important;
+    }
+
+    .user-info strong {
+      color: var(--gold) !important;
+    }
+
+    /* ====== BOUTON خروج - GRIS/DORÉ ====== */
+    .logout_btn {
+      background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      border: 2px solid var(--gold);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .logout_btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      color: #fff;
+      text-decoration: none;
+      border-color: var(--gold-light);
+    }
+
+    .logout_btn i {
+      color: var(--gold);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: #1a1a1a;
+      color: white;
+      border: 2px solid var(--gold);
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle:hover {
+      background: #2c2c2c;
+      transform: scale(1.05);
+    }
+
+    /* ====== SIDEBAR - GRIS FONCÉ ====== */
+    .sidebar {
+      background: #2c2c2c;
+      position: fixed;
+      right: 0;
+      top: 128px;
+      width: 250px;
+      height: calc(100% - 128px);
+      padding-top: 20px;
+      z-index: 1000;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      border-left: 3px solid var(--gold);
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: #e0e0e0;
+      font-size: 1rem;
+      border-bottom: 1px solid #3d3d3d;
+      transition: all 0.3s ease;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover { 
+      background: #1a1a1a; 
+      color: var(--gold);
+      padding-right: 25px;
+    }
+
+    .sidebar a.active {
+      background: #1a1a1a;
+      font-weight: bold;
+      border-right: 4px solid var(--gold);
+      color: var(--gold);
+    }
+
+    .sidebar a i {
+      width: 24px;
+      text-align: center;
+      font-size: 1.1rem;
+      color: var(--gold);
+    }
+
+    .sidebar .badge {
+      margin-right: auto;
+      margin-left: 0;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 10px;
+      background: var(--gold);
+      color: #1a1a1a;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: #3d3d3d;
+      margin: 10px 15px;
+    }
+
+    /* ====== MAIN CONTENT ====== */
+    .main-wrapper {
+      flex: 1 0 auto;
+      margin-right: 250px;
+      margin-top: 128px;
+      padding: 30px;
+      transition: all 0.5s ease;
+      min-height: calc(100vh - 128px - 60px);
+    }
+
+    /* ====== FOOTER ====== */
+    .footer {
+      background-color: #1a1a1a;
+      color: #fff;
+      padding: 15px 0;
+      font-family: "Times New Roman", serif !important;
+      margin-right: 250px;
+      flex-shrink: 0;
+      border-top: 3px solid var(--gold);
+    }
+
+    .footer-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .footer-logo {
+      height: 28px;
+      width: auto;
+      display: block;
+    }
+
+    .footer-text {
+      font-size: 14px;
+      margin: 0;
+      white-space: nowrap;
+      color: #e0e0e0;
+    }
+
+    /* Scrollbar sidebar */
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 3px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: var(--gold-light);
+    }
+
+    /* ====== RESPONSIVE ====== */
+    @media (max-width: 992px) {
+      header {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      
+      .header-right {
+        margin-right: 0;
+      }
+      
+      .sidebar { 
+        width: 280px; 
+        transform: translateX(100%);
+      }
+      
+      .sidebar.active { 
+        transform: translateX(0); 
+      }
+      
+      .main-wrapper { 
+        margin-right: 0; 
+        min-height: calc(100vh - 128px - 60px);
+      }
+      
+      .footer { 
+        margin-right: 0; 
+      }
+      
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .top_bar {
+        font-size: 1rem;
+        padding: 12px 0;
+      }
+      
+      header {
+        height: 60px;
+        top: 52px;
+      }
+      
+      .sidebar {
+        top: 112px;
+        height: calc(100% - 112px);
+      }
+      
+      .main-wrapper {
+        margin-top: 112px;
+        padding: 20px;
+        min-height: calc(100vh - 112px - 50px);
+      }
+      
+      .footer {
+        padding: 10px 0;
+      }
+      
+      .logout_btn {
+        padding: 6px 14px;
+        font-size: 0.9rem;
+      }
+      
+      .user-info span {
+        font-size: 0.9rem;
+      }
+      
+      .footer-logo {
+        height: 24px;
+      }
+      
+      .footer-text {
+        font-size: 12px;
+      }
+    }
+
+    /* ====== ANIMATIONS ====== */
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    {% block extra_css %}{% endblock %}
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top_bar">
+    <h4 class="m-0">المنظومة المعلوماتية الإدارة المركزية</h4>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      
+      <!-- Gauche : nom délégué -->
+      <div class="header-left">
+        <div class="user-info">
+          {% if request.user.delegate_profile %}
+            <i class="fas fa-user-tie" style="font-size: 1.2rem;"></i>
+            
+            <span style="font-weight: 600;">
+             المندوب العام:
+              <strong>
+                {{ request.user.delegate_profile.first_name }} {{ request.user.delegate_profile.last_name }}
+              </strong>
+            </span>
+          {% else %}
+            <span class="text-warning">
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              لم يتم تعيين بيانات المندوب
+            </span>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Centre : bouton menu -->
+      <div class="header-center">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      
+      <!-- Droite : bouton خروج -->
+      <div class="header-right">
+        <a href="{% url 'logout' %}" class="logout_btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>خروج</span>
+        </a>
+      </div>
+      
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  {% include "account/sidebar.html" %}
+
+  <!-- Main Content -->
+  <div class="main-wrapper">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Footer -->
+  {% include "account/footer.html" %}
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar) {
+        sidebar.classList.toggle('active');
+      }
+    }
+    
+    document.addEventListener('click', function(e) {
+      const sidebar = document.querySelector('.sidebar');
+      const toggle = document.querySelector('.menu-toggle');
+      
+      if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('active')) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+          sidebar.classList.remove('active');
+        }
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar && sidebar.classList.contains('active')) {
+          sidebar.classList.remove('active');
+        }
+      }
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

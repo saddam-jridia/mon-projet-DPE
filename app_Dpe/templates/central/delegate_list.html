@@ -1,0 +1,682 @@
+{% extends "account/base-login.html" %}
+{% load static %}
+
+{% block title %}قائمة المندوبين{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===============================
+   LISTE DES DÉLÉGUÉS
+   Style GRIS/DORÉ
+================================= */
+
+/* Wrapper principal */
+.list-wrapper {
+    min-height: calc(100vh - 150px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(100, 100, 100, .03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(150, 150, 150, .04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+/* En-tête de page */
+.page-header {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid #e0e0e0;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Titre centré */
+.header-title {
+    text-align: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #b8860b;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c2c2c;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: "Times New Roman", serif !important;
+}
+
+.page-title i {
+    color: #b8860b;
+}
+
+/* Section contrôles */
+.header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Filtre */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f8f8f8;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #2c2c2c;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    font-family: "Times New Roman", serif !important;
+}
+
+.filter-group label i {
+    color: #b8860b;
+}
+
+.filter-group select {
+    border: 2px solid #d0d0d0;
+    background: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 180px;
+    transition: all 0.3s ease;
+    font-family: "Times New Roman", serif !important;
+}
+
+.filter-group select:focus {
+    border-color: #b8860b;
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.1);
+    outline: none;
+}
+
+/* ====== BOUTON بحث - GRIS/DORÉ ====== */
+.btn-filter {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    color: white;
+    border: 2px solid #b8860b;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: "Times New Roman", serif !important;
+}
+
+.btn-filter:hover {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    transform: translateY(-1px);
+    border-color: #d4a520;
+}
+
+.btn-filter i {
+    color: #b8860b;
+}
+
+/* Stats badge */
+.stats-badge {
+    background: #f0f0f0;
+    border: 2px solid #b8860b;
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.stats-badge i {
+    font-size: 1.5rem;
+    color: #b8860b;
+}
+
+.stats-number {
+    font-weight: 700;
+    color: #2c2c2c;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.stats-label {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+/* Messages */
+.messages-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-custom {
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideDown 0.4s ease-out;
+    border-right: 4px solid;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-success { border-color: #10b981; color: #065f46; }
+.alert-error, .alert-danger { border-color: #ef4444; color: #991b1b; }
+.alert-warning { border-color: #f59e0b; color: #92400e; }
+.alert-info { border-color: #b8860b; color: #744210; }
+
+.close-btn {
+    margin-right: auto;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+/* Table container */
+.table-container {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f8f8;
+}
+
+.table-title {
+    font-weight: 700;
+    color: #2c2c2c;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-family: "Times New Roman", serif !important;
+}
+
+.table-title i {
+    color: #b8860b;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin: 0;
+    font-family: "Times New Roman", serif !important;
+}
+
+.table thead th {
+    background: #f5f5f5;
+    color: #666;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.table tbody td {
+    padding: 1rem;
+    color: #2c2c2c;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: #f8f8f8;
+}
+
+/* Badges */
+.badge-custom {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-wilaya { background: #f0f0f0; color: #2c2c2c; border: 1px solid #b8860b; }
+.badge-wilaya i { color: #b8860b; }
+
+.badge-central { background: #f0f0f0; color: #2c2c2c; border: 1px solid #2d5a3d; }
+.badge-central i { color: #2d5a3d; }
+
+.badge-delegate { background: #f0f0f0; color: #2c2c2c; border: 1px solid #666; }
+.badge-delegate i { color: #666; }
+
+/* Liens de contact */
+.contact-link {
+    color: #b8860b;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 0.2s;
+}
+
+.contact-link:hover {
+    color: #d4a520;
+    text-decoration: underline;
+}
+
+.contact-link.muted {
+    color: #999;
+}
+
+/* ====== BOUTONS ACTION ====== */
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: white;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+/* Bouton تعديل - DORÉ */
+.btn-edit {
+    background: #b8860b;
+}
+
+.btn-edit:hover {
+    background: #d4a520;
+    transform: scale(1.05);
+}
+
+/* Bouton حذف - ROUGE (inchangé pour danger) */
+.btn-delete {
+    background: #dc3545;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+    transform: scale(1.05);
+}
+
+/* ====== BOUTON إضافة جديد - GRIS/DORÉ ====== */
+.btn-add-pro {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    color: white;
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 2px solid #b8860b;
+    cursor: pointer;
+    font-family: "Times New Roman", serif !important;
+}
+
+.btn-add-pro:hover {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
+    border-color: #d4a520;
+}
+
+.btn-add-pro i {
+    color: #b8860b;
+}
+
+/* État vide */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #d0d0d0;
+}
+
+.empty-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #2c2c2c;
+}
+
+.empty-text {
+    margin-bottom: 1.5rem;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .list-wrapper {
+        padding: 1rem;
+        min-height: calc(100vh - 100px);
+    }
+    
+    .page-header {
+        padding: 1.25rem;
+    }
+    
+    .page-title {
+        font-size: 1.4rem;
+    }
+    
+    .header-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .filter-group select {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .stats-badge {
+        justify-content: center;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .btn-add-pro {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .table thead th,
+    .table tbody td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .actions-cell {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="list-wrapper" dir="rtl">
+    
+    <!-- EN-TÊTE -->
+    <div class="page-header">
+        <div class="header-title">
+            <h1 class="page-title">
+                <i class="fas fa-users-cog"></i>
+                قائمة المندوبين
+            </h1>
+        </div>
+
+        <div class="header-controls">
+            <!-- Filtre à gauche -->
+            <div class="header-filter">
+                <form method="GET" class="filter-form">
+                    <div class="filter-group">
+                        <label for="wilaya">
+                            <i class="fas fa-map-marker-alt"></i>
+                            اختيار الولاية
+                        </label>
+                        <select name="wilaya" id="wilaya" onchange="this.form.submit()">
+                            <option value="">جميع الولايات</option>
+                            {% for code, name in wilayas %}
+                                <option value="{{ code }}" {% if selected_wilaya == code %}selected{% endif %}>
+                                    {{ name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-filter">
+                            <i class="fas fa-search"></i>
+                            بحث
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Stats à droite -->
+            <div class="header-stats">
+                <div class="stats-badge">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <div class="stats-number">{{ delegates|length }}</div>
+                        <div class="stats-label">مندوب</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="messages-wrapper">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-custom alert-{{ message.tags|default:'info' }}">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle"></i>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                    <div>{{ message }}</div>
+                    <button type="button" class="close-btn" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fas fa-list"></i>
+                سجل المندوبين
+            </div>
+            <a href="{% url 'register_delegate' %}" class="btn-add-pro">
+                <i class="fas fa-user-plus"></i>
+                إضافة جديد
+            </a>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الولاية</th>
+                        <th>الاسم الكامل</th>
+                        <th>المعرف</th>
+                        <th>الهاتف</th>
+                        <th>البريد</th>
+                        <th>الدور</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for delegate in delegates %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <span class="badge-custom badge-wilaya">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ delegate.get_wilaya_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>{{ delegate.first_name }} {{ delegate.last_name }}</strong>
+                        </td>
+                        <td>
+                            <code style="background: #f0f0f0; padding: 0.25rem 0.5rem; border-radius: 4px; font-family: monospace; color: #2c2c2c;">
+                                {{ delegate.delegate_code }}
+                            </code>
+                        </td>
+                        <td>
+                            {% if delegate.phone %}
+                                <a href="tel:{{ delegate.phone }}" class="contact-link">
+                                    <i class="fas fa-phone-alt"></i>
+                                    {{ delegate.phone }}
+                                </a>
+                            {% else %}
+                                <span class="contact-link muted">
+                                    <i class="fas fa-minus"></i>
+                                    غير متوفر
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if delegate.email %}
+                                <a href="mailto:{{ delegate.email }}" class="contact-link">
+                                    <i class="fas fa-envelope"></i>
+                                    {{ delegate.email }}
+                                </a>
+                            {% else %}
+                                <span class="contact-link muted">
+                                    <i class="fas fa-minus"></i>
+                                    غير متوفر
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if delegate.role == 'central' %}
+                                <span class="badge-custom badge-central">
+                                    <i class="fas fa-building"></i>
+                                    {{ delegate.get_role_display }}
+                                </span>
+                            {% else %}
+                                <span class="badge-custom badge-delegate">
+                                    <i class="fas fa-user"></i>
+                                    {{ delegate.get_role_display }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="actions-cell">
+                            <a href="{% url 'delegate_edit' delegate.id %}" class="btn-action btn-edit" title="تعديل">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'delegate_delete' delegate.id %}" class="btn-action btn-delete" title="حذف" >
+    
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-inbox"></i>
+                                </div>
+                                <div class="empty-title">لا يوجد مندوبين</div>
+                                <div class="empty-text">لم يتم العثور على أي مندوبين في النظام</div>
+                                <a href="{% url 'register_delegate' %}" class="btn-add-pro">
+                                    <i class="fas fa-plus"></i>
+                                    إضافة أول مندوب
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-supprimer les messages après 5 secondes
+setTimeout(function() {
+    document.querySelectorAll('.alert-custom').forEach(alert => {
+        alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        alert.style.opacity = '0';
+        alert.style.transform = 'translateY(-20px)';
+        setTimeout(() => alert.remove(), 500);
+    });
+}, 5000);
+</script>
+{% endblock %}

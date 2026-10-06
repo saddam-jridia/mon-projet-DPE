@@ -1,0 +1,90 @@
+<div id="assessment-card-{{ assessment.id }}" class="assessment-file">
+    <div class="file-header">
+        <h5>
+            <i class="fas fa-edit me-2"></i>
+            تعديل تقدير جدية الإشعار
+        </h5>
+        <span class="file-number">#{{ assessment.id }}</span>
+    </div>
+    
+    <div class="file-body">
+        <form class="inline-form"
+              hx-post="{% url 'threat_assessment_list' child.id %}"
+              hx-target="#assessment-card-{{ assessment.id }}"
+              hx-swap="outerHTML">
+            {% csrf_token %}
+            <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
+            
+            <!-- Niveau de menace -->
+            <div class="file-section">
+                <div class="file-section-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    مستوى الخطورة
+                </div>
+                <div class="mb-3">
+                    {{ form.threat_level }}
+                    {% if form.threat_level.errors %}
+                        <div class="text-danger small mt-1">{{ form.threat_level.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Détails -->
+            <div class="file-section">
+                <div class="file-section-title">
+                    <i class="fas fa-info-circle"></i>
+                    تفاصيل التقدير
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">تاريخ التقدير</label>
+                    {{ form.assessment_date }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">القائم بالتقدير</label>
+                    {{ form.assessor_name }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">الجهة المُقيّمة</label>
+                    {{ form.assessing_body }}
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="file-section">
+                <div class="file-section-title">
+                    <i class="fas fa-align-right"></i>
+                    وصف الحالة
+                </div>
+                <div class="mb-3">
+                    {{ form.description }}
+                </div>
+            </div>
+            
+            <!-- Mesures -->
+            <div class="file-section">
+                <div class="file-section-title">
+                    <i class="fas fa-tasks"></i>
+                    التوصيات والإجراءات
+                </div>
+                <div class="mb-3">
+                    {{ form.recommended_measures }}
+                </div>
+            </div>
+            
+            <!-- Boutons -->
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-secondary"
+                        hx-get="{% url 'threat_assessment_list' child.id %}"
+                        hx-target="#assessments-container"
+                        hx-swap="innerHTML">
+                    <i class="fas fa-times me-1"></i>
+                    إلغاء
+                </button>
+                <button type="submit" class="btn btn-gold">
+                    <i class="fas fa-save me-1"></i>
+                   تسجيل التغييرات
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

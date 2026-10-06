@@ -1,0 +1,1112 @@
+{% extends "account/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% load dict_extras %}
+
+{% block head_title %}إضافة طفل جديد{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ============================================ */
+/* VARIABLES ET STYLES DE BASE */
+/* ============================================ */
+:root {
+    --primary: #b8860b;
+    --primary-dark: #8c6d0b;
+    --primary-light: #f4e4bc;
+    --danger: #c41230;
+    --success: #28a745;
+    --text: #1a1a1a;
+    --text-light: #5a5b5d;
+    --bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --label-width: 220px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(184, 134, 11, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(184, 134, 11, 0.04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* ============================================ */
+/* CONTENEUR PRINCIPAL */
+/* ============================================ */
+.registration-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 3rem;
+}
+
+/* ============================================ */
+/* BOUTON RETOUR */
+/* ============================================ */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: 2px solid #e2e8f0;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    font-size: 14px;
+}
+
+.back-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    transform: translateX(-5px);
+}
+
+/* ============================================ */
+/* EN-TÊTE */
+/* ============================================ */
+.header-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: white;
+    padding: 1.75rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    border-bottom: 3px solid var(--primary);
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-title i {
+    color: var(--primary);
+    font-size: 1.6rem;
+}
+
+.page-subtitle {
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+}
+
+/* ============================================ */
+/* SÉLECTEUR DE TYPE D'ENFANT */
+/* ============================================ */
+.type-selector {
+    background: linear-gradient(135deg, #faf8f3 0%, #fff 100%);
+    border: 2px solid rgba(184, 134, 11, 0.2);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.type-radio-group {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.type-radio {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.type-radio input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.type-radio label {
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.type-radio.menaced {
+    background: rgba(184, 134, 11, 0.1);
+    border-color: rgba(184, 134, 11, 0.3);
+}
+
+.type-radio.menaced.active,
+.type-radio.menaced:hover {
+    background: linear-gradient(135deg, var(--primary) 0%, #8c6d0b 100%);
+    border-color: var(--primary);
+    color: white;
+}
+
+.type-radio.delinquant {
+    background: rgba(26, 26, 26, 0.08);
+    border-color: rgba(26, 26, 26, 0.2);
+}
+
+.type-radio.delinquant.active,
+.type-radio.delinquant:hover {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    border-color: var(--primary);
+}
+
+.type-radio.delinquant.active label,
+.type-radio.delinquant:hover label {
+    color: var(--primary);
+}
+
+/* ============================================ */
+/* CARTE DU FORMULAIRE */
+/* ============================================ */
+.form-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(184, 134, 11, 0.1);
+}
+
+.section-title {
+    background: linear-gradient(90deg, var(--primary-light) 0%, transparent 100%);
+    padding: 10px 16px;
+    border-right: 4px solid var(--primary);
+    font-weight: 800;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+/* ============================================ */
+/* BOÎTES SPÉCIALES */
+/* ============================================ */
+.unmarried-box, .foreign-box, .delinquant-box {
+    border: 2px solid rgba(184, 134, 11, 0.2);
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    border-radius: var(--radius-sm);
+    background: #faf8f3;
+}
+
+.unmarried-box h5, .foreign-box h5, .delinquant-box h5 {
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(184, 134, 11, 0.2);
+    font-size: 1rem;
+}
+
+/* ============================================ */
+/* CHAMPS DE FORMULAIRE */
+/* ============================================ */
+.form-control, .form-select, input[type="text"], input[type="date"], input[type="number"], select {
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1rem;
+    transition: all 0.3s ease;
+    font-family: 'Tajawal', sans-serif;
+    background-color: #fff;
+    height: 44px;
+    font-size: 14px;
+    width: 100%;
+    color: var(--text);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.12);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #adb5bd;
+    font-size: 13px;
+}
+
+select.form-select {
+    cursor: pointer;
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+.form-check-label {
+    font-size: 14px;
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.uid-disabled {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* ============================================ */
+/* DISPOSITION DES LIGNES */
+/* ============================================ */
+#menacedForm .row,
+#delinquantForm .row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    min-height: 44px;
+}
+
+#menacedForm .row .col-md-3,
+#delinquantForm .row .col-md-3 {
+    width: var(--label-width);
+    flex: 0 0 var(--label-width);
+    max-width: var(--label-width);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-left: 1rem;
+}
+
+#menacedForm .row .col-md-9,
+#delinquantForm .row .col-md-9 {
+    flex: 1;
+    max-width: calc(100% - var(--label-width));
+}
+
+.col-form-label {
+    font-weight: 600;
+    color: var(--text);
+    text-align: right;
+    white-space: nowrap;
+    line-height: 1.3;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.col-form-label.text-long {
+    font-size: 13px;
+    white-space: normal;
+    line-height: 1.3;
+}
+
+.row.align-top {
+    align-items: flex-start !important;
+    min-height: auto;
+}
+
+.row.align-top .col-md-3 {
+    align-items: flex-start;
+    padding-top: 0.65rem;
+}
+
+.row .col-md-9 .row {
+    margin-bottom: 0;
+    min-height: auto;
+}
+
+.row .col-md-9 .row .col-md-4,
+.row .col-md-9 .row .col-md-3,
+.row .col-md-9 .row .col-md-6 {
+    padding: 0 0.4rem;
+}
+
+/* ============================================ */
+/* BOUTONS */
+/* ============================================ */
+.btn-submit {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, var(--primary) 0%, #8c6d0b 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(184, 134, 11, 0.35);
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--text-light);
+    border: 2px solid #e2e8f0;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 15px;
+}
+
+.btn-cancel:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: rgba(196, 18, 48, 0.05);
+}
+
+/* ============================================ */
+/* ALERTES */
+/* ============================================ */
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: none;
+    border-right: 4px solid var(--success);
+    color: #155724;
+    font-weight: 600;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    font-size: 14px;
+}
+
+.alert-error {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border: none;
+    border-right: 4px solid var(--danger);
+    color: #721c24;
+    font-weight: 600;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    font-size: 14px;
+}
+
+.form-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* ============================================ */
+/* MODAL */
+/* ============================================ */
+.modal-content {
+    border-radius: var(--radius);
+}
+
+.modal-header {
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+@media (max-width: 992px) {
+    :root {
+        --label-width: 190px;
+    }
+}
+
+@media (max-width: 768px) {
+    .registration-container {
+        padding: 0 1rem 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.3rem;
+    }
+    
+    .form-card {
+        padding: 1.25rem;
+    }
+    
+    .type-radio-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .btn-submit, .btn-cancel {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    #menacedForm .row .col-md-3,
+    #delinquantForm .row .col-md-3 {
+        width: 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
+        justify-content: flex-start;
+        margin-bottom: 0.3rem;
+        padding-left: 0;
+    }
+    
+    #menacedForm .row .col-md-9,
+    #delinquantForm .row .col-md-9 {
+        max-width: 100%;
+    }
+    
+    #menacedForm .row,
+    #delinquantForm .row {
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: auto;
+        margin-bottom: 1rem;
+    }
+    
+    .col-form-label {
+        white-space: normal;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.1rem;
+    }
+    
+    .section-title {
+        font-size: 0.95rem;
+    }
+    
+    .form-control, .form-select {
+        height: 42px;
+        font-size: 13px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registration-container">
+    <a href="{% url 'recherche_enfants' %}" class="back-btn">
+        <i class="fas fa-arrow-right"></i>
+        <span>العودة إلى البحث</span>
+    </a>
+
+    <div class="header-card">
+        <div class="page-title">
+            <i class="fas fa-child"></i>
+            <span>إضافة طفل جديد</span>
+        </div>
+        <div class="page-subtitle">
+            <i class="fas fa-info-circle"></i>
+            قم بإدخال بيانات الطفل في النظام
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %} text-center">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="form-card">
+        <!-- Sélection du type d'enfant -->
+        <div class="type-selector">
+            <div class="type-radio-group" id="childTypeSelector">
+                <div class="type-radio menaced active" data-type="menaced">
+                    <input type="radio" name="child_type" value="menaced" id="type_menaced" checked>
+                    <label for="type_menaced">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        طفل مهدد
+                    </label>
+                </div>
+                <div class="type-radio delinquant" data-type="delinquant">
+                    <input type="radio" name="child_type" value="delinquant" id="type_delinquant">
+                    <label for="type_delinquant">
+                        <i class="fas fa-gavel"></i>
+                        طفل في خلاف مع القانون
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- FORMULAIRE ENFANT MENACÉ (طفل مهدد) -->
+        <!-- ============================================ -->
+        <form method="post" action="{% url 'child_registration' %}" id="menacedForm">
+            {% csrf_token %}
+            <input type="hidden" name="child_type" id="childTypeInput" value="menaced">
+            
+            <h4 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                المعطيات الأساسية
+            </h4>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">المعرف الوحيد</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.uid }}
+                   
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">الاسم *</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.first_name }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">اللقب *</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.last_name }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">الجنس</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.gender }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">تاريخ الميلاد</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.birth_date }}
+                </div>
+            </div>
+
+            <!-- Lieu de naissance -->
+            <div class="row align-top">
+                <div class="col-md-3">
+                    <label class="col-form-label text-long">مكان الولادة</label>
+                </div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            {{ form.birth_place }}
+                        </div>
+                        <div class="col-md-4 mb-2" id="gov_box" style="display:none;">
+                            <label class="form-label" style="font-size:12px; color:#666;">الولاية</label>
+                            {{ form.birth_governorate }}
+                        </div>
+                        <div class="col-md-4 mb-2" id="dept_box" style="display:none;">
+                            <label class="form-label" style="font-size:12px; color:#666;">المعتمدية</label>
+                            <select id="id_birth_department" name="birth_department" class="form-select">
+                                <option value="">اختر المعتمدية</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-2" id="country_box" style="display:none;">
+                            <label class="form-label" style="font-size:12px; color:#666;">الدولة</label>
+                            {{ form.birth_country }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label text-long">الترسيم بدفاتر الحالة المدنية</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.registration_type }}
+                </div>
+            </div>
+
+            <div class="row" id="registration_number_row" style="display:none;">
+                <div class="col-md-3">
+                    <label class="col-form-label">عدد الرسم</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.registration_number }}
+                </div>
+            </div>
+
+            <div class="row" id="registration_date_row" style="display:none;">
+                <div class="col-md-3">
+                    <label class="col-form-label">تاريخ الرسم</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.registration_date }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">جنسية الطفل</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.nationality }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">الولادة</label>
+                </div>
+                <div class="col-md-9">
+                    {{ form.birth_status }}
+                </div>
+            </div>
+
+            <div id="foreign_fields" class="foreign-box" style="display:none;">
+                <h5><i class="fas fa-globe"></i> معطيات إضافية للطفل الأجنبي</h5>
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label">الدولة</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.foreign_country }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label text-long">وثائق الهوية</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.identity_documents_available }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label text-long">الوضعية العائلية للطفل الأجنبي</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.foreign_family_status }}
+                    </div>
+                </div>
+
+               
+            </div>
+
+            <div id="unmarried_box" class="unmarried-box" style="display:none;">
+                <h5><i class="fas fa-heart-broken"></i> المعطيات الإضافية للأطفال المولودين خارج إطار الزواج</h5>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label">هوية الطفل</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.child_identity_type }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label">إثبات الهوية</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.identity_proof }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label text-long">سن الأم عند الولادة</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.mother_age_at_birth }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label">مكان الانجاب</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.birth_place_detail }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label text-long">عدد الإخوة خارج الزواج</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.siblings_outside_marriage }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label text-long">الإخوة في صحبة الأم</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.siblings_outside }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label text-long">الإخوة المتخلي عنهم</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{ form.siblings_out }}
+                    </div>
+                </div>
+
+                <div class="row align-top">
+                    <div class="col-md-3">
+                        <label class="col-form-label text-long">الموقف الأولي من الطفل</label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            {% for p in persons %}
+                            <div class="col-md-4 mb-2">
+                                <label class="fw-bold mb-1 d-block" style="font-size:13px;">{{ p }}</label>
+                                <select name="initial_{{ p }}" class="form-select">
+                                    <option value="">---</option>
+                                    {% for val, txt in zip_values %}
+                                    <option value="{{ val }}" {% if initial_status|get_item:p == val %}selected{% endif %}>
+                                        {{ txt }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+              
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i>
+                    إضافة الطفل
+                </button>
+                <a href="{% url 'recherche_enfants' %}" class="btn-cancel">
+                    <i class="fas fa-times"></i>
+                    إلغاء
+                </a>
+            </div>
+        </form>
+
+        <!-- ============================================ -->
+        <!-- FORMULAIRE ENFANT DÉLINQUANT (طفل جانح) -->
+        <!-- ============================================ -->
+        <form method="post" action="{% url 'child_registration' %}" id="delinquantForm" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="child_type" value="delinquant">
+            
+            <h4 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                المعطيات الأساسية
+            </h4>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">المعرف الوحيد</label>
+                </div>
+                <div class="col-md-9">
+                    <input type="text" name="uid" class="form-control uid-disabled" 
+                           value="{{ uid_auto }}" readonly disabled>
+                    <input type="hidden" name="uid_hidden" value="{{ uid_auto }}">
+                    
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">الاسم *</label>
+                </div>
+                <div class="col-md-9">
+                    <input type="text" name="prenom" class="form-control" placeholder="أدخل الاسم" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">اللقب *</label>
+                </div>
+                <div class="col-md-9">
+                    <input type="text" name="nom" class="form-control" placeholder="أدخل اللقب" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">الجنس</label>
+                </div>
+                <div class="col-md-9">
+                    <select name="sexe" class="form-select">
+                        <option value="">--------</option>
+                        <option value="M">ذكر</option>
+                        <option value="F">أنثى</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label">تاريخ الميلاد</label>
+                </div>
+                <div class="col-md-9">
+                    <input type="date" name="date_naissance" class="form-control">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="col-form-label text-long">رقم استخراج قيد الولادة</label>
+                </div>
+                <div class="col-md-9">
+                    <input type="text" name="num_extrait_naissance" class="form-control" placeholder="أدخل رقم الاستخراج">
+                </div>
+            </div>
+
+            <div class="delinquant-box">
+                <h5><i class="fas fa-file-alt"></i> معطيات إضافية</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-form-label">الولاية</label>
+                    </div>
+                    <div class="col-md-9">
+                        <select name="wilaya" class="form-select">
+                            <option value="">اختر الولاية</option>
+                            {% for code, name in WILAYAS %}
+                            <option value="{{ code }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i>
+                    إضافة الطفل
+                </button>
+                <a href="{% url 'recherche_enfants' %}" class="btn-cancel">
+                    <i class="fas fa-times"></i>
+                    إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{ DEPARTMENTS|json_script:"departments-data" }}
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // ============================================
+    // SWITCH ENTRE LES FORMULAIRES
+    // ============================================
+    const typeMenaced = document.getElementById('type_menaced');
+    const typeDelinquant = document.getElementById('type_delinquant');
+    const menacedForm = document.getElementById('menacedForm');
+    const delinquantForm = document.getElementById('delinquantForm');
+    const childTypeInput = document.getElementById('childTypeInput');
+    const typeRadios = document.querySelectorAll('.type-radio');
+
+    function switchForm(type) {
+        if (!menacedForm || !delinquantForm) return;
+
+        if (type === 'menaced') {
+            menacedForm.style.display = 'block';
+            delinquantForm.style.display = 'none';
+            if (childTypeInput) childTypeInput.value = 'menaced';
+        } else {
+            menacedForm.style.display = 'none';
+            delinquantForm.style.display = 'block';
+            if (childTypeInput) childTypeInput.value = 'delinquant';
+        }
+
+        typeRadios.forEach(r => r.classList.remove('active'));
+        const active = document.querySelector('.type-radio.' + type);
+        if (active) active.classList.add('active');
+    }
+
+    if (typeMenaced) typeMenaced.addEventListener('change', () => switchForm('menaced'));
+    if (typeDelinquant) typeDelinquant.addEventListener('change', () => switchForm('delinquant'));
+
+    // ============================================
+    // BIRTH PLACE (WILAYA / DELEGATION / COUNTRY)
+    // ============================================
+    const birthPlace = document.getElementById("id_birth_place");
+    const govBox = document.getElementById("gov_box");
+    const deptBox = document.getElementById("dept_box");
+    const countryBox = document.getElementById("country_box");
+
+    const govSelect = document.getElementById("id_birth_governorate");
+    const deptSelect = document.getElementById("id_birth_department");
+
+    let departmentsData = {};
+
+    try {
+        const dataElement = document.getElementById("departments-data");
+        if (dataElement && dataElement.textContent) {
+            departmentsData = JSON.parse(dataElement.textContent);
+        }
+    } catch(e) {
+        console.error("Erreur chargement départements:", e);
+    }
+
+    function loadDepartments(governorate, selectedDept = null) {
+        if (!deptSelect) return;
+
+        deptSelect.innerHTML = '<option value="">اختر المعتمدية</option>';
+        deptSelect.disabled = true;
+
+        if (governorate && departmentsData[governorate]) {
+            departmentsData[governorate].forEach(function(dept) {
+                let opt = document.createElement("option");
+                opt.value = dept;
+                opt.textContent = dept;
+                if (selectedDept && selectedDept === dept) {
+                    opt.selected = true;
+                }
+                deptSelect.appendChild(opt);
+            });
+            deptSelect.disabled = false;
+        }
+    }
+
+    function toggleBirthPlace(reset = false) {
+        if (!birthPlace) return;
+        const val = birthPlace.value;
+
+        if (reset) {
+            if (govSelect) govSelect.value = "";
+            if (deptSelect) {
+                deptSelect.innerHTML = '<option value="">اختر المعتمدية</option>';
+                deptSelect.disabled = true;
+            }
+        }
+
+        if (val === "IN_COUNTRY") {
+            if (govBox) govBox.style.display = "block";
+            if (deptBox) deptBox.style.display = "block";
+            if (countryBox) countryBox.style.display = "none";
+        } 
+        else if (val === "ABROAD") {
+            if (govBox) govBox.style.display = "none";
+            if (deptBox) deptBox.style.display = "none";
+            if (countryBox) countryBox.style.display = "block";
+        } 
+        else {
+            if (govBox) govBox.style.display = "none";
+            if (deptBox) deptBox.style.display = "none";
+            if (countryBox) countryBox.style.display = "none";
+        }
+    }
+
+    if (birthPlace) {
+        birthPlace.addEventListener("change", () => toggleBirthPlace(true));
+        toggleBirthPlace(false);
+    }
+
+    if (govSelect) {
+        govSelect.addEventListener("change", function() {
+            loadDepartments(this.value);
+        });
+        if (govSelect.value) {
+            loadDepartments(govSelect.value, deptSelect ? deptSelect.value : null);
+        }
+    }
+
+    // ============================================
+    // REGISTRATION FIELDS
+    // ============================================
+    const registrationType = document.getElementById("id_registration_type");
+    const numberRow = document.getElementById("registration_number_row");
+    const dateRow = document.getElementById("registration_date_row");
+
+    function toggleRegistrationFields() {
+        if (!registrationType) return;
+        if (registrationType.value === "REGISTERED") {
+            if (numberRow) numberRow.style.display = "";
+            if (dateRow) dateRow.style.display = "";
+        } else {
+            if (numberRow) numberRow.style.display = "none";
+            if (dateRow) dateRow.style.display = "none";
+        }
+    }
+
+    if (registrationType) {
+        registrationType.addEventListener("change", toggleRegistrationFields);
+        toggleRegistrationFields();
+    }
+
+    // ============================================
+    // FOREIGN NATIONALITY
+    // ============================================
+    const nationality = document.getElementById("id_nationality");
+    const foreignBox = document.getElementById("foreign_fields");
+
+    function toggleForeignFields() {
+        if (!nationality || !foreignBox) return;
+        foreignBox.style.display = (nationality.value === "FOREIGN") ? "block" : "none";
+    }
+
+    if (nationality) {
+        nationality.addEventListener("change", toggleForeignFields);
+        toggleForeignFields();
+    }
+
+    // ============================================
+    // UNMARRIED BIRTH
+    // ============================================
+    const birthStatus = document.getElementById("id_birth_status");
+    const unmarriedBox = document.getElementById("unmarried_box");
+
+    function toggleUnmarried() {
+        if (!birthStatus || !unmarriedBox) return;
+        unmarriedBox.style.display = (birthStatus.value === "UNMARRIED") ? "block" : "none";
+    }
+
+    if (birthStatus) {
+        birthStatus.addEventListener("change", toggleUnmarried);
+        toggleUnmarried();
+    }
+});
+</script>
+{% endblock %}

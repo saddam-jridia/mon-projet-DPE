@@ -1,469 +1,461 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{% block head_title %}{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <style>
-        .form-group {
-            margin-top: 10px;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-    {% block extra_head %}{% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    {% block body %}
-    {% if messages %}
-        <div class="p-2">
-            {% for message in messages %}
-                <div class="text-center border-bottom">{{message}}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    {% csrf_token %}
-    <div class="p-2 mb-2 bg-dark">
-        <div class="container d-flex justify-content-between">
-            <div class="container mt-4">
-                <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <a class="text-light" href="{% url 'account_signup' %}">signup</a>
-                        <a class="btn btn-dark" href="{% url 'tableauboard' %}">Tableau de Board</a>
-                        <a class="btn btn-dark" href="{% url 'parametre' %}">Paramètres</a>
-                        <a class="btn btn-dark" href="{% url 'projet' %}">Projets</a>
-                        <a class="btn btn-dark" href="{% url 'listeprojet' %}">Liste des Projets</a>
-                        <a class="btn btn-dark" href="{% url 'map' %}">Map</a>
-                        <a class="btn btn-dark" href="{% url 'listereclamation' %}">Liste des Reclamations</a>
-                        <a class="text-light" href="{% url 'logout' %}">logout</a>
-                    </div>
-                </div>
+{% extends "account/base-login.html" %}
+{% load static %}
+
+{% block title %} الإدارة المركزية - جميع الولايات{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --ink: #15181b;
+        --charcoal: #2a2e33;
+        --gold: #b8860b;
+        --gold-light: #d4a520;
+        --gold-pale: #f4e8c9;
+        --paper: #f6f5f2;
+        --line: #e4e1da;
+        --muted: #6f7278;
+        --danger: #a6383a;
+        --success: #3f7d52;
+        --accent2: #3c6e71;
+        --radius: 14px;
+    }
+
+    body {
+        background: var(--paper) !important;
+        font-family: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif !important;
+        color: var(--ink);
+    }
+
+    .tb-wrap { direction: rtl; max-width: 1360px; margin: 0 auto; padding: 28px 20px 40px; }
+
+    /* ===== LETTERHEAD ===== */
+    .tb-letterhead {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        flex-wrap: wrap; gap: 16px;
+        border-bottom: 3px solid var(--gold);
+        padding-bottom: 18px; margin-bottom: 22px;
+    }
+    .tb-letterhead .eyebrow {
+        font-size: 11px; letter-spacing: 2px; color: var(--gold);
+        font-weight: 700; text-transform: uppercase; margin-bottom: 6px;
+        font-family: 'Tajawal', sans-serif;
+    }
+    .tb-letterhead h1 {
+        font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 1.85rem;
+        color: var(--ink); margin: 0;
+    }
+    .tb-meta { color: var(--muted); font-size: 0.85rem; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+    .tb-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .tb-meta i { color: var(--gold); }
+    #liveClock { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); }
+
+    /* ===== NAV PILLS ===== */
+    .tb-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tb-nav a {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 9px 18px; border-radius: 999px; font-size: 0.88rem; font-weight: 600;
+        text-decoration: none; border: 1.5px solid transparent; transition: all .2s ease;
+    }
+    .tb-nav a.nav-menaces { background: var(--ink); color: #fff; border-color: var(--gold); }
+    .tb-nav a.nav-juveniles { background: #fff; color: var(--danger); border-color: var(--danger); }
+    .tb-nav a.nav-etrangers { background: #fff; color: var(--accent2); border-color: var(--accent2); }
+    .tb-nav a.nav-hors { background: #fff; color: var(--success); border-color: var(--success); }
+    .tb-nav a:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.1); filter: brightness(0.97); }
+
+    /* ===== KPI CARDS ===== */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 26px 0; }
+    .kpi-card {
+        background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 20px 22px; position: relative; overflow: hidden;
+    }
+    .kpi-card::before {
+        content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%;
+        background: var(--gold);
+    }
+    .kpi-card.danger::before { background: var(--danger); }
+    .kpi-card .kpi-icon {
+        width: 40px; height: 40px; border-radius: 10px;
+        background: var(--gold-pale); color: var(--gold);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.05rem; margin-bottom: 12px; flex-shrink: 0;
+    }
+    .kpi-card.danger .kpi-icon { background: #f3dcdc; color: var(--danger); }
+    .kpi-card .kpi-label {
+        font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+        color: var(--gold); font-weight: 700; font-family: 'Tajawal', sans-serif;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .kpi-card.danger .kpi-label { color: var(--danger); }
+    .kpi-card .kpi-value {
+        font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 2.1rem;
+        color: var(--ink); font-variant-numeric: tabular-nums; margin: 6px 0 2px;
+    }
+    .kpi-card .kpi-sub { font-size: 0.8rem; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+
+    /* ===== MINI STATS ===== */
+    .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
+    .mini-card {
+        background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 18px; text-align: center;
+    }
+    .mini-card .mini-value {
+        font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 1.7rem;
+        font-variant-numeric: tabular-nums; margin-bottom: 2px;
+    }
+    .mini-card .mini-icon { font-size: 1.1rem; margin-bottom: 6px; }
+    .mini-card .mini-label { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+
+    /* ===== PANEL / CHART CARDS ===== */
+    .panel {
+        background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+        overflow: hidden; margin-bottom: 22px;
+    }
+    .panel-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px; border-bottom: 2px solid var(--gold-pale);
+    }
+    .panel-header h6 {
+        margin: 0; font-family: 'Tajawal', sans-serif; font-weight: 700;
+        color: var(--ink); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+    }
+    .panel-header h6 i { color: var(--gold); }
+    .panel-body { padding: 18px 20px; }
+
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* ===== TABLE ===== */
+    .tb-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9rem; }
+    .tb-table thead th {
+        position: sticky; top: 0; background: var(--ink); color: var(--gold-light);
+        font-weight: 700; padding: 11px 14px; font-size: 0.82rem;
+        letter-spacing: .5px; z-index: 1;
+    }
+    .tb-table tbody td { padding: 10px 14px; border-bottom: 1px solid var(--line); color: var(--ink); }
+    .tb-table tbody tr:hover { background: var(--gold-pale); }
+    .tb-table tfoot td { padding: 11px 14px; font-weight: 700; background: var(--paper); border-top: 2px solid var(--gold); }
+    .tb-progress { height: 7px; width: 110px; background: var(--line); border-radius: 99px; overflow: hidden; }
+    .tb-progress-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+    .tb-progress-bar.high { background: linear-gradient(90deg, var(--danger), #c9605f); }
+    .tb-progress-bar.mid { background: linear-gradient(90deg, #b98b1e, var(--gold-light)); }
+
+    /* ===== INTERVENTIONS LEDGER STRIP ===== */
+    .ledger-strip { display: flex; }
+    .ledger-item {
+        flex: 1; text-align: center; padding: 6px 10px;
+        border-left: 1px solid var(--line);
+    }
+    .ledger-item:first-child { border-left: none; }
+    .ledger-item .lv { font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+    .ledger-item .ll { color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
+
+    /* ===== SIGNATURE: ACTIVITY TIMELINE (REGISTER LEDGER) ===== */
+    .timeline { position: relative; padding-right: 26px; max-height: 320px; overflow-y: auto; }
+    .timeline::before {
+        content: ''; position: absolute; right: 8px; top: 4px; bottom: 4px;
+        width: 2px; background: linear-gradient(var(--gold), var(--gold-pale));
+    }
+    .timeline-item { position: relative; padding-bottom: 20px; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+        content: ''; position: absolute; right: -22px; top: 3px;
+        width: 11px; height: 11px; border-radius: 50%;
+        background: #fff; border: 3px solid var(--gold);
+    }
+    .timeline-item .ti-title { font-weight: 700; font-size: 0.9rem; color: var(--ink); }
+    .timeline-item .ti-meta { color: var(--muted); font-size: 0.78rem; margin-top: 3px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .timeline-item .ti-meta i { color: var(--gold); margin-left: 3px; }
+    .timeline-empty { text-align: center; color: var(--muted); padding: 40px 0; }
+
+    /* ===== FOOTER ===== */
+    .tb-footer { text-align: center; margin-top: 8px; color: var(--muted); font-size: 0.85rem; }
+    .tb-refresh {
+        background: var(--ink); border: 2px solid var(--gold); color: #fff;
+        padding: 7px 18px; border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+        margin-right: 12px; transition: all .2s;
+    }
+    .tb-refresh:hover { background: var(--gold); color: var(--ink); }
+
+    @media (max-width: 992px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .mini-grid { grid-template-columns: 1fr; }
+        .charts-grid { grid-template-columns: 1fr; }
+        .ledger-strip { flex-wrap: wrap; }
+        .ledger-item { flex: 1 1 33%; border-left: none; border-top: 1px solid var(--line); }
+    }
+    @media (max-width: 560px) {
+        .kpi-grid { grid-template-columns: 1fr; }
+        .tb-letterhead { align-items: flex-start; }
+    }
+
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; animation: none !important; }
+    }
+</style>
+
+<div class="tb-wrap">
+
+    <!-- ===== LETTERHEAD ===== -->
+    <div class="tb-letterhead">
+        <div>
+           
+            <h1> الإدارة المركزية</h1>
+            <div class="tb-meta">
+                <span><i class="fas fa-calendar-alt"></i>{{ current_date|date:"d/m/Y" }}</span>
+                <span><i class="fas fa-clock"></i><span id="liveClock">{{ current_time }}</span></span>
+                <span><i class="fas fa-flag"></i>24 ولاية</span>
             </div>
+        </div>
+        <nav class="tb-nav">
+            <a href="{% url 'central_enfants_menaces' %}" class="nav-menaces"><i class="fas fa-child"></i>الأطفال المهددون</a>
+            <a href="{% url 'central_enfants_juveniles' %}" class="nav-juveniles"><i class="fas fa-gavel"></i>الأطفال في خلاف مع القانون</a>
+            <a href="{% url 'central_enfants_etrangers' %}" class="nav-etrangers"><i class="fas fa-globe"></i>الأطفال الأجانب</a>
+            <a href="{% url 'central_enfants_hors_mariage' %}" class="nav-hors"><i class="fas fa-heart-broken"></i>خارج الزواج</a>
+        </nav>
+    </div>
+
+    <!-- ===== KPIs PRINCIPAUX ===== -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-label">إجمالي الأطفال</div>
+            <div class="kpi-value">{{ kpis.total_global|default:0 }}</div>
+            <div class="kpi-sub">مجموع كل الاطفال المسجلين</div>
+        </div>
+         <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="kpi-label">الأطفال المهددون</div>
+            <div class="kpi-value">{{ kpis.total_menaces|default:0 }}</div>
+              </div>
+         <div class="kpi-card danger">
+            <div class="kpi-icon"><i class="fas fa-gavel"></i></div>
+            <div class="kpi-label">الأطفال في خلاف مع القانون</div>
+            <div class="kpi-value">{{ kpis.total_delinquants|default:0 }}</div>
+              </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-bell"></i></div>
+            <div class="kpi-label">الإشعارات</div>
+            <div class="kpi-value">{{ kpis.notifications_count|default:0 }}</div>
+            <div class="kpi-sub">جميع الإشعارات المسجلة</div>
+        </div>
+       
+       
+    
+    </div>
+
+    <!-- ===== MINI STATS ===== -->
+    <div class="mini-grid">
+      <!-- <div class="mini-card">
+            <div class="mini-icon"><i class="fas fa-globe" style="color:var(--gold)"></i></div>
+            <div class="mini-value" style="color:var(--gold)">{{ kpis.etrangers|default:0 }}</div>
+            <div class="mini-label">أطفال أجانب</div>
+        </div>--> 
+        <div class="mini-card">
+            <div class="mini-icon"><i class="fas fa-passport" style="color:var(--danger)"></i></div>
+            <div class="mini-value" style="color:var(--danger)">{{ kpis.irregular|default:0 }}</div>
+            <div class="mini-label">اطفال في وضعية غير قانونية </div>
+        </div>
+        <div class="mini-card">
+            <div class="mini-icon"><i class="fas fa-heart-broken" style="color:var(--accent2)"></i></div>
+            <div class="mini-value" style="color:var(--accent2)">{{ kpis.unmarried|default:0 }}</div>
+            <div class="mini-label">ولادة خارج الزواج</div>
         </div>
     </div>
-    {% block content %}{% endblock %}
-    {% endblock %}
-    {% block extra_body %}{% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-    <div class="row">
-        <!-- Vertical Navbar -->
-        <div class="col-md-3">
-            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <a class="nav-link active" id="v-pills-projects-tab" data-bs-toggle="pill" href="#v-pills-projects" role="tab" aria-controls="v-pills-projects" aria-selected="true">Projects</a>
-                <a class="nav-link" id="v-pills-claims-tab" data-bs-toggle="pill" href="#v-pills-claims" role="tab" aria-controls="v-pills-claims" aria-selected="false">Réclamations</a>
+
+    <!-- ===== GRAPHIQUES ===== -->
+    <div class="charts-grid">
+        <div class="panel">
+            <div class="panel-header"><h6><i class="fas fa-chart-bar"></i>أعلى 10 ولايات</h6></div>
+            <div class="panel-body"><canvas id="wilayaChart" height="230"></canvas></div>
+        </div>
+        <div class="panel">
+            <div class="panel-header"><h6><i class="fas fa-chart-bar"></i>التوزيع حسب الفئة العمرية</h6></div>
+            <div class="panel-body"><canvas id="ageChart" height="230"></canvas></div>
+        </div>
+        <div class="panel">
+            <div class="panel-header"><h6><i class="fas fa-chart-pie"></i>مصادر الإشعارات</h6></div>
+            <div class="panel-body"><canvas id="sourceChart" height="230"></canvas></div>
+        </div>
+        <div class="panel">
+            <div class="panel-header"><h6><i class="fas fa-chart-line"></i>تطور الحالات خلال الأشهر الماضية</h6></div>
+            <div class="panel-body"><canvas id="evolutionChart" height="230"></canvas></div>
+        </div>
+    </div>
+
+    <!-- ===== TABLEAU DES WILAYAS ===== -->
+    <div class="panel">
+        <div class="panel-header"><h6><i class="fas fa-flag"></i>إحصائيات الولايات (24 ولاية)</h6></div>
+        <div class="panel-body" style="padding:0; max-height: 420px; overflow-y:auto;">
+            <table class="tb-table">
+                <thead>
+                    <tr>
+                        <th>#</th><th>الولاية</th><th>عدد الأطفال</th><th>النسبة من الإجمالي</th><th>المؤشر</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if all_wilayas_stats %}
+                        {% for wilaya in all_wilayas_stats %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ wilaya.name }}</td>
+                            <td><strong>{{ wilaya.total }}</strong></td>
+                            <td>{{ wilaya.percentage|floatformat:1 }}%</td>
+                            <td>
+                                <div class="tb-progress">
+                                    <div class="tb-progress-bar {% if wilaya.percentage > 20 %}high{% elif wilaya.percentage > 10 %}mid{% endif %}"
+                                         style="width: {{ wilaya.percentage }}%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="5" class="text-center text-muted py-3"><i class="fas fa-info-circle me-2"></i>لا توجد بيانات متاحة</td></tr>
+                    {% endif %}
+                </tbody>
+                {% if all_wilayas_stats %}
+                <tfoot>
+                    <tr>
+                        <td colspan="2" style="text-align:center;">المجموع</td>
+                        <td>{{ total_records|default:0 }}</td>
+                        <td>100%</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== الوساطات (LEDGER STRIP) =>
+    <div class="panel">
+        <div class="panel-header"><h6><i class="fas fa-handshake"></i>إحصائيات الوساطات</h6></div>
+        <div class="panel-body">
+            <div class="ledger-strip">
+                <div class="ledger-item"><div class="lv" style="color:var(--gold)">{{ interventions_stats.total|default:0 }}</div><div class="ll">مجموع الوساطات</div></div>
+                <div class="ledger-item"><div class="lv" style="color:#b98b1e">{{ interventions_stats.avant_jugement|default:0 }}</div><div class="ll">قبل المحاكمة</div></div>
+                <div class="ledger-item"><div class="lv" style="color:var(--accent2)">{{ interventions_stats.pendant_jugement|default:0 }}</div><div class="ll">أثناء المحاكمة</div></div>
+                <div class="ledger-item"><div class="lv" style="color:var(--success)">{{ interventions_stats.apres_jugement|default:0 }}</div><div class="ll">بعد المحاكمة</div></div>
+                <div class="ledger-item"><div class="lv" style="color:var(--danger)">{{ interventions_stats.detention|default:0 }}</div><div class="ll">في حالة إيقاف</div></div>
+                <div class="ledger-item"><div class="lv" style="color:var(--success)">{{ interventions_stats.liberte|default:0 }}</div><div class="ll">في حالة سراح</div></div>
             </div>
         </div>
-        <!-- Content Area -->
-        <div class="col-md-9">
-            <div class="tab-content" id="v-pills-tabContent">
-                <!-- Projects Tab Content -->
-                <div class="tab-pane fade show active" id="v-pills-projects" role="tabpanel" aria-labelledby="v-pills-projects-tab">
-                    {% block projects_content %}
-                    <h2>Projects</h2>
-                    <p><strong>Total number of projects: {{ nombre_projets }}</strong></p>
-                    <h2>Statistiques des projets par Etat</h2>
-                    <canvas id="etatProjetChart" width="400" height="400"></canvas>
-                    <br>
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                    <h2>Statistics on Project Types</h2>
-                    <canvas id="projectTypeChart" width="400" height="400"></canvas>
-                    {% endblock %}
-                </div>
-                <!-- Claims Tab Content -->
-                <div class="tab-pane fade" id="v-pills-claims" role="tabpanel" aria-labelledby="v-pills-claims-tab">
-                    {% block claims_content %}
-                    <h2>Réclamations</h2>
-                    <p><strong>Total number of Réclamations: {{ nombre_reclamations }}</strong></p>
-                    
-                        <div>
-                            <h2>Statistiques des réclamations par type</h2>
-                            <canvas id="reclamationsChart" width="400" height="200"></canvas>
-                        </div>
+    </div> -->
 
-                        <div>
-                            <h2>Statistiques des réclamations par Ville</h2>
-                            <div>
-                                <canvas id="cityStatsChart"  width: 60%;
-                                margin: auto;></canvas>
+    <!-- ===== النشاط الأخير — SIGNATURE TIMELINE ===== -->
+    <div class="panel">
+        <div class="panel-header"><h6><i class="fas fa-history"></i>النشاط الأخير (7 أيام)</h6></div>
+        <div class="panel-body">
+            <div class="timeline">
+                {% if recent_activity %}
+                    {% for activity in recent_activity %}
+                        <div class="timeline-item">
+                            <div class="ti-title">{{ activity.title }}</div>
+                            <div class="ti-meta">
+                                <span><i class="fas fa-clock"></i>{{ activity.date|date:"d/m/Y H:i" }}</span>
+                                {% if activity.wilaya %}<span><i class="fas fa-map-marker-alt"></i>{{ activity.wilaya }}</span>{% endif %}
                             </div>
                         </div>
-                        <h2>Statistiques des Réclamations par Localisation</h2>
-                        <canvas id="locationChart" width="400" height="400"></canvas>
-
-                        <div>
-                            <h2>Statistiques des réclamations par état</h2>
-                            <canvas id="etatChart" width="400" height="200"></canvas>
-                        </div>
-                   
-                    {% endblock %}
-                </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="timeline-empty"><i class="fas fa-inbox fa-2x mb-2 d-block" style="color:var(--line)"></i>لا يوجد نشاط حديث</div>
+                {% endif %}
             </div>
         </div>
     </div>
-    <script>
 
-var ctx = document.getElementById('projectTypeChart').getContext('2d');
-        var typeCounts = {{ type_counts|safe }};
-        var labels = Object.keys(typeCounts);
-        var data = Object.values(typeCounts);
+    <!-- ===== FOOTER ===== -->
+    <div class="tb-footer">
+        <i class="fas fa-database me-1"></i>آخر تحديث: {{ last_update }}
+        <button onclick="location.reload()" class="tb-refresh"><i class="fas fa-sync-alt me-1"></i>تحديث البيانات</button>
+    </div>
 
+</div>
 
-        var myChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['red', 'blue', 'green'], // Ajouter plus de couleurs si nécessaire
-
-                    
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                }
-            }
-        });
-
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Récupérer les données de l'état du projet et du nombre de projets
-            var labels = [];
-            var data = [];
-            {% for etat, nombre_projets in statistiques_etats.items %}
-                labels.push("{{ etat }}");
-                data.push("{{ nombre_projets }}");
-            {% endfor %}
-            // Configurer les données du graphe des projets par état
-            var ctx = document.getElementById('etatProjetChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Nombre du projet',
-                        data: data,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: false,
-                    maintainAspectRatio: false
-                }
-            });
-
- // Récupérer les données des réclamations par type
-var labels = [];
-var data = [];
-{% for reclamation in reclamations_par_type %}
-    labels.push("{{ reclamation.type }}");
-    data.push({{ reclamation.nombre_reclamations }}); // Retirez les guillemets
-{% endfor %}
-// Configurer les données du graphique histogramme des réclamations par type
-var ctx = document.getElementById('reclamationsChart').getContext('2d');
-new Chart(ctx, {
-    type: 'bar', // Utilisez 'bar' pour un graphique histogramme
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Nombre de réclamations par type',
-            data: data,
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: false,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    precision: 0, // Ajuster la précision à 0 pour éviter les décimales
-                    callback: function(value) {
-                        return value.toLocaleString('en-US'); // Utiliser toLocaleString pour afficher les nombres réels
-                    }
-                }
-            }
-        }
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function updateClock() {
+        const now = new Date();
+        const h = now.getHours().toString().padStart(2, '0');
+        const m = now.getMinutes().toString().padStart(2, '0');
+        const s = now.getSeconds().toString().padStart(2, '0');
+        const el = document.getElementById('liveClock');
+        if (el) el.textContent = `${h}:${m}:${s}`;
     }
-});
+    updateClock();
+    setInterval(updateClock, 1000);
 
-            // Récupérer les données de réclamations par état
-           /* var etatLabels = [];
-            var etatData = [];
-            {% for reclamation in reclamations_par_etat %}
-                etatLabels.push("{{ reclamation.etat }}");
-                etatData.push("{{ reclamation.nombre_reclamations }}");
-            {% endfor %}
-            // Configurer les données du graphe des réclamations par état en graphique circulaire
-            var etatCtx = document.getElementById('etatChart').getContext('2d');
-            new Chart(etatCtx, {
-                type: 'pie',
+    document.addEventListener('DOMContentLoaded', function() {
+        Chart.defaults.font.family = "'IBM Plex Sans Arabic', 'Tajawal', sans-serif";
+        Chart.defaults.color = '#6f7278';
+
+        const wilayaCtx = document.getElementById('wilayaChart');
+        if (wilayaCtx) {
+            new Chart(wilayaCtx, {
+                type: 'bar',
                 data: {
-                    labels: etatLabels,
-                    datasets: [{
-                        label: 'Nombre de réclamations par état',
-                        data: etatData,
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
+                    labels: {{ wilaya_labels|safe }},
+                    datasets: [{ label: 'عدد الأطفال', data: {{ wilaya_data|safe }}, backgroundColor: '#b8860b', borderRadius: 6, maxBarThickness: 34 }]
                 },
                 options: {
-                    responsive: false,
-                    maintainAspectRatio: false
-                }
-            });*/
-
-                  
-     // Récupérer les données des réclamations par région
-
-// Graphique des réclamations par région
-
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Exemple de données JSON. Remplacez par vos données réelles.
-            const reclamations = [
-                {"lat": 33.339922, "lng": 10.495868, "city": "medenine"},
-                {"lat": 33.807598, "lng": 10.845147, "city": "djerba"},
-                {"lat": 33.5036797, "lng": 11.1097173, "city": "zarzis"},
-                // Ajoutez plus de réclamations ici
-            ];
-
-            const cityCounts = {
-                medenine: 0,
-                djerba: 0,
-                zarzis: 0
-            };
-
-            // Calculer le nombre de réclamations par ville
-            reclamations.forEach(reclamation => {
-                if (reclamation.city === 'medenine') {
-                    cityCounts.medenine++;
-                } else if (reclamation.city === 'djerba') {
-                    cityCounts.djerba++;
-                } else if (reclamation.city === 'zarzis') {
-                    cityCounts.zarzis++;
-                }
-            });
-
-            const cityData = {
-                labels: Object.keys(cityCounts),
-                datasets: [{
-                    label: 'Nombre de Réclamations',
-                    data: Object.values(cityCounts),
-                    backgroundColor: ['red', 'blue', 'green'] // Ajouter plus de couleurs si nécessaire
-                }]
-            };
-
-            const config = {
-                type: 'pie',
-                data: cityData,
-                options: {
-                    responsive: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Réclamations par Ville'
-                        }
-                    }
-                },
-            };
-
-            const cityStatsChart = new Chart(
-                document.getElementById('cityStatsChart'),
-                config
-            );
-        });
-      
-var ctx = document.getElementById('locationChart').getContext('2d');
-        var locationChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: {{ labels|safe }},
-                datasets: [{
-                    label: 'Réclamations',
-                    data: {{ data|safe }},
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Réclamations par Localisation'
-                    }
-                }
-            },
-        });
-
-// Fonction pour récupérer les données des états depuis localStorage
-function getEtatData() {
-    var etatCounts = {};
-    for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i);
-        if (key.startsWith('selectedEtat_')) {
-            var etat = localStorage.getItem(key);
-            if (etat) {
-                if (!etatCounts[etat]) {
-                    etatCounts[etat] = 0;
-                }
-                etatCounts[etat]++;
-            }
-        }
-    }
-    return etatCounts;
-}
-
-        // Fonction pour créer le graphique
-        function createChart() {
-            var etatData = getEtatData();
-            var labels = Object.keys(etatData);
-            var data = Object.values(etatData);
-
-            var ctx = document.getElementById('etatChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Nombre de réclamations par état',
-                        data: data,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                  
-                    responsive: false,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom',
-                            labels: {
-                                boxWidth: 10,
-                                font: {
-                                    size: 10
-                                }
-                            }
-                        }
-                    }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#e4e1da' } }, x: { grid: { display: false } } }
                 }
             });
         }
 
-        // Charger les données et créer le graphique au chargement de la page
-        document.addEventListener('DOMContentLoaded', createChart);
-    </script>
-</body>
-</html>
+        const ageCtx = document.getElementById('ageChart');
+        if (ageCtx) {
+            new Chart(ageCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ age_labels|safe }},
+                    datasets: [
+                        { label: 'الأطفال المهددون', data: {{ age_data_menaces|safe }}, backgroundColor: '#b8860b', borderRadius: 6 },
+                        { label: 'الأطفال الجانحون', data: {{ age_data_delinquants|safe }}, backgroundColor: '#a6383a', borderRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { usePointStyle: true } } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#e4e1da' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        const sourceCtx = document.getElementById('sourceChart');
+        if (sourceCtx) {
+            new Chart(sourceCtx, {
+                type: 'doughnut',
+                data: { labels: {{ source_labels|safe }}, datasets: [{ data: {{ source_data|safe }}, backgroundColor: {{ source_colors|safe }}, borderWidth: 2, borderColor: '#fff' }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '62%',
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } } }
+                }
+            });
+        }
+
+        const evolutionCtx = document.getElementById('evolutionChart');
+        if (evolutionCtx) {
+            new Chart(evolutionCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ monthly_labels|safe }},
+                    datasets: [
+                        { label: 'الأطفال المهددون', data: {{ monthly_data_menaces|safe }}, borderColor: '#b8860b', backgroundColor: 'rgba(184,134,11,0.08)', fill: true, tension: 0.35, pointBackgroundColor: '#b8860b', pointRadius: 3 },
+                        { label: 'الأطفال الجانحون', data: {{ monthly_data_delinquants|safe }}, borderColor: '#a6383a', backgroundColor: 'rgba(166,56,58,0.06)', fill: true, tension: 0.35, pointBackgroundColor: '#a6383a', pointRadius: 3 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { usePointStyle: true } } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#e4e1da' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

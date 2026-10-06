@@ -1,0 +1,802 @@
+{% extends "account/base.html" %}
+{% load static %}
+
+{% block head_title %}
+    تفاصيل الطفل الجانح - {{ child.prenom }} {{ child.nom }}
+{% endblock %}
+
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --primary: #b8860b;
+    --primary-dark: #8c6d0b;
+    --primary-light: #f4e4bc;
+    --accent: #d4a520;
+    --danger: #c41230;
+    --bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-light: #5a5b5d;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+    --radius: 20px;
+    --radius-sm: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(184, 134, 11, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(184, 134, 11, 0.04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- Main Content ---------- */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+/* ===== HEADER ===== */
+.modern-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: white;
+    padding: 2.5rem 0 5rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid #b8860b;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.modern-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: rgba(184, 134, 11, 0.05);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.modern-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, var(--bg), transparent);
+    pointer-events: none;
+}
+
+.header-content {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.brand-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.brand-section .system-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.brand-section .system-title i { 
+    color: #b8860b;
+    font-size: 2rem;
+}
+
+.user-badge {
+    background: rgba(184, 134, 11, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(184, 134, 11, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(184, 134, 11, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    border: 2px solid rgba(184, 134, 11, 0.4);
+    color: #b8860b;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+}
+.user-role {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    font-weight: 500;
+    color: #f4e4bc;
+}
+
+/* ===== NAVIGATION ===== */
+.menu-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-shrink: 0;
+}
+
+.menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.8rem;
+    background: white;
+    color: #b8860b;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border: 2px solid #b8860b;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.menu-btn i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.menu-btn:hover {
+    background: linear-gradient(135deg, #d4a520 0%, #f4e4bc 100%);
+    color: #000000;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+}
+
+.menu-btn:hover i {
+    transform: translateX(-5px);
+}
+
+.menu-btn:active {
+    transform: translateY(0);
+}
+
+/* ===== MAIN CARD ===== */
+.detail-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: -3rem auto 2rem;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 10;
+    flex: 1;
+}
+
+.detail-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.02);
+    overflow: hidden;
+    animation: slideUp 0.6s ease-out;
+    border: 1px solid rgba(184, 134, 11, 0.1);
+    width: 100%;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== CARD HEADER ===== */
+.detail-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #b8860b;
+}
+
+.detail-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.detail-header h2 i { color: #b8860b; }
+
+.badge-delinquent {
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.1);
+    color: #f4e4bc;
+    border: 1px solid rgba(184, 134, 11, 0.3);
+}
+
+/* ===== CHILD IDENTITY BAR ===== */
+.child-identity-bar {
+    background: linear-gradient(135deg, #faf8f3 0%, #fff 100%);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.1);
+}
+
+.identity-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.identity-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    border: 2px solid var(--primary);
+}
+
+.identity-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.identity-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding-right: 64px;
+}
+
+.meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    background: rgba(184, 134, 11, 0.05);
+    padding: 0.35rem 0.9rem;
+    border-radius: 50px;
+    border: 1px solid rgba(184, 134, 11, 0.1);
+}
+
+.meta-chip i {
+    color: #b8860b;
+    font-size: 0.85rem;
+}
+
+/* ===== SECTIONS GRID ===== */
+.sections-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+}
+
+.section-card {
+    background: #f8f9fa;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid rgba(184, 134, 11, 0.1);
+    transition: all 0.3s ease;
+}
+
+.section-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.section-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.section-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: white;
+    padding: 0.9rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.section-header i { color: var(--primary); font-size: 1.1rem; }
+
+.section-body {
+    padding: 0;
+}
+
+/* ===== DATA TABLE ===== */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table tr {
+    border-bottom: 1px solid rgba(184, 134, 11, 0.08);
+    transition: background 0.2s ease;
+}
+
+.data-table tr:hover { background: rgba(184, 134, 11, 0.02); }
+.data-table tr:last-child { border-bottom: none; }
+
+.data-table td {
+    padding: 0.75rem 1.25rem;
+    vertical-align: middle;
+}
+
+.data-table td:first-child {
+    width: 40%;
+    font-weight: 700;
+    color: var(--text);
+    background: rgba(184, 134, 11, 0.03);
+    font-size: 0.9rem;
+}
+
+.data-table td:last-child {
+    width: 60%;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255,255,255,0.9);
+    border-radius: var(--radius);
+    margin: 1.5rem 2rem;
+    border: 2px dashed var(--primary-light);
+    backdrop-filter: blur(4px);
+}
+
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(184, 134, 11, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+}
+
+.empty-state-icon i {
+    font-size: 2.5rem;
+    color: #b8860b;
+    opacity: 0.6;
+}
+
+.empty-state-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-desc {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.9rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+}
+
+/* ===== FOOTER ===== */
+.card-footer {
+    background: #f8f9fa;
+    padding: 1.25rem 2rem;
+    border-top: 1px solid rgba(184, 134, 11, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .sections-grid {
+        grid-template-columns: 1fr;
+    }
+    .section-card.full-width {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .modern-header {
+        padding: 2rem 0 4rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .menu-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .identity-meta {
+        padding-right: 0;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .identity-main {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .card-footer {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .data-table td:first-child {
+        width: 45%;
+    }
+    
+    .sections-grid {
+        padding: 1rem;
+    }
+    
+    .detail-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-container {
+        padding: 0 0.75rem;
+    }
+    
+    .detail-header {
+        padding: 1rem;
+    }
+    
+    .child-identity-bar {
+        padding: 1rem;
+    }
+    
+    .sections-grid {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+    
+    .section-header {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.9rem;
+    }
+    
+    .data-table td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .identity-name {
+        font-size: 1.1rem;
+    }
+    
+    .detail-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .empty-state {
+        margin: 0.75rem;
+        padding: 2rem 1rem;
+    }
+    
+    .card-footer {
+        padding: 0.75rem 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <!-- ===== HEADER ===== -->
+    <div class="modern-header">
+        <div class="header-content">
+            <div class="brand-section">
+                <div class="system-title">
+                    <i class="fas fa-gavel"></i>
+                    <span>الملف الاجتماعي للطفل</span>
+                </div>
+            </div>
+            {% if request.user.delegate_profile %}
+            <div class="user-badge">
+                <div class="user-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name">{{ request.user.delegate_profile.first_name }} {{ request.user.delegate_profile.last_name }}</span>
+                    <span class="user-role">مندوب حماية الطفولة</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="menu-container">
+            <a href="{% url 'recherche_enfants' %}" class="menu-btn">
+                <i class="fas fa-arrow-right"></i>
+                <span>العودة إلى صفحة البحث</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CARD ===== -->
+    <div class="detail-container">
+        <div class="detail-card">
+            
+            <div class="detail-header">
+                <h2>
+                    <i class="fas fa-gavel"></i>
+                    الملف الاجتماعي للطفل
+                </h2>
+                <span class="badge-delinquent">
+                    <i class="fas fa-user-slash"></i> طفل في خلاف مع القانون
+                </span>
+            </div>
+
+            <!-- Child Identity Bar -->
+            <div class="child-identity-bar">
+                <div class="identity-main">
+                    <div class="identity-icon">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <div class="identity-name">
+                        {{ child.prenom }} {{ child.nom }}
+                    </div>
+                </div>
+                <div class="identity-meta">
+                    <div class="meta-chip">
+                        <i class="fas fa-id-card"></i>
+                        <span>المعرف: {{ child.uid|default:"غير محدد" }}</span>
+                    </div>
+                    <div class="meta-chip">
+                        <i class="fas fa-calendar"></i>
+                        <span>
+                            {{ child.date_naissance|date:"d/m/Y"|default:"غير محدد" }}
+                        </span>
+                    </div>
+                    <div class="meta-chip">
+                        <i class="fas fa-venus-mars"></i>
+                        <span>
+                            {% if child.sexe == "M" %}ذكر{% elif child.sexe == "F" %}أنثى{% else %}غير محدد{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SECTION SOCIAL FILE ===== -->
+            {% if social_file %}
+            <div class="sections-grid">
+                <!-- Section 1: Données de l'enfant -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-child"></i>
+                        بيانات الطفل
+                    </div>
+                    <div class="section-body">
+                        <table class="data-table">
+                            <tr><td>المندوب</td><td>
+                                {% if social_file.delegue %}
+                                    {{ social_file.delegue.first_name|default:"" }} {{ social_file.delegue.last_name|default:"" }}
+                                {% else %}
+                                    غير محدد
+                                {% endif %}
+                            </td></tr>
+                            <tr><td>عنوان الإقامة الحالية</td><td>{{ social_file.adresse_enfant|default:"غير محدد" }}</td></tr>
+                            <tr><td>الولاية</td><td>{{ social_file.gouvernorat_enfant|default:"غير محدد" }}</td></tr>
+                            <tr><td>المعتمدية</td><td>{{ social_file.delegation_enfant|default:"غير محدد" }}</td></tr>
+                            <tr><td>الوضعية التربوية</td><td>{{ social_file.situation_scolaire_enfant|default:"غير محدد" }}</td></tr>
+                            <tr><td>النتائج المدرسية</td><td>{{ social_file.resultat_scolaire_enfant|default:"غير محدد" }}</td></tr>
+                            <tr><td>الوضعية الصحية</td><td>{{ social_file.situation_sante_enfant|default:"غير محدد" }}</td></tr>
+                            <tr><td>المنحة المخصصة</td><td>{{ social_file.beneficiaire_allocation_enfant|default:"غير محدد" }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 2: Données de la famille -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-home"></i>
+                        بيانات العائلة
+                    </div>
+                    <div class="section-body">
+                        <table class="data-table">
+                            <tr><td>الإطار العائلي</td><td>{{ social_file.famille_type|default:"غير محدد" }}</td></tr>
+                            <tr><td>وضعية الأبوين</td><td>{{ social_file.relation_parents|default:"غير محدد" }}</td></tr>
+                            <tr><td>مصدر الدخل</td><td>{{ social_file.source_revenu|default:"غير محدد" }}</td></tr>
+                            <tr><td>الوضعية الاجتماعية</td><td>{{ social_file.situation_sociale|default:"غير محدد" }}</td></tr>
+                            <tr><td>التغطية الصحية</td><td>{{ social_file.couverture_sante|default:"غير محدد" }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 3: Données du père -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-father"></i>
+                        بيانات الأب
+                    </div>
+                    <div class="section-body">
+                        <table class="data-table">
+                            <tr><td>الاسم واللقب</td><td>{{ social_file.nom_pere|default:"" }} {{ social_file.prenom_pere|default:"" }}</td></tr>
+                            <tr><td>الجنسية</td><td>{{ social_file.nationalite_pere|default:"غير محدد" }}</td></tr>
+                            <tr><td>مكان الإقامة</td><td>{{ social_file.residence_pere|default:"غير محدد" }}</td></tr>
+                            <tr><td>الولاية / المعتمدية</td><td>{{ social_file.gouvernorat_pere|default:"" }} / {{ social_file.delegation_pere|default:"" }}</td></tr>
+                            <tr><td>الدولة</td><td>{{ social_file.pays_pere|default:"غير محدد" }}</td></tr>
+                            <tr><td>المستوى التعليمي</td><td>{{ social_file.niveau_etude_pere|default:"غير محدد" }}</td></tr>
+                            <tr><td>الوضعية المهنية</td><td>{{ social_file.emploi_pere|default:"غير محدد" }}</td></tr>
+                            <tr><td>الوضعية الصحية</td><td>{{ social_file.etat_sante_pere|default:"غير محدد" }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 4: Données de la mère -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <i class="fas fa-mother"></i>
+                        بيانات الأم
+                    </div>
+                    <div class="section-body">
+                        <table class="data-table">
+                            <tr><td>الاسم واللقب</td><td>{{ social_file.nom_mere|default:"" }} {{ social_file.prenom_mere|default:"" }}</td></tr>
+                            <tr><td>الجنسية</td><td>{{ social_file.nationalite_mere|default:"غير محدد" }}</td></tr>
+                            <tr><td>مكان الإقامة</td><td>{{ social_file.residence_mere|default:"غير محدد" }}</td></tr>
+                            <tr><td>الولاية / المعتمدية</td><td>{{ social_file.gouvernorat_mere|default:"" }} / {{ social_file.delegation_mere|default:"" }}</td></tr>
+                            <tr><td>الدولة</td><td>{{ social_file.pays_mere|default:"غير محدد" }}</td></tr>
+                            <tr><td>المستوى التعليمي</td><td>{{ social_file.niveau_etude_mere|default:"غير محدد" }}</td></tr>
+                            <tr><td>الوضعية المهنية</td><td>{{ social_file.emploi_mere|default:"غير محدد" }}</td></tr>
+                            <tr><td>الوضعية الصحية</td><td>{{ social_file.etat_sante_mere|default:"غير محدد" }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                <!-- ===== EMPTY STATE ===== -->
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div class="empty-state-title">لا يوجد ملف اجتماعي مسجل</div>
+                    <div class="empty-state-desc">هذا الطفل ليس لديه ملف اجتماعي مسجل بعد. يمكنك إضافة ملف جديد.</div>
+                    <a href="{% url 'social_file' enfant_id=child.id %}" class="btn-primary">
+                        <i class="fas fa-plus"></i>
+                        إضافة ملف اجتماعي
+                    </a>
+                </div>
+            {% endif %}
+
+            <!-- ===== FOOTER ===== -->
+            <div class="card-footer">
+                <div class="footer-actions">
+                    <a href="{% url 'intervention_create' child.id %}" class="btn-primary">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>إضافة مطلب وساطة</span>
+                    </a>
+                    {% if social_file %}
+                    <a href="{% url 'download_enfant_delinquent_pdf' enfant_id=child.id %}" class="btn-primary" style="background: #dc3545;">
+                    <i class="fas fa-file-pdf"></i>
+                    تحميل PDF
+                </a>                    
+                {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

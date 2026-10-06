@@ -1,0 +1,588 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load social_filters %}
+
+{% block head_title %}  مطلب الوساطة
+{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="main-content">
+    <!-- Header -->
+    <div class="modern-header">
+        <div class="header-content">
+            <div class="brand-section">
+                <div class="system-title">
+                    <span>قائمة  مطالب الوساطة   
+                       <br>
+                     <!--  <span class="subtitle">
+                         إجمالي مطالب الوساطة الخاصة بالطفل 
+                        {{ enfant.first_name }} {{ enfant.last_name }}
+                       </span>
+                           <span id="counter" class="badge bg-info">{{ interventions|length }}</span>
+                   --> 
+                    </span>
+                </div>
+            </div>
+             
+        <div style="top: 50px;" class="menu-container">
+            <a href="{% url 'index2' %}" class="menu-btn">
+                <i class="fas fa-chart-line"></i>
+                <span>المعطيات العامة</span>
+            </a>
+
+            <a href="{% url 'enfant_list' %}" class="menu-btn">
+                <i class="fas fa-users"></i>
+                <span>الأطفال في خلاف مع القانون</span>
+            </a>
+
+            <a href="{% url 'child_create' %}" class="menu-btn">
+                <i class="fas fa-user-plus"></i>
+                <span>إضافة طفل</span>
+            </a>
+
+            <a href="/recherche-enfants" class="menu-btn">
+                <i class="fas fa-search"></i>
+                <span>البحث عن طفل</span>
+            </a>
+        </div>
+        <!--
+            {% if request.user.delegate_profile %}
+           
+            <div class="user-badge">
+                <div class="user-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name">{{ request.user.delegate_profile.first_name }} {{ request.user.delegate_profile.last_name }}</span>
+                    <span class="user-role">مندوب حماية الطفولة</span>
+                </div>
+                
+            </div>
+            {% endif %}
+            -->
+
+        </div>
+
+    </div>
+
+ 
+<style>
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 25px;
+        margin-top: 25px;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #420197;
+        padding: 20px 22px;
+        border-radius: 14px;
+        border: 1px solid #eee;
+        transition: all 0.25s ease;
+    }
+
+    .stat-card:hover {
+        border-color: #ddd;
+        box-shadow: 0 8px 25px rgba(252, 253, 253, 0.07);
+        transform: translateY(-3px);
+    }
+
+    .stat-content {
+        text-align: right;
+    }
+
+    .stat-card .number {
+        font-size: 26px;
+        font-weight: 700;
+        color: #fffefe;
+    }
+
+    .stat-card .label {
+        font-size: 13px;
+        color: #ffffff;
+        margin-top: 4px;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: rgb(0, 15, 153);
+    }
+
+    .bg-blue { background: #3b82f6; }
+    .bg-green { background: #10b981; }
+    .bg-pink { background: #ec4899; }
+    .bg-orange { background: #f59e0b; }
+
+    .rtl {
+        direction: rtl;
+    }
+    .custom-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px; 
+    background: #fff3cd;
+    color: #856404;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    font-size: 14px;
+    z-index: 9999;
+    animation: slideIn 0.4s ease;
+}
+
+/* animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
+<style>
+    .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card.pro {
+    background: linear-gradient(135deg, #10078f, #002a4e);
+    border: 1px solid #e3e6ea;
+    border-radius: 10px;
+    padding: 22px 15px;
+    text-align: center;
+}
+
+.stat-card.pro .number {
+    font-size: 34px;
+    font-weight: 700;
+    color: #fdfdfd; 
+}
+
+.stat-card.pro .label {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+
+.stat-card.pro:hover {
+    background-color: #f9fafb;
+}
+.menu-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #2e0294, #00f2fe);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.menu-btn i {
+    font-size: 16px;
+}
+
+.menu-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, #034e1c, #38f9d7);
+}
+
+.menu-btn:active {
+    transform: scale(0.97);
+}
+</style>
+
+
+<div style="margin-left: 20px; margin-right: 20px;" class=" mt-4">
+
+  {% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mt-2">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+
+  <div class="card shadow-sm mb-3 bg-dark text-light" id="childInfoCard">
+    <div class="card-body text-right rtl">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+
+        <div>
+          <h2 class="h4 mb-1">  <strong>{{ enfant.first_name }} {{ enfant.last_name }}</strong></h2>
+          <p class="mb-0">المعرف: <span class="badge bg-primary">{{ enfant.uid }}</span>
+            | تاريخ التسجيل:{{ enfant.created_at|date:"d/m/Y H:i" }}
+            | الجنس: {% if enfant.gender == "M" %}ذكر{% elif enfant.gender == "F" %}أنثى{% else %}غير محدد{% endif %}
+            {{ enfant.date_creation|date:"| تاريخ التسجيل: d/m/Y" }}
+            <!-- time de creation -->
+             {{ enfant.date_creation|date:"| وقت التسجيل: H:i:s" }}
+          </p>
+        </div>
+
+        <div class="text-center mt-3 mt-md-0">
+          <a href="{% url 'intervention_create' enfant.id %}" class="btn btn-success btn-lg"> إضافة وساطة</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+    <input id="searchBox" type="search" class="form-control w-100 w-md-50 mb-2 mb-md-0" placeholder="ابحث في الجدول...">
+
+<div class="d-flex gap-2 mt-2 mt-md-0 flex-nowrap">
+  <button id="exportExcel" style="margin-left: 10px;margin-right: 10px; width: 200px;" class="btn btn-success">  تحميل ملف Excel</button>
+  <button id="exportPDF" style="margin-left: 10px;margin-right: 10px; width: 200px;" class="btn btn-danger"> تحميل ملف PDF</button>
+</div>
+
+  </div>
+
+  <div class="mb-3 text-right rtl">
+    إجمالي مطالب الوساطة: <span id="counter" class="badge bg-info">{{ interventions|length }}</span>
+  </div>
+
+<div class="table-responsive shadow-sm rounded" id="tableWrapper">
+
+    <table
+        id="interventionsTable"
+        class="table table-striped table-hover align-middle text-right rtl mb-0"
+    >
+
+        <thead class="table-dark">
+            <tr>
+
+                <th>تاريخ المطلب</th>
+
+                <th>صفة من قام بالمطلب </th>
+
+                <th>صفة المتضرر</th>
+
+              
+                <th>نوعية الفعلة المرتكبة</th>
+
+                <th>طور التقاضي</th>
+
+                <th>وضعية الطفل الحالية</th>
+
+                <th>نتيجة الصلح</th>
+
+                <th class="text-center">إجراءات</th>
+
+            </tr>
+        </thead>
+
+        <tbody id="tbodyInterventions">
+
+            {% for intervention in interventions %}
+
+            <tr
+                data-recidivist="{% if intervention.enfant_recidiviste %}yes{% else %}no{% endif %}"
+            >
+
+                    <td>
+                    {% if intervention.date_intervention %}
+                        {{ intervention.date_intervention|date:"d/m/Y" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+
+                   <td class="truncate"
+                    title="{{ intervention.role_demandeur }}">
+
+                    {% if intervention.role_demandeur %}
+                        {{ intervention.role_demandeur }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </td>
+
+
+                  <td class="truncate"
+                    title="{{ intervention.concerne }}">
+
+                    {% if intervention.concerne %}
+                        {{ intervention.concerne }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </td>
+
+           
+           <td class="truncate"
+                    title="{{ intervention.type_fait }}">
+
+                    {% if intervention.type_fait %}
+                        {{ intervention.type_fait }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </td>
+
+            <td class="truncate"
+                    title="{{ intervention.etat_procedure }}">
+
+                    {% if intervention.etat_procedure %}
+                        {{ intervention.etat_procedure }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </td>
+
+             <td>
+
+                    {% if intervention.situation_actuelle_enfant %}
+                        {{ intervention.situation_actuelle_enfant }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </td>
+
+
+                   <td>
+
+                    {% if intervention.accord_reached == True %}
+
+                        <span class="badge bg-success">
+                            تم الصلح
+                        </span>
+
+                    {% elif intervention.accord_reached == False %}
+
+                        <span class="badge bg-danger">
+                            لم يتم الصلح
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+                            لم يُبتّ بعد
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+            <td class="text-center">
+
+                    <div class="btn-group" role="group">
+
+                        <a
+                            href="{% url 'intervention_edit' intervention.id %}"
+                            class="btn btn-outline-primary"
+                            title="تحيين الطلب"
+                        >
+                           <i class="fas fa-edit"></i>
+                        </a>
+
+                        <!--
+                        <button
+                            class="btn btn-outline-danger btn-delete"
+                            data-id="{{ intervention.id }}"
+                            title="حذف الطلب"
+                        >
+                            حذف 🗑
+                        </button>
+                        -->
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td
+                    colspan="9"
+                    class="text-center py-4"
+                >
+                    لا توجد مطالب وساطة
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rtl text-right">
+      <div class="modal-header">
+        <h5 class="modal-title">تأكيد الحذف</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">هل أنت متأكد من الحذف؟</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+        <form id="deleteForm" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">حذف</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .rtl { direction: rtl; }
+  .card { border-radius: 14px; }
+  .table thead th { white-space: nowrap; text-align: center; }
+  .table td { vertical-align: middle; }
+  .badge { font-size: 0.85rem; }
+  table tbody tr:hover { background-color: #eef5ff; transition: 0.2s; }
+  .truncate {
+    max-width: 90px;   
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchBox = document.getElementById('searchBox');
+  const tbody = document.getElementById('tbodyInterventions');
+
+  searchBox.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    Array.from(tbody.rows).forEach(row => {
+      row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+    updateCounter();
+  });
+
+  function updateCounter() {
+    const visible = Array.from(tbody.rows).filter(r => r.style.display !== 'none');
+    document.getElementById('counter').innerText = visible.length;
+  }
+
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.dataset.id;
+      const form = document.getElementById('deleteForm');
+      form.action = "{% url 'intervention_delete' 0 %}".replace('0', id);
+      new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+    });
+  });
+
+  document.getElementById('exportExcel').addEventListener('click', function () {
+    const table = document.getElementById("interventionsTable");
+    const clonedTable = table.cloneNode(true);
+    clonedTable.querySelectorAll("thead tr th:last-child").forEach(th => th.remove());
+    clonedTable.querySelectorAll("tbody tr").forEach(tr => tr.querySelector("td:last-child")?.remove());
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.table_to_sheet(clonedTable);
+    ws['!rtl'] = true;
+    XLSX.utils.book_append_sheet(wb, ws, "Interventions");
+    XLSX.writeFile(wb, "interventions_ED-{{ enfant.id }}.xlsx");
+  });
+
+ document.getElementById('exportPDF').addEventListener('click', function () {
+
+    const tableOriginal = document.getElementById('interventionsTable');
+    const tableClone = tableOriginal.cloneNode(true);
+
+    tableClone.querySelectorAll("thead tr th:last-child").forEach(th => th.remove());
+    tableClone.querySelectorAll("tbody tr").forEach(tr => tr.querySelector("td:last-child")?.remove());
+
+    const container = document.createElement('div');
+    const title = document.createElement('h1');
+    title.innerText = "قائمة مطالب الوساطة للطفل";
+    title.style.textAlign = "center";
+    title.style.marginBottom = "15px";
+    container.appendChild(title);
+
+    const childInfo = document.createElement('h2');
+    childInfo.innerText = "{{ enfant.nom }} {{ enfant.prenom }} ({{ enfant.id }})";
+    childInfo.style.textAlign = "center";
+    childInfo.style.marginBottom = "10px";
+    container.appendChild(childInfo);
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        * { font-family: 'Cairo', 'Amiri', 'Tajawal', serif !important; direction: rtl; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: right; }
+        .badge { display: inline-block; padding: 2px 6px; font-size: 0.8rem; }
+        h1, h2, p { margin: 2px 0; }
+        #childInfoCard { margin-bottom: 15px; }
+    `;
+    container.appendChild(style);
+
+ 
+    container.appendChild(tableClone);
+
+    html2pdf().set({
+        margin: 0.2,
+        filename: 'interventions_ED-{{ enfant.id }}.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'cm', format: 'a4', orientation: 'landscape' }
+    }).from(container).save();
+});
+
+
+});
+</script>
+
+    </div>
+</div>
+
+ 
+
+{% endblock %}

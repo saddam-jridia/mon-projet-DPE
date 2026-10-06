@@ -1,0 +1,390 @@
+<!-- dashboard.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <!-- ✅ Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+
+    <style>
+        body {
+           background: linear-gradient(135deg, #f5e0a2, #fbeab6);
+
+
+
+
+            color: #ffd966;
+            font-family: "Times New Roman", serif;
+        }
+        .sidebar {
+            height: 100vh;
+            width: 240px;
+            position: fixed;
+            top: 0;
+            right: 0; /* RTL: sidebar à droite */
+            background-color: #010101;
+            padding-top: 20px;
+            font-family: "Times New Roman", serif;
+        }
+        .sidebar a {
+            color: #ffd966;
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-family: "Times New Roman", serif;
+            font-size: 23px;
+        }
+        .sidebar a:hover {
+            background-color: #e9ede6;
+            color: white;
+            border-radius: 5px;
+        }
+        .sidebar .logo-dpe {
+    display: block;
+    margin: 0 auto 10px auto;
+    width: 50px; /* réduit de 120px à 80px */
+    height: auto;
+}
+        .sidebar .sidebar-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 25px; /* augmente la taille du texte */
+    font-weight: bold;
+}
+        .content {
+            margin-right: 260px; /* espace pour la sidebar */
+            padding: 20px;
+            font-family: "Times New Roman", serif;
+             
+        }
+        .card, .card h6, .card h3, .card h5 {
+            font-family: "Times New Roman", serif;
+        }
+
+        .card {
+        background-color: #131313; /* beige */
+        color: #ffd966;
+        font-family: "Times New Roman", serif;
+       
+    }
+    .card h6, .card h3 {
+        font-family: "Times New Roman", serif;
+    }
+    .card-icon {
+        font-size: 30px;
+       
+        color: #ffd966; /* couleur verte pour l'icône */
+    }
+
+   .chart-card {
+    height: 420px;          /* 👈 نفس الارتفاع للغرافيْن */
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;          /* 👈 نفس مساحة الرسم */
+    width: 100%;
+}
+
+.card i { font-size: 34px;   } 
+
+@media print {
+    body {
+        background: #fff;
+        color: #000;
+    }
+
+    .card {
+        border: 1px solid #000;
+    }
+
+    .no-print, .sidebar, .btn {
+        display: none !important;
+    }
+}
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Logo réduit -->
+    <img src="{% static 'images/dpe.png' %}" alt="DPE" class="logo-dpe">
+    <!-- Titre plus grand -->
+    <div class="sidebar-title">الاحصائيات الجهوية لمندوب حماية الطفولة بولاية {{ request.user.delegate_profile.get_wilaya_display }}
+        </div>
+    
+    <!-- Liens -->
+    <a href="{% url 'tableauboardstatistique' %}" >احصائيات عامة </a>  
+     <a href="{% url 'notifications_tableauboardstatistique' %}">احصائيات الاشعارات</a>
+    <!-- <a href="#">الاحصائيات حسب الفئات </a>
+    <a href="#">الاحصائيات حسب الوضعيات</a>-->
+    <a href="{% url 'tableauboard_mandoub_jihawi' %}">المنظومة المعلوماتية</a>
+</div>
+<br>
+<div class="d-flex justify-content-end" >
+    
+
+ <button class="btn me-2" onclick="downloadWord()" style="background-color: #020725; color: #ffd966; border: none;">
+    <i class="bi bi-file-earmark-word"></i> Télécharger Word
+</button>
+
+
+
+</div>
+
+
+
+<!-- Contenu principal -->
+<div class="content">
+
+    <h2 class="mb-4"></h2>
+       <h2 class="mb-4"></h2>
+          <h2 class="mb-4"></h2>
+<div id="statistics-section">
+    <!-- البطاقات -->
+  <!-- Cards avec icônes et titres sur la même ligne -->
+<div class="row row-cols-1 row-cols-md-5 g-3 mb-4">
+
+    <div class="col">
+        <div class="card text-center p-3">
+            <div class="d-flex align-items-center justify-content-center ">
+                <i class="bi bi-people-fill me-2"></i>
+                <h5 class="mb-0">الأطفال المهددين</h5>
+            </div>
+            <h3>{{ registered_children_count }}</h3>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card text-center p-3">
+            <div class="d-flex align-items-center justify-content-center mb-2">
+                <i class="fas fa-baby me-2"></i>
+                <h5 class="mb-0">الأطفال خارج إطار الزواج</h5>
+            </div>
+            <h3>{{ unmarried_children_count }}</h3>
+        </div>
+    </div>
+<!--
+    <div class="col">
+        <div class="card text-center p-3">
+            <div class="d-flex align-items-center justify-content-center 
+            ">
+                <i class="bi bi-globe me-2"></i>
+                <h5 class="mb-0">الأطفال الأجانب</h5>
+            </div>
+            <h3>{{ foreign_children_count }}</h3>
+        </div>
+    </div>-->
+
+    <div class="col">
+        <div class="card text-center p-3">
+            <div class="d-flex align-items-center justify-content-center mb-2">
+                <i class="fas fa-user-slash me-2"></i>
+                <h5 class="mb-0">الأطفال الأجانب خارج إطار الزواج</h5>
+            </div>
+            <h3>{{ foreign_unmarried_illegal_count }}</h3>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card text-center p-3">
+            <div class="d-flex align-items-center justify-content-center mb-2">
+                 <i class="fas fa-child fs-5 me-2"></i>
+                <h5 class="mb-0">التخلي عن طفل مولود خارج الزواج</h5>
+            </div>
+            <h3>{{ children_count }}</h3>
+        </div>
+    </div>
+
+</div>
+
+    <!-- الرسوم البيانية -->
+   <div class="row g-2">
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white chart-card">
+            <h4 class="card-title text-center">عدد الأطفال المسجلين سنويا</h4>
+            <div class="chart-wrapper">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white chart-card">
+            <h4 class="card-title text-center">عدد الأطفال حسب الفئات</h4>
+            <div class="chart-wrapper">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    </div>
+</div>
+
+
+</div>
+
+<script>
+// Pie Chart: عدد الأطفال المسجلين سنويا (sans labels sur les tranches)
+const pieCtx = document.getElementById('lineChart').getContext('2d');
+const yearlyData = {{ yearly_registration|safe }};
+const years = {{ years|safe }};
+const totalChildren = yearlyData.reduce((a,b) => a+b, 0);
+
+const pieChart = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+        labels: years,
+        datasets: [{
+            data: yearlyData,
+            backgroundColor: ['#66ffd1','#84d546','#ffc107','#dc3545','#6f42c1'],
+            borderColor: '#ffd966',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: '#ffd966', font: { size: 18 } }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const value = context.raw;
+                        const percent = ((value / totalChildren) * 100).toFixed(1) + '%';
+                        return `عدد الأطفال: ${value} (${percent})`;
+                    }
+                }
+            },
+            datalabels: { display: false } // ❌ supprime labels sur les tranches
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+
+// Ajouter le total et pourcentage sous le graphique
+const pieChartWrapper = document.querySelector('.chart-wrapper');
+const totalInfoDiv = document.createElement('div');
+totalInfoDiv.style.color = '#ffd966';
+totalInfoDiv.style.fontWeight = 'bold';
+totalInfoDiv.style.marginTop = '10px';
+totalInfoDiv.style.textAlign = 'center';
+
+let infoHtml = '';
+years.forEach((year, i) => {
+    const value = yearlyData[i];
+    const percent = ((value / totalChildren) * 100).toFixed(1);
+    infoHtml += `${year} : (${percent}%)<br>`;
+});
+
+totalInfoDiv.innerHTML = infoHtml;
+pieChartWrapper.appendChild(totalInfoDiv);
+
+
+// Bar Chart: عدد الأطفال حسب الفئات
+const barCtx = document.getElementById('barChart').getContext('2d');
+const barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+        labels: ['المهددين','خارج الزواج','الأجانب','أجانب خارج الزواج غير قانونيين','التخلي عن طفل مولود خارج الزواج'],
+        datasets: [{
+            label: 'عدد الأطفال',
+            data: [
+                {{ registered_children_count }},
+                {{ unmarried_children_count }},
+                {{ foreign_children_count }},
+                {{ foreign_unmarried_illegal_count }},
+                {{ children_count }}
+            ],
+            backgroundColor: ['#0d6efd','#ffc107','#198754','#dc3545','#84d546']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            datalabels: {
+                anchor: 'end',
+                align: 'end',
+                color: '#ffd966', // couleur des nombres sur les barres
+                font: { weight: 'bold', size: 14 },
+                formatter: (value) => value
+            }
+        },
+        scales: {
+            x: { ticks: { color: '#ffd966' }, grid: { color: 'rgba(0,0,0,0.1)' } },
+            y: { ticks: { color: '#ffd966' }, grid: { color: 'rgba(0,0,0,0.1)' } }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+ 
+function downloadWord() {
+    // ⚡ Redessiner les charts pour que les labels soient visibles
+    pieChart.update();
+    barChart.update();
+
+    // ✅ Récupérer le texte total / pourcentage sous le pie chart
+    const pieChartWrapper = document.querySelector('.chart-wrapper');
+    const totalInfoDiv = pieChartWrapper.querySelector('div'); // notre div créée avec total/%
+    const totalInfoHTML = totalInfoDiv ? `<p style="font-weight:bold; text-align:center;">${totalInfoDiv.innerHTML}</p>` : '';
+
+    const tableHTML = `
+    <h3>Résumé des enfants</h3>
+    <table border="1" style="border-collapse:collapse; width:100%; text-align:center;">
+        <tr><th>الفئة</th><th>عدد الأطفال</th></tr>
+        <tr><td>الأطفال المهددين</td><td>{{ registered_children_count }}</td></tr>
+        <tr><td>الأطفال خارج إطار الزواج</td><td>{{ unmarried_children_count }}</td></tr>
+        <tr><td>الأطفال الأجانب</td><td>{{ foreign_children_count }}</td></tr>
+        <tr><td>الأطفال الأجانب خارج إطار الزواج</td><td>{{ foreign_unmarried_illegal_count }}</td></tr>
+        <tr><td>التخلي عن طفل مولود خارج الزواج</td><td>{{ children_count }}</td></tr>
+    </table>
+
+    <h3>Graphique: عدد الأطفال المسجلين سنويا</h3>
+    <img src="${document.getElementById('lineChart').toDataURL('image/png',1.0)}" style="width:100%; max-width:600px; margin-bottom:10px;">
+    ${totalInfoHTML} <!-- <-- Ajouter le total et pourcentage -->
+
+    <h3>Graphique: عدد الأطفال حسب الفئات</h3>
+    <img src="${document.getElementById('barChart').toDataURL('image/png',1.0)}" style="width:100%; max-width:600px;">
+    `;
+
+    const blob = new Blob(['\ufeff', tableHTML], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Statistiques.doc';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+
+
+
+</script>
+
+</body>
+</html>

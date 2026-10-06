@@ -1,0 +1,23 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4>تأكيد حذف الإشعار</h4>
+            </div>
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                <p>هل أنت متأكد من حذف إشعار الاتجار الخاص بالطفل <strong>{{ notification.child.first_name }} {{ notification.child.last_name }}</strong>؟</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">نعم، احذف</button>
+                    <a href="{% url 'trafficking_notification_list' %}" class="btn btn-secondary">إلغاء</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

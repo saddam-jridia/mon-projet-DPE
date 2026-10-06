@@ -1,0 +1,618 @@
+<style>.child-info {
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-radius: 0 0 8px 8px;
+}
+
+.child-info .row {
+    margin-bottom: 12px;
+}
+
+.child-info .row:last-child {
+    margin-bottom: 0;
+}
+
+.child-info .col-md-3 {
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.child-info .info-label {
+    font-weight: 600;
+    color: #64748b;
+    margin-left: 4px;
+}</style>
+
+<div id="assessment-card-{{ assessment.id }}" class="assessment-file">
+    <div class="file-header">
+        <h5>
+            <i class="fas fa-file-alt me-2"></i>
+            تقدير جدية الإشعار على الإشعار رقم ({{ assessment.notification.notifier_number }})
+        </h5> <div class="d-flex align-items-center gap-2">
+           
+            <button class="btn-edit-file"
+                    hx-get="{% url 'threat_assessment_edit_form' assessment.id %}"
+                    hx-target="#assessment-card-{{ assessment.id }}"
+                    hx-swap="outerHTML">
+                <i class="fas fa-edit"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="file-body">
+       <!-- معلومات الإشعار -->
+<!-- معلومات الإشعار -->
+<div class="file-section">
+    <div class="file-section-title">
+        <i class="fas fa-bell"></i>
+        معلومات الإشعار
+    </div>
+    <div class="child-info">
+        <div class="row">
+            <div class="col-md-3">
+                <span class="info-label">رقم الإشعار:</span> {{ assessment.notification.notifier_number|default:"--" }}
+            </div>
+            <div class="col-md-3">
+                <span class="info-label">المعرف الوحيد:</span> {{ assessment.notification.child.uid|default:"--" }}
+            </div>
+            <div class="col-md-3">
+                <span class="info-label">الاسم:</span> {{ assessment.notification.child.first_name|default:"--" }}
+            </div>
+            <div class="col-md-3">
+                <span class="info-label">اللقب:</span> {{ assessment.notification.child.last_name|default:"--" }}
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+        <!-- تاريخ التقدير -->
+        <div class="file-section">
+            <div class="file-section-title">
+                <i class="fas fa-calendar-alt"></i>
+                تاريخ تقدير حالة التهديد
+            </div>
+            <div class="date-display">
+                <i class="far fa-calendar-check"></i>
+                <span>{{ assessment.assessment_date|default:"غير محدد"|date:"Y-m-d" }}</span>
+            </div>
+        </div>
+        
+       <!-- القرار المتخذ -->
+
+<div class="file-section">
+
+    <div class="file-section-title">
+        <i class="fas fa-gavel"></i>
+        القرار المتخذ
+    </div>
+
+
+    {% with a=assessment %}
+
+
+    <!-- ===================================== -->
+    <!-- التعهد بوضعية الطفل -->
+    <!-- ===================================== -->
+
+    {% if a.decision_type == 'commitment' %}
+
+        <div class="decision-block positive">
+
+            <div class="decision-header">
+                <i class="fas fa-check-circle"></i>
+                <span>التعهد بوضعية الطفل بــــ</span>
+            </div>
+
+            <div class="decision-body">
+
+                <ul class="decision-list">
+
+
+                    {% if a.decision_social_protection %}
+                    <li class="positive-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>توفير الحماية الاجتماعية</span>
+                    </li>
+                    {% endif %}
+
+
+                    <!-- اعلام قاضي الأسرة -->
+                    {% if a.decision_family_judge %}
+                    <li class="positive-item">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>اعلام قاضي الأسرة</span>
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.decision_public_prosecutor %}
+                    <li class="positive-item">
+                        <i class="fas fa-gavel"></i>
+                        <span>إعلام النيابة العمومية بوضعية الطفل</span>
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.decision_violence_unit %}
+                    <li class="positive-item">
+                        <i class="fas fa-fist-raised"></i>
+                        <span>
+                            إحالة الوضعية على الوحدة المختصة
+                        </span>
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.decision_relevant_services %}
+                    <li class="positive-item">
+                        <i class="fas fa-building"></i>
+                        <span>
+                            إعلام المصالح ذات الصلة
+                        </span>
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.decision_trafficking_committee %}
+                    <li class="positive-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>
+                            إعلام الهيئة الوطنية لمكافحة للإتجار بالاشخاص
+                        </span>
+                    </li>
+                    {% endif %}
+
+
+                </ul>
+
+            </div>
+
+        </div>
+
+
+    <!-- ===================================== -->
+    <!-- رفع الأمر إلى قاضي الأسرة -->
+    <!-- ===================================== -->
+
+    {% elif a.decision_type == 'family' %}
+
+        <div class="decision-block family-decision">
+
+            <div class="decision-header">
+
+                <i class="fas fa-balance-scale"></i>
+
+                <span>
+                    رفع الأمر إلى قاضي الأسرة
+                </span>
+
+            </div>
+
+
+            <div class="decision-body">
+
+                {% if a.decision_family_referral %}
+
+                    <ul class="decision-list">
+
+                        <li class="positive-item">
+
+                           
+
+                            <span>
+                                تم اتخاذ قرار رفع الأمر إلى قاضي الأسرة
+                            </span>
+
+                        </li>
+
+                    </ul>
+
+                {% else %}
+
+                    <span class="no-data">
+                        تم اختيار رفع الأمر إلى قاضي الأسرة
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+    <!-- ===================================== -->
+    <!-- عدم التعهد -->
+    <!-- ===================================== -->
+
+    {% elif a.decision_type == 'no_commitment' %}
+
+        <div class="decision-block negative">
+
+            <div class="decision-header">
+
+                <i class="fas fa-times-circle"></i>
+
+                <span>
+                    عدم التعهد بوضعية الطفل بسبب
+                </span>
+
+            </div>
+
+
+            <div class="decision-body">
+
+                <ul class="decision-list">
+
+
+                    {% if a.reason_not_serious %}
+                    <li class="negative-item">
+                        عدم جدية الإشعار
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.reason_not_professional %}
+                    <li class="negative-item">
+                        عدم الاختصاص المهني
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.reason_not_territorial %}
+                    <li class="negative-item">
+                        عدم الاختصاص الترابي
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.reason_age_18 %}
+                    <li class="negative-item">
+                        بلوغ سن 18 سنة
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.reason_address_inaccurate %}
+                    <li class="negative-item">
+                        عنوان غير دقيق
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.reason_threat_removed %}
+                    <li class="negative-item">
+                        زوال التهديد
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.reason_child_death %}
+                    <li class="negative-item">
+                        وفاة الطفل
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.reason_no_agreement_20_days %}
+                    <li class="negative-item">
+                        عدم الحصول على أي اتفاق في 20 يوما
+                    </li>
+                    {% endif %}
+
+
+                    {% if a.reason_agreement_breached %}
+                    <li class="negative-item">
+                        نقض الاتفاق
+                    </li>
+                    {% endif %}
+
+
+                </ul>
+
+            </div>
+
+        </div>
+
+
+    <!-- ===================================== -->
+    <!-- لا يوجد قرار -->
+    <!-- ===================================== -->
+
+    {% else %}
+
+        <span class="no-data">
+            لم يتم اتخاذ أي قرار
+        </span>
+
+    {% endif %}
+
+
+    {% endwith %}
+
+</div>
+        
+        <!-- معلومات التسجيل -->
+        <div class="file-section meta-section">
+            <div class="file-section-title">
+                <i class="fas fa-clock"></i>
+                معلومات تسجيل تقدير جدية الإشعار
+            </div>
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <i class="fas fa-plus-circle text-muted"></i>
+                    <div>
+                        <span class="meta-label">تاريخ الإنشاء</span>
+                        <span class="meta-value">{{ assessment.created_at|date:"Y-m-d H:i" }}</span>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-sync-alt text-muted"></i>
+                    <div>
+                        <span class="meta-label">آخر تحديث</span>
+                        <span class="meta-value">{{ assessment.updated_at|date:"Y-m-d H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.assessment-file {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.file-header {
+    background: #003154;
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-header h5 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.file-number {
+    background: rgba(255,255,255,0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.btn-edit-file {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit-file:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.05);
+}
+
+.file-body {
+    padding: 1.5rem;
+}
+
+.file-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.file-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.file-section-title {
+    color: #003154;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.file-section-title i {
+    color: #0056b3;
+}
+
+/* معلومات الإشعار */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border-right: 3px solid #003154;
+}
+
+.info-label {
+    display: block;
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    display: block;
+    color: #212529;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.highlight-id {
+    color: #003154;
+    font-family: monospace;
+    font-size: 1rem;
+}
+
+/* تاريخ التقدير */
+.date-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #e7f3ff;
+    color: #003154;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.date-display i {
+    color: #0056b3;
+    font-size: 1.2rem;
+}
+
+/* القرارات */
+.decision-block {
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.decision-block:last-child {
+    margin-bottom: 0;
+}
+
+.decision-block.positive {
+    background: #f0f9f0;
+    border: 1px solid #d4edda;
+}
+
+.decision-block.negative {
+    background: #fff5f5;
+    border: 1px solid #f8d7da;
+}
+
+.decision-header {
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.decision-block.positive .decision-header {
+    color: #155724;
+}
+
+.decision-block.negative .decision-header {
+    color: #721c24;
+}
+
+.decision-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.decision-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.decision-list li:last-child {
+    border-bottom: none;
+}
+
+.badge-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.positive-item .badge-icon {
+    background: #d4edda;
+    color: #155724;
+}
+
+.negative-item .badge-icon {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.no-data {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* معلومات التسجيل */
+.meta-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.meta-item i {
+    font-size: 1.5rem;
+}
+
+.meta-label {
+    display: block;
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.meta-value {
+    display: block;
+    color: #212529;
+    font-weight: 600;
+    font-size: 0.9rem;
+    font-family: monospace;
+}
+
+/* RTL Support */
+[dir="rtl"] .info-item {
+    border-right: none;
+    border-left: 3px solid #003154;
+}
+</style>

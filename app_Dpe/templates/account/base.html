@@ -4,52 +4,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block head_title %}منظومة مندوبي حماية الطفولة{% endblock %}</title>
+  <title>{% block head_title %}المنظومة المعلوماتية الخاصة بالمكاتب الجهوية لمندوبي حماية الطفولة {% endblock %}</title>
 
   <!-- Bootstrap RTL -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap" rel="stylesheet">
 
-  <!-- Icons (optional) -->
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-  <style>
+ <style>
     :root {
-      --primary-color: #005a9e;
-      --secondary-color: #f1f9ff;
-      --text-dark: #003366;
-      --text-light: #555;
+      --primary-color: #1a1a1a;
+      --secondary-color: #b8860b;
+      --text-dark: #2c2c2c;
+      --text-light: #555555;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-
+    
     body {
-      font-family: 'Tajawal', sans-serif;
-      background-color: #f8fbfd;
+      font-family: "Times New Roman", serif !important;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(100, 100, 100, .03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(150, 150, 150, .04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
       color: var(--text-light);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* Navbar */
+ 
+
+    /* ====== NAVBAR - NOIR/DORÉ ====== */
     .navbar-main {
-      background: linear-gradient(135deg, #ffffff, #eef7ff);
+      background: #1a1a1a;
+      border-bottom: 3px solid #b8860b;
       box-shadow: var(--shadow);
       padding: 0.6rem 0;
     }
 
     .navbar-main .navbar-brand {
       font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--text-dark);
+      font-size: 1.4rem;
+      color: #ffffff;
       display: flex;
       align-items: center;
       gap: 10px;
+      font-family: "Times New Roman", serif !important;
     }
 
     .navbar-main .logo-dpe {
@@ -63,35 +71,85 @@
     }
 
     .navbar-main .nav-link {
-      color: var(--text-dark);
+      color: #e0e0e0;
       font-weight: 600;
       margin-left: 1rem;
-      transition: color 0.3s ease;
+      transition: all 0.3s ease;
     }
 
     .navbar-main .nav-link:hover {
-      color: var(--primary-color);
+      color: #b8860b;
     }
 
-    /* Footer */
-    footer {
-      margin-top: auto;
-      background-color: var(--primary-color);
-      color: white;
-      text-align: center;
-      padding: 1.2rem 0.5rem;
-      font-size: 0.9rem;
+    /* ====== BOUTON الدخول - GRIS/DORÉ ====== */
+    .login-btn {
+      background: transparent;
+      color: #e0e0e0;
+      font-weight: 600;
+      padding: 6px 18px;
+      border: 2px solid #b8860b;
+      border-radius: 50px;
+      transition: all 0.3s ease;
     }
 
-    /* Alerts */
+    .login-btn:hover {
+      background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+      color: #ffffff;
+      border-color: #d4a520;
+      transform: translateY(-2px);
+    }
+
+    .login-btn i {
+      color: #b8860b;
+    }
+
+    /* ====== BOUTON الخروج - GRIS/DORÉ ====== */
+    .logout-btn {
+      background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+      color: #ffffff;
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-weight: 600;
+      border: 2px solid #b8860b;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+      color: #ffffff;
+      border-color: #d4a520;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .logout-btn i {
+      color: #b8860b;
+      margin-left: 5px;
+    }
+
+    /* ====== ALERTS ====== */
     .alert-container {
       margin-top: 1rem;
+    }
+
+    .alert {
+      border-radius: 12px;
+    }
+
+    /* ====== TOGGLER ====== */
+    .navbar-toggler {
+      border-color: #b8860b;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23b8860b' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
     }
 
     /* Responsive */
     @media (max-width: 576px) {
       .navbar-main .navbar-brand {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
       }
 
       .navbar-main .logo-dpe {
@@ -105,47 +163,41 @@
 <body>
 
   <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-main">
+    <div class="container">
 
-<nav class="navbar navbar-expand-lg navbar-main">
-  <div class="container">
+      <!-- Logo -->
+      <a class="navbar-brand" href="{% url 'login_delegate' %}">
+        
+        المنظومة المعلوماتية الخاصة بالمكاتب الجهوية لمندوبي حماية الطفولة
+      </a>
 
-    <!-- 1. Logo à gauche -->
-    <a class="navbar-brand" href="{% url 'login' %}">
-      <img src="{% static 'images/dpe.png' %}" alt="DPE" class="logo-dpe">
-      منظومة مندوبي حماية الطفولة
-    </a>
+      <!-- Bouton toggle mobile -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <!-- 2. Bouton toggle mobile -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+      <!-- Liens -->
+      <div class="collapse navbar-collapse" id="navbarMenu">
+        <ul class="navbar-nav ms-auto">
+          {% if not user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link login-btn" href="{% url 'index' %}">
+                <i class="bi bi-person-circle"></i> الخروج
+              </a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="bi bi-box-arrow-left"></i> الخروج
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
 
-    <!-- 3. Liens à droite -->
-    <div class="collapse navbar-collapse" id="navbarMenu">
-      <ul class="navbar-nav ms-auto">
-        {% if not user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">
-              <i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'delegate_create' %}">
-              <i class="bi bi-person-plus"></i> تسجيل مندوب
-            </a>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">
-              <i class="bi bi-box-arrow-right"></i> تسجيل الخروج
-            </a>
-          </li>
-        {% endif %}
-      </ul>
     </div>
-
-  </div>
-</nav>
+  </nav>
 
   <!-- Messages -->
   <div class="container alert-container">
@@ -164,12 +216,8 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
-  <footer>
-    وزارة الأسرة والمرأة والطفولة وكبار السن &copy; {% now 'Y' %}
-  </footer>
-
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+{% include "account/footer2.html" %}
 </html>

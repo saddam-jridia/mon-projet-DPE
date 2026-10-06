@@ -1,0 +1,740 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block head_title %}جميع مطالب الحماية المرفوعة لقاضي الأسرة{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ===== CORRECTION DU CONTENEUR PRINCIPAL ===== */
+    .main-content {
+        margin-right: 260px !important;
+        margin-top: 80px !important;
+        padding: 20px 25px !important;
+        background: #f4f6f9 !important;
+        min-height: calc(100vh - 80px) !important;
+        direction: rtl;
+        box-sizing: border-box;
+        width: auto !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-inner {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* ===== HEADER ===== */
+    .modern-header {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+        padding: 15px 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-bottom: 3px solid #d4a520;
+        width: 100%;
+    }
+
+    .brand-section .system-title {
+        font-size: 20px;
+        font-weight: 900;
+        color: #d4a520;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .brand-section .system-title i {
+        font-size: 24px;
+        color: #d4a520;
+    }
+
+    .brand-section .subtitle {
+        font-size: 12px;
+        color: rgba(255,255,255,0.7);
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .brand-section .subtitle i {
+        color: #d4a520;
+    }
+
+    .brand-section .subtitle .separator {
+        color: rgba(255,255,255,0.3);
+    }
+
+    /* ===== MENU BUTTONS ===== */
+    .menu-container { display: flex; flex-wrap: wrap; gap: 8px; }
+    
+    .menu-btn {
+        display: flex; align-items: center; gap: 5px;
+        padding: 6px 14px;
+        background: transparent;
+        color: #d4a520;
+        border: 2px solid #d4a520;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-family: inherit;
+        text-decoration: none;
+    }
+    .menu-btn:hover {
+        background: #d4a520;
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 165, 32, 0.3);
+    }
+    .menu-btn i { font-size: 13px; }
+
+    .menu-btn-primary {
+        background: #d4a520;
+        color: #000;
+        border: 2px solid #d4a520;
+    }
+    .menu-btn-primary:hover {
+        background: #b8860b;
+        border-color: #b8860b;
+        color: #fff;
+    }
+
+    /* ===== CARD ===== */
+    .modern-card {
+        background: white;
+        border-radius: 16px;
+        padding: 0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 1px solid rgba(212, 165, 32, 0.1);
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+        color: #d4a520;
+        padding: 12px 20px;
+        border-bottom: 3px solid #d4a520;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .card-header-custom h3 {
+        font-size: 18px;
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .card-header-custom h3 i {
+        color: #d4a520;
+    }
+
+    .card-header-custom .header-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* ===== STATS ===== */
+    .stats-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        font-size: 12px;
+        border: 1px solid rgba(212, 165, 32, 0.3);
+        flex-shrink: 0;
+    }
+    .stats-badge i { color: #d4a520; }
+    .stats-badge .number {
+        background: #d4a520;
+        color: #000;
+        padding: 1px 8px;
+        border-radius: 4px;
+        font-weight: 900;
+        font-size: 13px;
+        margin-right: 3px;
+    }
+
+    /* ===== SEARCH BAR ===== */
+    .search-bar {
+        padding: 12px 20px;
+        background: #fafafa;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+        max-width: 400px;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #d4a520;
+        font-size: 14px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 8px 35px 8px 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 13px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .search-input:focus {
+        border-color: #d4a520;
+        box-shadow: 0 0 0 4px rgba(212, 165, 32, 0.15);
+        outline: none;
+    }
+
+    .search-input::placeholder {
+        color: #adb5bd;
+        font-size: 12px;
+    }
+
+    /* ===== TABLE ===== */
+    .table-responsive {
+        padding: 0 15px 15px 15px;
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        min-width: 650px;
+    }
+
+    .data-table th {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+        color: #d4a520;
+        font-weight: 700;
+        text-align: center;
+        padding: 10px 8px;
+        border-bottom: 3px solid #d4a520;
+        font-size: 12px;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+    }
+    .data-table th i {
+        margin-left: 4px;
+        font-size: 12px;
+    }
+
+    .data-table td {
+        text-align: center;
+        padding: 8px 6px;
+        vertical-align: middle;
+        color: #222 !important;
+        font-size: 12px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .data-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    .data-table tbody tr:hover {
+        background: #fef9e6 !important;
+    }
+    .data-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* ===== PARENT ROW ===== */
+    .parent-row {
+        background: #f8f9fa;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .parent-row td:first-child {
+        border-right: 3px solid #d4a520;
+    }
+    .parent-row:hover {
+        background: #f0f0f0 !important;
+    }
+
+    /* ===== CHILD ROW ===== */
+    .child-row td:first-child {
+        padding-right: 30px;
+    }
+
+    .toggle-icon {
+        cursor: pointer;
+        margin-left: 6px;
+        color: #d4a520;
+        transition: transform 0.3s ease;
+        font-size: 14px;
+    }
+    .toggle-icon.rotated {
+        transform: rotate(180deg);
+    }
+
+    .demande-count {
+        background: #d4a520;
+        color: #000;
+        border-radius: 20px;
+        padding: 1px 8px;
+        font-size: 10px;
+        font-weight: 700;
+        margin-right: 6px;
+    }
+
+    /* ===== BADGES ===== */
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 700;
+    }
+    .badge-primary { background: #3b82f6; color: white; }
+    .badge-success { background: #28a745; color: white; }
+    .badge-danger { background: #dc3545; color: white; }
+    .badge-warning { background: #ffc107; color: #000; }
+    .badge-info { background: #17a2b8; color: white; }
+    .badge-secondary { background: #6c757d; color: white; }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 10px;
+        margin: 1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        font-family: inherit;
+    }
+    .btn i { font-size: 10px; }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #d4a520, #b8860b);
+        color: #000;
+    }
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(184, 134, 11, 0.3);
+        color: #000;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    .btn-success:hover {
+        background: #218838;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .btn-sm { padding: 2px 8px; font-size: 9px; }
+    .btn-sm i { font-size: 9px; }
+
+    /* ===== ALERT ===== */
+    .alert-custom {
+        border-radius: 8px;
+        margin: 0 15px 12px 15px;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-right: 4px solid transparent;
+        font-size: 12px;
+        position: relative;
+    }
+    .alert-success {
+        background: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+    }
+    .alert-info {
+        background: #cce5ff;
+        border-color: #17a2b8;
+        color: #004085;
+    }
+    .alert-warning {
+        background: #fff3cd;
+        border-color: #ffc107;
+        color: #856404;
+    }
+    .btn-close-alert {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 10px;
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        opacity: 0.5;
+        padding: 0 5px;
+        line-height: 1;
+    }
+    .btn-close-alert:hover { opacity: 1; }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 16px;
+        margin: 10px;
+        border: 2px dashed #e5e7eb;
+    }
+    .empty-state i {
+        font-size: 2.5rem;
+        color: #d4a520;
+        margin-bottom: 10px;
+        opacity: 0.6;
+    }
+    .empty-state .title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+    .empty-state .desc {
+        color: #6c757d;
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+
+    /* ===== RTL ===== */
+    .rtl { direction: rtl; text-align: right; }
+    .text-center { text-align: center; }
+    .text-muted { color: #6c757d; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 992px) {
+        .main-content {
+            margin-right: 70px !important;
+            padding: 15px !important;
+        }
+    }
+    @media (max-width: 768px) {
+        .main-content {
+            margin-right: 0 !important;
+            margin-top: 70px !important;
+            padding: 10px !important;
+        }
+        .modern-header {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+            padding: 12px;
+        }
+        .menu-container { justify-content: center; }
+        .card-header-custom {
+            flex-direction: column;
+            text-align: center;
+        }
+        .card-header-custom .header-actions {
+            justify-content: center;
+        }
+        .search-bar { 
+            flex-direction: column; 
+            align-items: stretch;
+            padding: 10px;
+        }
+        .search-input-wrapper { max-width: 100%; }
+        .table-responsive { padding: 0 10px 10px 10px; }
+        .data-table { font-size: 11px; min-width: 550px; }
+        .data-table th, .data-table td { padding: 4px 3px; }
+        .btn { font-size: 8px; padding: 2px 5px; }
+        .btn i { font-size: 8px; }
+        .stats-badge { font-size: 10px; padding: 3px 8px; }
+        .brand-section .system-title { font-size: 16px; }
+        .brand-section .subtitle { font-size: 10px; }
+    }
+    @media (max-width: 480px) {
+        .main-content { padding: 8px !important; }
+        .data-table { font-size: 9px; min-width: 450px; }
+        .data-table th, .data-table td { padding: 3px 2px; }
+        .btn { font-size: 7px; padding: 2px 4px; }
+        .btn i { font-size: 7px; }
+        .card-header-custom h3 { font-size: 14px; }
+        .badge { font-size: 8px; padding: 2px 5px; }
+    }
+</style>
+
+<div class="page-inner rtl">
+
+    <!-- ===== HEADER ===== -->
+    <div class="modern-header">
+        <div class="brand-section">
+            <div class="system-title">
+                <i class="fas fa-gavel"></i>
+                <span>جميع مطالب الحماية المرفوعة لقاضي الأسرة</span>
+            </div>
+            <div class="subtitle">
+                <i class="fas fa-list"></i> قائمة المطالب
+                <span class="separator">|</span>
+                <i class="fas fa-user-tie"></i> {{ request.user.delegate_profile.first_name }} {{ request.user.delegate_profile.last_name }}
+            </div>
+        </div>
+        <div class="menu-container">
+            
+            <button onclick="window.location.reload();" class="menu-btn menu-btn-primary">
+                <i class="fas fa-sync-alt"></i>
+                <span>تحديث</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== MESSAGES ===== -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-custom alert-{% if message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}" role="alert">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+                <span>{{ message }}</span>
+                <button type="button" class="btn-close-alert" onclick="this.parentElement.remove();">×</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- ===== MAIN CARD ===== -->
+    <div class="modern-card">
+        <div class="card-header-custom">
+            <h3>
+                <i class="fas fa-file-alt"></i>
+                مطالب الحماية
+                <span class="stats-badge" style="margin-right: 10px;">
+                    <i class="fas fa-list"></i>
+                    <span>المجموع:</span>
+                    <span class="number">{{ total_demandes|default:0 }}</span>
+                </span>
+            </h3>
+             </div>
+
+        <!-- ===== SEARCH BAR ===== -->
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchBox" class="search-input" 
+                       placeholder="بحث بالاسم أو المعرف..."
+                       autocomplete="off">
+            </div>
+        </div>
+
+        <!-- ===== TABLE ===== -->
+        <div class="table-responsive">
+            <table class="data-table" id="demandesTable">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;"></th>
+                        <th style="width: 18%;"><i class="fas fa-user"></i> اسم الطفل</th>
+                        <th style="width: 18%;"><i class="fas fa-user-tag"></i> لقب الطفل</th>
+                        <th style="width: 12%;"><i class="fas fa-id-card"></i> المعرف</th>
+                        <th style="width: 12%;"><i class="fas fa-calendar"></i> تاريخ المطلب</th>
+                        <th style="width: 12%;"><i class="fas fa-clipboard-list"></i> التدابير</th>
+                        <th style="width: 10%;"><i class="fas fa-info-circle"></i> الحالة</th>
+                        <th style="width: 13%;"><i class="fas fa-cogs"></i> الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enfant_id, demandes in enfants_groupes.items %}
+                        {% with premiere_demande=demandes.0 %}
+                        <tr class="parent-row" data-enfant-id="{{ enfant_id }}">
+                            <td>
+                                <i class="fas fa-chevron-down toggle-icon" onclick="toggleDemandes({{ enfant_id }})"></i>
+                                <span class="demande-count">{{ demandes|length }}</span>
+                            </td>
+                            <td class="enfant-first-name"><strong>{{ premiere_demande.enfant.first_name|default:"-" }}</strong></td>
+                            <td class="enfant-last-name"><strong>{{ premiere_demande.enfant.last_name|default:"-" }}</strong></td>
+                            <td><span class="badge badge-primary">{{ premiere_demande.enfant.uid|default:"-" }}</span></td>
+                            <td colspan="4" style="text-align: right; color: #6c757d; font-size: 11px;">
+                                <i class="fas fa-file-alt"></i> {{ demandes|length }} مطلب حماية
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        
+                        {% for demande in demandes %}
+                        <tr class="child-row child-row-{{ enfant_id }}" style="display: none;">
+                            <td></td>
+                            <td colspan="2"></td>
+                            <td></td>
+                            <td>{{ demande.date_demande|date:"d/m/Y"|default:"-" }}</td>
+                            <td>
+                                {% if demande.mesures %}
+                                    <span class="badge badge-info">{{ demande.mesures|length }} تدبير</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">لا توجد</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if demande.resultat and demande.resultat.accord_protection == True %}
+                                    <span class="badge badge-success">مكتمل</span>
+                                {% elif demande.resultat and demande.resultat.accord_protection == False %}
+                                    <span class="badge badge-danger">مرفوض</span>
+                                {% else %}
+                                    <span class="badge badge-warning">قيد المعالجة</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'production_request_edit' demande.id %}" class="btn btn-primary btn-sm" title="تعديل المطلب">
+                                    <i class="fas fa-edit"></i> تعديل
+                                </a>
+                                <a href="{% url 'resultat_production_request' demande.id %}" class="btn btn-success btn-sm" title="مآل مطلب الحماية">
+                                    <i class="fas fa-chart-line"></i> المآل
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <div class="title">لا توجد مطالب حماية</div>
+                                <div class="desc">لم تقم بإضافة أي مطلب حماية حتى الآن</div>
+                                <a href="{% url 'production_list_notification_production' %}" class="menu-btn menu-btn-primary" style="margin-top: 10px; display: inline-flex;">
+                                    <i class="fas fa-plus"></i> إضافة مطلب جديد
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== TOGGLE DEMANDES =====
+function toggleDemandes(enfantId) {
+    const rows = document.querySelectorAll('.child-row-' + enfantId);
+    const icon = document.querySelector('tr[data-enfant-id="' + enfantId + '"] .toggle-icon');
+    
+    let isVisible = false;
+    rows.forEach(row => {
+        if (row.style.display === 'none' || row.style.display === '') {
+            row.style.display = 'table-row';
+            isVisible = true;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    if (icon) {
+        if (isVisible) {
+            icon.className = 'fas fa-chevron-up toggle-icon';
+        } else {
+            icon.className = 'fas fa-chevron-down toggle-icon';
+        }
+    }
+}
+
+// ===== RECHERCHE =====
+document.addEventListener('DOMContentLoaded', function() {
+    const searchBox = document.getElementById('searchBox');
+    
+    if (searchBox) {
+        searchBox.addEventListener('keyup', function() {
+            const term = this.value.toLowerCase().trim();
+            const parentRows = document.querySelectorAll('#demandesTable tbody tr.parent-row');
+            
+            parentRows.forEach(parentRow => {
+                const enfantId = parentRow.getAttribute('data-enfant-id');
+                const firstName = parentRow.querySelector('.enfant-first-name')?.textContent.toLowerCase() || '';
+                const lastName = parentRow.querySelector('.enfant-last-name')?.textContent.toLowerCase() || '';
+                const uid = parentRow.querySelector('.badge-primary')?.textContent.toLowerCase() || '';
+                
+                const childRows = document.querySelectorAll('.child-row-' + enfantId);
+                let match = false;
+                
+                if (term === '' || firstName.includes(term) || lastName.includes(term) || uid.includes(term)) {
+                    match = true;
+                } else {
+                    childRows.forEach(row => {
+                        const rowText = row.innerText.toLowerCase();
+                        if (rowText.includes(term)) {
+                            match = true;
+                        }
+                    });
+                }
+                
+                if (match) {
+                    parentRow.style.display = '';
+                    childRows.forEach(row => row.style.display = 'none');
+                    const icon = parentRow.querySelector('.toggle-icon');
+                    if (icon) icon.className = 'fas fa-chevron-down toggle-icon';
+                } else {
+                    parentRow.style.display = 'none';
+                    childRows.forEach(row => row.style.display = 'none');
+                }
+            });
+        });
+    }
+    
+    // ===== AUTO-FERMETURE DES MESSAGES =====
+    setTimeout(function() {
+        document.querySelectorAll('.alert-custom').forEach(function(alert) {
+            alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-10px)';
+            setTimeout(function() { alert.remove(); }, 500);
+        });
+    }, 4000);
+});
+
+// ===== SUPPRESSION MANUELLE DES MESSAGES =====
+document.querySelectorAll('.btn-close-alert').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        const alert = this.closest('.alert-custom');
+        if (alert) {
+            alert.style.transition = 'opacity 0.3s ease';
+            alert.style.opacity = '0';
+            setTimeout(function() { alert.remove(); }, 300);
+        }
+    });
+});
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

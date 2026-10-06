@@ -1,0 +1,387 @@
+{% extends "admin/base_admin.html" %}
+{% load static %}
+
+{% block title %}لوحة تحكم الإدارة{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===============================
+   لوحة تحكم الإدارة الرئيسية
+   =============================== */
+
+.dashboard-wrapper {
+    min-height: calc(100vh - 150px);
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+/* رأس الصفحة */
+.dash-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.dash-header h2 {
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+}
+
+.dash-header h2 i {
+    color: #b8860b;
+    margin-left: 10px;
+}
+
+.dash-header .welcome-text {
+    color: #d0d0d0;
+    margin: 0;
+}
+
+.dash-header .welcome-text small {
+    color: #b8860b;
+}
+
+.btn-add-delegate {
+    background: linear-gradient(135deg, #b8860b 0%, #d4a520 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.btn-add-delegate:hover {
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(184,134,11,0.35);
+}
+
+/* بطاقات الإحصائيات */
+.dash-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.dash-stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.75rem 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    text-align: center;
+    border-top: 4px solid #b8860b;
+    transition: all 0.3s ease;
+}
+
+.dash-stat-card.stat-regional { border-top-color: #e0a800; }
+.dash-stat-card.stat-central { border-top-color: #1a1a1a; }
+
+.dash-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.dash-stat-card i {
+    font-size: 2.2rem;
+    color: #b8860b;
+    margin-bottom: 0.75rem;
+}
+
+.dash-stat-card.stat-regional i { color: #e0a800; }
+.dash-stat-card.stat-central i { color: #1a1a1a; }
+
+.dash-stat-number {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #2c2c2c;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+}
+
+.dash-stat-label {
+    color: #777;
+    font-size: 0.95rem;
+}
+
+/* قسم الإجراءات السريعة */
+.dash-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.dash-section-header {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dash-section-header h5 {
+    margin: 0;
+    font-weight: 700;
+    color: #2c2c2c;
+}
+
+.dash-section-header h5 i {
+    color: #b8860b;
+    margin-left: 8px;
+}
+
+.dash-section-body { padding: 1.5rem; }
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.quick-action-btn {
+    background: #faf9f6;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    text-decoration: none;
+    color: #2c2c2c;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.quick-action-btn i {
+    font-size: 1.6rem;
+    color: #b8860b;
+}
+
+.quick-action-btn:hover {
+    border-color: #b8860b;
+    background: #fff8e6;
+    color: #2c2c2c;
+    transform: translateY(-3px);
+}
+
+/* رابط عرض الكل */
+.btn-view-all {
+    background: transparent;
+    color: #b8860b;
+    border: 2px solid #b8860b;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-view-all:hover {
+    background: #b8860b;
+    color: white;
+}
+
+/* جدول آخر المندوبين */
+.dash-table { width: 100%; border-collapse: collapse; }
+
+.dash-table th, .dash-table td {
+    padding: 0.9rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dash-table th {
+    background: #1a1a1a;
+    color: #b8860b;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.dash-table tbody tr:hover { background: #faf9f6; }
+
+.role-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.role-badge.central { background: #e8f5e9; color: #1e7e34; }
+.role-badge.regional { background: #fff8e6; color: #b8860b; }
+
+.dash-action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    margin: 0 2px;
+    transition: all 0.3s ease;
+}
+
+.dash-action-btn.edit { background: #b8860b; }
+.dash-action-btn.edit:hover { background: #d4a520; color: white; }
+.dash-action-btn.delete { background: #dc3545; }
+.dash-action-btn.delete:hover { background: #c82333; color: white; }
+
+.dash-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #999;
+}
+
+.dash-empty i { font-size: 2.5rem; margin-bottom: 1rem; color: #ddd; }
+
+@media (max-width: 768px) {
+    .dashboard-wrapper { padding: 1rem; }
+    .dash-header { padding: 1.25rem; flex-direction: column; align-items: flex-start; }
+    .btn-add-delegate { width: 100%; justify-content: center; }
+    .dash-table { font-size: 0.85rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper" dir="rtl">
+
+    <!-- HEADER -->
+    <div class="dash-header">
+        <div>
+            <h2><i class="fas fa-user-tie"></i> إدارة المندوبين</h2>
+            
+        </div>
+
+        <a href="{% url 'register_delegate' %}" class="btn-add-delegate">
+            <i class="fas fa-user-plus"></i> إضافة مندوب
+        </a>
+    </div>
+
+    <!-- STATISTIQUES -->
+    <div class="dash-stats">
+
+        <div class="dash-stat-card">
+            <i class="fas fa-users"></i>
+            <div class="dash-stat-number">{{ total_delegates }}</div>
+            <div class="dash-stat-label">إجمالي المندوبين</div>
+        </div>
+
+        <div class="dash-stat-card stat-central">
+            <i class="fas fa-building"></i>
+            <div class="dash-stat-number">{{ central_delegates }}</div>
+            <div class="dash-stat-label">المندوبون المركزيون</div>
+        </div>
+
+        <div class="dash-stat-card stat-regional">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="dash-stat-number">{{ regional_delegates }}</div>
+            <div class="dash-stat-label">المندوبون الجهويون</div>
+        </div>
+
+    </div>
+
+    <!-- ACTIONS RAPIDES -->
+    <div class="dash-section">
+        <div class="dash-section-header">
+            
+        </div>
+        <div class="dash-section-body">
+            <div class="quick-actions-grid">
+
+                <a href="{% url 'register_delegate' %}" class="quick-action-btn">
+                    <i class="fas fa-user-plus"></i>
+                    إضافة مندوب جديد
+                </a>
+
+                <a href="{% url 'admin_delegate_list' %}" class="quick-action-btn">
+                    <i class="fas fa-users"></i>
+                    قائمة المندوبين
+                </a>
+
+               
+
+            </div>
+        </div>
+    </div>
+
+    <!-- DERNIERS DELEGUES -->
+    <div class="dash-section">
+        <div class="dash-section-header">
+            <h5><i class="fas fa-clock"></i>آخر المندوبين المسجلين</h5>
+            <a href="{% url 'admin_delegate_list' %}" class="btn-view-all">عرض الكل</a>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>المعرف</th>
+                        <th>الولاية</th>
+                        <th>الصفة</th>
+                        <th>الهاتف</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for delegate in recent_delegates %}
+                    <tr>
+                        <td>{{ delegate.first_name }} {{ delegate.last_name }}</td>
+                        <td><code>{{ delegate.delegate_code }}</code></td>
+                        <td>{{ delegate.get_wilaya_display }}</td>
+                        <td>
+                            {% if delegate.role == 'central' %}
+                                <span class="role-badge central">مركزي</span>
+                            {% else %}
+                                <span class="role-badge regional">جهوي</span>
+                            {% endif %}
+                        </td>
+                        <td>{% if delegate.phone %}{{ delegate.phone }}{% else %}<span style="color:#aaa;">غير متوفر</span>{% endif %}</td>
+                        <td>
+                            <a href="{% url 'admin_delegate_edit' delegate.id %}" class="dash-action-btn edit" title="تعديل">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'admin_delegate_delete' delegate.id %}" class="dash-action-btn delete" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="dash-empty">
+                                <i class="fas fa-users"></i>
+                                <h6>لا يوجد مندوبون مسجلون</h6>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

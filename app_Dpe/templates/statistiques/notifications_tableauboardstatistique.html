@@ -1,0 +1,2319 @@
+<!-- dashboard.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <!-- ✅ Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.4.1/html-docx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+
+    <style>
+        body {
+           background: linear-gradient(135deg, #f5e0a2, #f5e0a2);
+
+
+
+
+            color: #ffd966;
+            font-family: "Times New Roman", serif;
+        }
+        .sidebar {
+            height: 100vh;
+            width: 240px;
+            position: fixed;
+            top: 0;
+            right: 0; /* RTL: sidebar à droite */
+            background-color: #0d0d0d;
+            padding-top: 20px;
+            font-family: "Times New Roman", serif;
+        }
+        .sidebar a {
+            color: #ffd966;
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-family: "Times New Roman", serif;
+            font-size: 23px;
+        }
+        .sidebar a:hover {
+            background-color: #f5e0a2;
+            color: white;
+            border-radius: 5px;
+        }
+        .sidebar .logo-dpe {
+    display: block;
+    margin: 0 auto 10px auto;
+    width: 50px; /* réduit de 120px à 80px */
+    height: auto;
+}
+        .sidebar .sidebar-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 25px; /* augmente la taille du texte */
+    font-weight: bold;
+}
+        .content {
+            margin-right: 260px; /* espace pour la sidebar */
+            padding: 20px;
+            font-family: "Times New Roman", serif;
+             
+        }
+        .card, .card h6, .card h3, .card h5 {
+            font-family: "Times New Roman", serif;
+        }
+
+        .card {
+        background-color: #070a1a; /* beige */
+        color: #ffd966;
+        font-family: "Times New Roman", serif;
+       
+    }
+    .card h6, .card h3 {
+        font-family: "Times New Roman", serif;
+    }
+    .card-icon {
+        font-size: 30px;
+       
+        color: #ffd966; /* couleur verte pour l'icône */
+    }
+
+   .chart-card {
+    height: 420px;          /* 👈 نفس الارتفاع للغرافيْن */
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;          /* 👈 نفس مساحة الرسم */
+    width: 100%;
+}
+
+.card i { font-size: 34px;   } 
+
+@media print {
+    body {
+        background: #fff;
+        color: #000;
+    }
+
+    .card {
+        border: 1px solid #000;
+    }
+
+    .no-print, .sidebar, .btn {
+        display: none !important;
+    }
+}
+    </style>
+</head>
+<body dir="rtl">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Logo réduit -->
+    <img src="{% static 'images/dpe.png' %}" alt="DPE" class="logo-dpe">
+    <!-- Titre plus grand -->
+    <div class="sidebar-title">الاحصائيات الجهوية لمندوب حماية الطفولة بولاية {{ request.user.delegate_profile.get_wilaya_display }}
+        </div>
+    
+    <!-- Liens -->
+    <a href="{% url 'tableauboardstatistique' %}" >احصائيات عامة</a>  
+     <a href="{% url 'notifications_tableauboardstatistique' %}">احصائيات الاشعارات</a>
+   ||<!-- <a href="#">الاحصائيات حسب الفئات </a>
+    <a href="#">الاحصائيات حسب الوضعيات</a>-->
+    <a href="{% url 'tableauboard_mandoub_jihawi' %}">المنظومة المعلوماتية</a>
+</div>
+<br>
+
+<script>
+
+function exportWordWithCharts(){
+
+    let charts = {};
+
+    let canvasIds = [
+        "notificationsChart",
+        "ageChart",
+        "genderChart",
+        "placeChart",
+        "sourceChart",
+        "eduChart",
+        "suicideChart",
+        "suicideMethodChart",
+        "unmarriedBirthChart"
+    ];
+
+
+    canvasIds.forEach(function(id){
+
+        let canvas=document.getElementById(id);
+
+        if(canvas){
+
+            charts[id]=canvas.toDataURL("image/png");
+
+        }
+
+    });
+
+
+
+    fetch("{% url 'export_word' %}",{
+
+        method:"POST",
+
+        headers:{
+
+            "X-CSRFToken":"{{ csrf_token }}",
+
+            "Content-Type":"application/json"
+
+        },
+
+        body:JSON.stringify({
+
+            charts:charts
+
+        })
+
+    })
+
+
+    .then(response=>response.blob())
+
+    .then(blob=>{
+
+
+        let url=window.URL.createObjectURL(blob);
+
+
+        let a=document.createElement("a");
+
+        a.href=url;
+
+        a.download="Statistiques_{{ current_year }}.docx";
+
+
+        document.body.appendChild(a);
+
+
+        a.click();
+
+
+        a.remove();
+
+
+    });
+
+
+}
+
+
+</script>
+
+
+<div class="d-flex justify-content-end" >
+    
+
+<button 
+onclick="exportWordWithCharts()"
+class="btn"
+style="background:#020725;color:#ffd966;">
+
+<i class="bi bi-file-earmark-word"></i>
+
+Télécharger Word
+
+</button>
+
+
+
+</div>
+
+
+
+<!-- Contenu principal -->
+<div class="content">
+
+    <h2 class="mb-4"></h2>
+       <h2 class="mb-4"></h2>
+          <h2 class="mb-4"></h2>
+<div id="statistics-section">
+    <!-- البطاقات -->
+
+<div class="row row-cols-1 row-cols-md-5 g-3 mb-4">
+
+    <div class="col">
+        <div class="card text-center p-3">
+            <div class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-bell-fill me-2"></i>
+                <h5 class="mb-0">
+                    عدد الإشعارات السنوية
+                </h5>
+            </div>
+            <h3>{{ current_year_notifications }}</h3>
+        </div>
+    </div>
+
+</div> <!-- Fermeture de la row -->
+
+<br><br>
+
+
+
+<div class="row g-3">
+
+    <!-- Tableau -->
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle mb-0">
+                    <h4 class="text-end mb-3">
+    جدول احصائي لتوزيع الإشعارات حسب الجنس والولاية لسنة {{ current_year }}
+</h4>
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="background:#B7DB6A;color:rgb(7, 7, 7);">
+                                الولاية
+                            </th>
+                            <th colspan="2" style="background:#B7DB6A;color:rgb(5, 5, 5);">
+                                عدد الإشعارات
+                            </th>
+                            <th rowspan="2" style="background:#B7DB6A;color:rgb(13, 13, 13);">
+                                المجموع
+                            </th>
+                        </tr>
+                        <tr>
+                            <th  style="background:#ffd966;color:rgb(3, 3, 3);">إناث</th>
+                            <th  style="background:#ffd966;color:rgb(4, 4, 4);">ذكور</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td  style="color:white;">{{ request.user.delegate_profile.get_wilaya_display }}</td>
+                            <td style="color:white;">{{ female_count }}</td>
+                            <td style="color:white;">{{ male_count }}</td>
+                            <td style="color:white;">{{ male_count|add:female_count }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique -->
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white h-100">
+            <h4 class="text-end mb-3">
+               رسم بياني لتوزيع الإشعارات حسب الجنس و الولاية لسنة {{ current_year }}
+            </h4>
+            <div class="chart-wrapper">
+                <canvas id="genderChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+<br><br>
+
+<div class="row">
+
+
+      <!-- Table -->
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white">
+            <h4 class="card-title text-center">
+                جدول احصائي لتوزيع الإشعارات حسب  الفئة العمرية  لسنة {{ current_year }} 
+            </h4>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th style="background:#B7DB6A;color:rgb(6, 6, 6);">الفئة العمرية</th>
+                            <th style="background:#B7DB6A;color:rgb(14, 14, 14);">عدد الإشعارات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                       {% for label, count in age_table %}
+<tr>
+    <td style="background:#ffd966;color:rgb(9, 9, 9);">{{ label }}</td>
+    <td>{{ count }}</td>
+</tr>
+{% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Graph -->
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white chart-card">
+            <h4 class="card-title text-center">
+               رسم بياني لتوزيع الإشعارات حسب الفئة العمرية لسنة {{ current_year }}
+            </h4>
+
+            <div class="chart-wrapper">
+                <canvas id="ageChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+  
+
+</div>
+
+
+  
+
+  <br><br>  
+
+
+  <div class="row">
+
+      <!-- Table -->
+    <div class="col-md-6">
+       <div class="card p-3 bg-dark text-white">
+    <h4 class="card-title text-center">
+        جدول احصائي لتوزيع الإشعارات حسب مكان التهديد لسنة {{ current_year }}
+    </h4>
+
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered text-center">
+            <thead>
+                <tr>
+                    <th style="background:#B7DB6A;color:#000;">
+                        مكان التهديد
+                    </th>
+                    <th style="background:#B7DB6A;color:#000;">
+                        عدد الإشعارات
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for label, count in place_table %}
+                <tr>
+                    <td style="background:#ffd966;color:#000;">
+                        {{ label }}
+                    </td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+     </div>    
+
+<!-- ✅ إضافة جديدة: رسم بياني حسب مصدر الإشعار -->
+<div class="col-md-6">
+    <div class="card p-3 bg-dark text-white chart-card">
+        <h4 class="card-title text-center">
+              رسم بياني لتوزيع الإشعارات حسب مكان التهديد لسنة {{ current_year }}
+            </h4>
+
+        <div class="chart-wrapper">
+            <canvas id="placeChart"></canvas>
+        </div>
+    </div>
+</div>
+ </div>
+
+
+  <br><br>  
+
+<div class="row">
+
+    <!-- Table -->
+     <div class="col-md-6">
+       <div class="card p-3 bg-dark text-white">
+    <h4 class="card-title text-center">
+       
+            جدول احصائي لتوزيع الإشعارات حسب مصدر الإشعار لسنة {{ current_year }}
+        </h4>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th style="background:#B7DB6A;color:#000;">
+                            مصدر الإشعار
+                        </th>
+                        <th style="background:#B7DB6A;color:#000;">
+                            عدد الإشعارات
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for label, count in source_table %}
+                    <tr>
+                        <td style="background:#ffd966;color:#000;">
+                            {{ label }}
+                        </td>
+                        <td>{{ count }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    
+    <tr style="font-weight:bold;">
+        <td style="background:#B7DB6A;color:#000;">المجموع</td>
+        <td style="background:#B7DB6A;color:#000;">{{ source_total }}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+   
+
+    <!-- Graph -->
+  <div class="col-md-6">
+    <div class="card p-3 bg-dark text-white chart-card">
+        <h4 class="card-title text-center">
+            رسم بياني لتوزيع الإشعارات حسب مصدر الإشعار لسنة {{ current_year }}
+        </h4>
+
+        <div class="chart-wrapper">
+            <canvas id="sourceChart"></canvas>
+        </div>
+    </div>
+</div>
+
+</div>
+ </div>
+
+<br><br> 
+ <div class="row">
+
+    <!-- Table -->
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white">
+            <h4 class="card-title text-center">
+                توزيع الإشعارات حسب الوضعية التربوية للطفل
+            </h4>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-bordered text-center">
+
+                    <thead>
+                        <tr>
+                            <th style="background:#B7DB6A;color:#000;">
+                                الوضعية التربوية
+                            </th>
+                            <th style="background:#B7DB6A;color:#000;">
+                                عدد الإشعارات
+                            </th>
+                        </tr>
+                    </thead>
+
+               <tbody>
+    {% for item in edu_table %}
+    <tr>
+        <td style="background:#ffd966;color:#000;">
+            {{ item.label }}
+        </td>
+        <td>
+            {{ item.value }}
+        </td>
+    </tr>
+    {% endfor %}
+
+    <tr style="font-weight:bold;">
+        <td style="background:#B7DB6A;color:#000;">المجموع</td>
+        <td style="background:#B7DB6A;color:#000;">{{ total_edu }}</td>
+    </tr>
+</tbody>
+
+                </table>
+            </div>
+
+        </div>
+         </div>
+            <!-- Graph -->
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white chart-card">
+            <h4 class="card-title text-center">
+                رسم بياني حسب الوضعية التربوية للطفل
+            </h4>
+
+            <div class="chart-wrapper">
+                <canvas id="eduChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+   
+
+ <br><br> 
+
+ <br><br> 
+ <div class="row">
+
+    <!-- Table -->
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white">
+            <h4 class="card-title text-center">
+                توزيع الإشعارات حسب أشكال التهديد للطفل
+            </h4>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-bordered text-center">
+
+                    <thead>
+                        <tr>
+                            <th style="background:#B7DB6A;color:#000;">
+                               أشكال التهديد
+                            </th>
+                            <th style="background:#B7DB6A;color:#000;">
+                               اناث
+                            </th>
+                            <th style="background:#B7DB6A;color:#000;">
+                              ذكور
+                            </th>
+                            <th style="background:#B7DB6A;color:#000;">
+                              المجموع
+                            </th>
+                        </tr>
+                    </thead>
+
+       <tbody>
+    {% for row in threat_table %}
+    <tr>
+        <td>{{ row.label }}</td>
+        <td>{{ row.female }}</td>
+        <td>{{ row.male }}</td>
+        <td>{{ row.total }}</td>
+    </tr>
+    {% endfor %}
+
+    <tr style="font-weight:bold;background:#B7DB6A;">
+    <td>المجموع</td>
+    <td>{{ total_female }}</td>
+    <td>{{ total_male }}</td>
+    <td>{{ total_all }}</td>
+</tr>
+</tbody>
+                </table>
+            </div>
+
+        </div>
+         </div>
+            <!-- Graph -->
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white chart-card">
+            <h4 class="card-title text-center">
+                رسم بياني حسب الوضعية التربوية للطفل
+            </h4>
+
+            
+        </div>
+    </div>
+
+</div>
+
+   
+
+ <br><br> 
+
+<div class="row">
+
+<div class="col-md-6">
+
+<div class="card p-3 bg-dark text-white">
+
+<h4 class="card-title text-center">
+محاولات انتحار الأطفال
+</h4>
+
+
+<div class="table-responsive">
+
+<table class="table table-dark table-bordered text-center">
+
+<thead>
+<tr>
+
+<th style="background:#B7DB6A;color:#000;">
+الولاية
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+إناث
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+ذكور
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+المجموع
+</th>
+
+</tr>
+</thead>
+
+
+<tbody>
+
+{% for row in suicide_table %}
+
+<tr>
+
+<td>
+{{ row.wilaya }}
+</td>
+
+<td>
+{{ row.female }}
+</td>
+
+<td>
+{{ row.male }}
+</td>
+
+<td>
+{{ row.total }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+
+<tr style="font-weight:bold;background:#B7DB6A;color:#000;">
+
+<td>
+المجموع
+</td>
+
+<td>
+{{ suicide_female }}
+</td>
+
+<td>
+{{ suicide_male }}
+</td>
+
+<td>
+{{ suicide_total }}
+</td>
+
+</tr>
+
+
+</tbody>
+
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+<div class="col-md-6">
+
+    <div class="card p-3 bg-dark text-white chart-card">
+
+        <h4 class="card-title text-center">
+            رسم بياني لمحاولات انتحار الأطفال حسب الجنس
+        </h4>
+
+        <div class="chart-wrapper">
+            <canvas id="suicideChart"></canvas>
+        </div>
+
+    </div>
+
+</div>
+</div>
+
+ <br><br> 
+
+
+
+<div class="row">
+
+<div class="col-md-6">
+
+<div class="card p-3 bg-dark text-white">
+
+<h4 class="card-title text-center">
+محاولات انتحار الأطفال حسب الوسيلة
+</h4>
+
+
+<div class="table-responsive">
+
+<table class="table table-dark table-bordered text-center">
+
+
+<thead>
+
+<tr>
+
+<th style="background:#B7DB6A;color:#000;">
+الوسيلة
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+إناث
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+ذكور
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+المجموع
+</th>
+
+
+</tr>
+
+</thead>
+
+
+
+<tbody>
+
+
+{% for row in suicide_method_table %}
+
+<tr>
+
+<td>
+{{ row.label }}
+</td>
+
+<td>
+{{ row.female }}
+</td>
+
+<td>
+{{ row.male }}
+</td>
+
+<td>
+{{ row.total }}
+</td>
+
+
+</tr>
+
+
+{% endfor %}
+
+
+
+<tr style="font-weight:bold;background:#B7DB6A;color:#000;">
+
+<td>
+المجموع
+</td>
+
+<td>
+{{ total_suicide_method_female }}
+</td>
+
+<td>
+{{ total_suicide_method_male }}
+</td>
+
+<td>
+{{ total_suicide_method }}
+</td>
+
+
+</tr>
+
+
+</tbody>
+
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="col-md-6">
+
+    <div class="card p-3 bg-dark text-white chart-card">
+
+        <h4 class="card-title text-center">
+            رسم بياني لمحاولات الانتحار حسب الوسيلة
+        </h4>
+
+        <div class="chart-wrapper">
+            <canvas id="suicideMethodChart"></canvas>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+</div>
+
+
+
+ <br><br>
+
+<div class="row">
+
+<!-- Tableau -->
+<div class="col-md-6">
+
+<div class="card p-3 bg-dark text-white">
+
+<h4 class="card-title text-center">
+توزيع الولادات خارج إطار الزواج المتعهد بها خلال السنة {{ current_year }}
+</h4>
+
+
+<div class="table-responsive">
+
+<table class="table table-dark table-bordered text-center">
+
+<thead>
+
+<tr>
+<th style="background:#B7DB6A;color:#000;">
+الولاية
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+إناث
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+ذكور
+</th>
+
+<th style="background:#B7DB6A;color:#000;">
+المجموع
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+{% for row in unmarried_birth_table %}
+
+<tr>
+<td>{{ row.wilaya }}</td>
+<td>{{ row.female }}</td>
+<td>{{ row.male }}</td>
+<td>{{ row.total }}</td>
+</tr>
+
+{% endfor %}
+
+
+<tr style="font-weight:bold;background:#B7DB6A;color:#000;">
+
+<td>المجموع</td>
+<td>{{ total_unmarried_female }}</td>
+<td>{{ total_unmarried_male }}</td>
+<td>{{ total_unmarried_all }}</td>
+
+</tr>
+
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- Graphe -->
+
+<div class="col-md-6">
+
+<div class="card p-3 bg-dark text-white">
+
+<h4 class="card-title text-center">
+رسم بياني لتوزيع الولادات خارج إطار الزواج حسب الجنس
+</h4>
+
+
+<div class="chart-wrapper">
+
+<canvas id="unmarriedBirthChart"></canvas>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+</div>
+<br><br>
+
+  <div class="row">
+
+      <!-- Table -->
+    <div class="col-md-6">
+        <div class="card p-3 bg-dark text-white">
+    <h4 class="card-title text-center">
+        جدول احصائي لتوزيع الإشعارات حسب الأشهر لسنة {{ current_year }}
+    </h4>
+
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered text-center">
+            <thead>
+                <tr>
+                    <th style="background:#B7DB6A;color:#000;">
+                        الشهر
+                    </th>
+                    <th style="background:#B7DB6A;color:#000;">
+                        عدد الإشعارات
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for month, count in month_table %}
+                <tr>
+                    <td style="background:#ffd966;color:#000;">
+                        {{ month }}
+                    </td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+     </div> 
+ 
+
+    <div class="col-md-6">
+    <div class="card p-3 bg-dark text-white chart-card">
+        <h4 class="card-title text-center">
+              رسم بياني لتوزيع الإشعارات حسب الاشهر لسنة {{ current_year }}
+            </h4>
+
+        <div class="chart-wrapper">
+            <canvas id="notificationsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+   
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+
+function downloadWord() {
+    try {
+        // ⚡ Mettre à jour tous les charts pour s'assurer qu'ils sont rendus
+        if (typeof notifChart !== 'undefined') notifChart.update();
+        if (typeof ageChart !== 'undefined') ageChart.update();
+        if (typeof genderChart !== 'undefined') genderChart.update();
+        if (typeof sourceChart !== 'undefined') sourceChart.update();
+
+        // ✅ Fonction helper pour récupérer l'image d'un canvas en toute sécurité
+        function getCanvasImage(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (canvas && canvas.getContext) {
+                try {
+                    return canvas.toDataURL('image/png', 1.0);
+                } catch (e) {
+                    console.warn('Erreur canvas ' + canvasId + ':', e);
+                    return '';
+                }
+            }
+            return '';
+        }
+
+        // ✅ Récupérer les images des charts
+        const notificationsImg = getCanvasImage('notificationsChart');
+        const ageImg = getCanvasImage('ageChart');
+        const genderImg = getCanvasImage('genderChart');
+        const sourceImg = getCanvasImage('sourceChart');
+
+        // ✅ Construire le HTML pour Word
+        let tableHTML = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>Statistiques des Notifications</title><base target="_blank">
+</head>
+        <body style="font-family: Arial, sans-serif; direction: rtl;">
+
+        <h2 style="text-align: center; color: #020725;">الإحصائيات الجهوية للإشعارات - ${new Date().getFullYear()}</h2>
+        <h3 style="text-align: center; color: #666;">ولاية {{ request.user.delegate_profile.get_wilaya_display }}</h3>
+        <hr/>
+
+        <h3 style="color: #b8860b;">📊 ملخص الإشعارات</h3>
+        <table border="1" style="border-collapse:collapse; width:100%; text-align:center; margin-bottom: 20px;">
+            <tr style="background-color: #020725; color: #ffd966;">
+                <th>المؤشر</th>
+                <th>القيمة</th>
+            </tr>
+            <tr>
+                <td>عدد الإشعارات السنوية</td>
+                <td><strong>{{ current_year_notifications }}</strong></td>
+            </tr>
+            <tr>
+                <td>الذكور</td>
+                <td><strong>{{ male_count }} ({{ male_percentage }}%)</strong></td>
+            </tr>
+            <tr>
+                <td>الإناث</td>
+                <td><strong>{{ female_count }} ({{ female_percentage }}%)</strong></td>
+            </tr>
+        </table>
+        `;
+
+        // Ajouter les graphiques s'ils existent
+        if (notificationsImg) {
+            tableHTML += `
+            <h3 style="color: #b8860b;">📈 الإشعارات الشهرية لسنة {{ current_year }}</h3>
+            <img src="${notificationsImg}" style="width:100%; max-width:600px; margin-bottom:20px;">
+            `;
+        }
+
+        if (ageImg) {
+            tableHTML += `
+            <h3 style="color: #b8860b;">📈 الإشعارات حسب الفئة العمرية</h3>
+            <img src="${ageImg}" style="width:100%; max-width:600px; margin-bottom:20px;">
+            `;
+        }
+
+        if (genderImg) {
+            tableHTML += `
+            <h3 style="color: #b8860b;">📈 الإشعارات حسب الجنس</h3>
+            <img src="${genderImg}" style="width:100%; max-width:400px; margin-bottom:20px;">
+            `;
+        }
+
+        if (sourceImg) {
+            tableHTML += `
+            <h3 style="color: #b8860b;">📈 الإشعارات حسب مصدر الإشعار</h3>
+            <img src="${sourceImg}" style="width:100%; max-width:600px; margin-bottom:20px;">
+            `;
+        }
+
+        tableHTML += `
+        </body>
+        </html>
+        `;
+
+        // ✅ Créer et télécharger le fichier Word
+        const converted = htmlDocx.asBlob(html);
+
+saveAs(
+    converted,
+    "Statistiques_Notifications_{{ current_year }}.docx"
+);
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Statistiques_Notifications_{{ current_year }}.doc';
+        document.body.appendChild(a);
+        a.click();
+
+        // Nettoyage
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+
+    } catch (error) {
+        console.error('Erreur lors du téléchargement:', error);
+        alert('حدث خطأ أثناء تحميل الملف. يرجى المحاولة مرة أخرى.');
+    }
+}
+
+const notifCtx = document.getElementById('notificationsChart').getContext('2d');
+const notifChart = new Chart(notifCtx, {
+    type: 'bar',
+    data: {
+        labels: ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+        datasets: [{
+            label: 'عدد الإشعارات',
+            data: {{ monthly_notifications|safe }},
+            backgroundColor: '#b8860b'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            datalabels: {
+                anchor: 'end',
+                align: 'end',
+                color: '#ffd966',
+                font: { weight: 'bold', size: 12 },
+                formatter: (value) => value
+            }
+        },
+        scales: {
+            x: { 
+                ticks: { color: '#ffd966' }, 
+                grid: { color: 'rgba(0,0,0,0.1)' } 
+            },
+            y: { 
+                ticks: { 
+                    color: '#ffd966',
+                    stepSize: 1,
+                    precision: 0
+                }, 
+                grid: { color: 'rgba(0,0,0,0.1)' },
+                beginAtZero: true
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+document.getElementById('notificationsChart').chart = notifChart;
+
+const ageCtx = document.getElementById('ageChart').getContext('2d');
+const ageChart = new Chart(ageCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ age_labels|safe }},
+        datasets: [{
+            label: 'عدد الإشعارات',
+            data: {{ notifications_by_age|safe }},
+            backgroundColor: [
+                '#b8860b',
+                '#ffd966',
+                '#cd853f',
+                '#daa520',
+                '#f0e68c'
+            ],
+            borderColor: '#ffd966',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            datalabels: {
+                anchor: 'end',
+                align: 'end',
+                color: '#ffd966',
+                font: { weight: 'bold', size: 14 },
+                formatter: (value) => value
+            }
+        },
+        scales: {
+            x: { 
+                ticks: { color: '#ffd966', font: { size: 12 } }, 
+                grid: { color: 'rgba(255,255,255,0.1)' } 
+            },
+            y: { 
+                ticks: { 
+                    color: '#ffd966',
+                    stepSize: 1,
+                    precision: 0
+                }, 
+                grid: { color: 'rgba(255,255,255,0.1)' },
+                beginAtZero: true
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+document.getElementById('ageChart').chart = ageChart;
+
+
+// ✅ إضافة جديدة: رسم بياني دائري حسب الجنس
+const genderCtx = document.getElementById('genderChart').getContext('2d');
+const genderChart = new Chart(genderCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['ذكر', 'أنثى'],
+        datasets: [{
+            data: [{{ male_count }}, {{ female_count }}],
+            backgroundColor: [
+                '#4dabf7',
+                '#ff6b9d'
+            ],
+            borderColor: '#1a1a2e',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#ffd966',
+                    font: { size: 14, weight: 'bold' },
+                    padding: 20
+                }
+            },
+            datalabels: {
+                color: '#fff',
+                font: { weight: 'bold', size: 16 },
+                formatter: (value, ctx) => {
+                    let sum = 0;
+                    let dataArr = ctx.chart.data.datasets[0].data;
+                    dataArr.map(data => { sum += data; });
+                    let percentage = (value * 100 / sum).toFixed(1) + "%";
+                    return value + '\n' + percentage;
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ' + context.parsed + ' إشعار';
+                    }
+                }
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+document.getElementById('genderChart').chart = genderChart;
+
+
+
+
+
+
+const placeCtx = document.getElementById('placeChart');
+
+const placeChart = new Chart(placeCtx, {
+
+    type:'bar',
+    data: {
+        labels: {{ place_labels|safe }},
+        datasets: [{
+            label: 'عدد الإشعارات',
+            data: {{ place_data|safe }},
+            backgroundColor: [
+                '#b8860b',
+                '#ffd966',
+                '#cd853f',
+                '#daa520',
+                '#f0e68c',
+                '#4dabf7',
+                '#51cf66',
+                '#ff6b9d',
+                '#845ef7',
+                '#22b8cf'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+document.getElementById('placeChart').chart = placeChart;
+
+const sourceLabels = {{ source_labels|safe }};
+    const sourceData = {{ source_data|safe }};
+
+    const ctx = document.getElementById('sourceChart').getContext('2d');
+
+    const sourceChart = new Chart(ctx, {
+        type: 'bar',   // 👈 نفس نوع "مكان التهديد" إذا كان bar
+        data: {
+            labels: sourceLabels,
+            datasets: [{
+                label: "عدد الإشعارات",
+                data: sourceData,
+                backgroundColor: [
+    '#ffd966', '#b7db6a', '#ff922b', '#4dabf7',
+    '#ff6b9d', '#845ef7'
+],
+                borderColor: '#000',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+document.getElementById('sourceChart').chart = sourceChart;
+
+    const eduLabels = {{ edu_labels|safe }};
+    const eduData = {{ edu_data|safe }};
+
+    const ctxEdu = document.getElementById('eduChart').getContext('2d');
+
+    const eduChart = new Chart(ctxEdu, {
+        type: 'bar',   // نفس placeChart
+        data: {
+            labels: eduLabels,
+            datasets: [{
+                label: "عدد الإشعارات",
+                data: eduData,
+                backgroundColor: '#B7DB6A',
+                borderColor: '#000',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    document.getElementById('eduChart').chart = eduChart;
+
+// 📊 Chart محاولات الانتحار حسب الجنس
+
+const suicideCtx = document.getElementById('suicideChart').getContext('2d');
+
+const suicideChart = new Chart(suicideCtx, {
+
+    type: 'doughnut',
+
+    data: {
+
+        labels: [
+            'ذكور',
+            'إناث'
+        ],
+
+        datasets: [{
+
+            label: 'محاولات الانتحار',
+
+            data: [
+                {{ suicide_male }},
+                {{ suicide_female }}
+            ],
+
+            backgroundColor: [
+                '#4dabf7',
+                '#ff6b9d'
+            ],
+
+            borderColor: '#1a1a2e',
+
+            borderWidth: 2
+
+        }]
+
+    },
+
+
+    options: {
+
+        responsive: true,
+
+
+        plugins: {
+
+            legend: {
+
+                position: 'bottom',
+
+                labels: {
+
+                    color: '#ffd966',
+
+                    font: {
+
+                        size: 14,
+
+                        weight: 'bold'
+
+                    }
+
+                }
+
+            },
+
+
+            datalabels: {
+
+                color: '#fff',
+
+                font: {
+
+                    weight: 'bold',
+
+                    size: 16
+
+                },
+
+
+                formatter: function(value, context) {
+
+                    let data = context.chart.data.datasets[0].data;
+
+                    let total = data.reduce((a,b)=>a+b,0);
+
+                    let percent = total > 0 
+                        ? ((value / total) * 100).toFixed(1)
+                        : 0;
+
+
+                    return value + '\n' + percent + '%';
+
+                }
+
+            }
+
+        }
+
+    },
+
+
+    plugins: [ChartDataLabels]
+
+});
+
+document.getElementById('suicideChart').chart = suicideChart;
+
+// 📊 رسم بياني لمحاولات الانتحار حسب الوسيلة
+
+const suicideMethodCtx = document
+    .getElementById('suicideMethodChart')
+    .getContext('2d');
+
+
+const suicideMethodChart = new Chart(
+    suicideMethodCtx,
+    {
+
+    type: 'bar',
+
+    data: {
+
+        labels: {{ suicide_method_labels|safe }},
+
+        datasets: [{
+
+            label: 'عدد محاولات الانتحار',
+
+            data: {{ suicide_method_data|safe }},
+
+            backgroundColor: [
+                '#b8860b',
+                '#ffd966',
+                '#cd853f',
+                '#4dabf7',
+                '#ff6b9d',
+                '#51cf66',
+                '#845ef7'
+            ],
+
+            borderColor: '#000',
+
+            borderWidth: 1
+
+        }]
+
+    },
+
+
+    options: {
+
+        responsive: true,
+
+
+        plugins: {
+
+            legend: {
+
+                display: false
+
+            },
+
+
+            datalabels: {
+
+                anchor: 'end',
+
+                align: 'top',
+
+                color: '#ffd966',
+
+                font: {
+
+                    weight: 'bold',
+
+                    size: 13
+
+                },
+
+                formatter: function(value){
+
+                    return value;
+
+                }
+
+            }
+
+        },
+
+
+        scales: {
+
+            x: {
+
+                ticks: {
+
+                    color:'#ffd966',
+
+                    font:{
+                        size:12
+                    }
+
+                },
+
+                grid:{
+                    color:'rgba(255,255,255,0.1)'
+                }
+
+            },
+
+
+            y: {
+
+                beginAtZero:true,
+
+                ticks: {
+
+                    color:'#ffd966',
+
+                    stepSize:1,
+
+                    precision:0
+
+                },
+
+
+                grid:{
+                    color:'rgba(255,255,255,0.1)'
+                }
+
+            }
+
+        }
+
+    },
+
+
+    plugins:[ChartDataLabels]
+
+});
+
+document.getElementById('suicideMethodChart').chart = suicideMethodChart;
+
+
+const unmarriedBirthCtx = document
+    .getElementById('unmarriedBirthChart')
+    .getContext('2d');
+
+
+const unmarriedBirthChart = new Chart(
+    unmarriedBirthCtx,
+    {
+        type: 'bar',
+
+        data: {
+
+            labels: [
+                'إناث',
+                'ذكور'
+            ],
+
+
+            datasets: [
+                {
+                    label: 'عدد الولادات خارج إطار الزواج',
+
+                    data: [
+                        {{ total_unmarried_female }},
+                        {{ total_unmarried_male }}
+                    ],
+
+
+                    backgroundColor: [
+                        '#ff6b9d',
+                        '#4dabf7'
+                    ],
+
+                    borderColor: '#000',
+
+                    borderWidth: 1
+                }
+            ]
+
+        },
+
+
+        options: {
+
+            responsive: true,
+
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+
+                datalabels: {
+
+                    anchor: 'end',
+
+                    align: 'end',
+
+                    color: '#ffd966',
+
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    },
+
+
+                    formatter: function(value) {
+                        return value;
+                    }
+
+                }
+
+            },
+
+
+            scales: {
+
+                x: {
+
+                    ticks: {
+                        color:'#ffd966'
+                    }
+
+                },
+
+
+                y: {
+
+                    beginAtZero:true,
+
+                    ticks:{
+                        color:'#ffd966',
+                        stepSize:1
+                    }
+
+                }
+
+            }
+
+        },
+
+
+        plugins:[
+            ChartDataLabels
+        ]
+
+    }
+);
+document.getElementById('unmarriedBirthChart').chart = unmarriedBirthChart;
+
+function telechargerWord() {
+
+    try {
+
+        // ============================
+        // تحديث الرسومات
+        // ============================
+
+        const charts = [
+            'notificationsChart',
+            'ageChart',
+            'genderChart',
+            'placeChart',
+            'sourceChart',
+            'eduChart',
+            'suicideChart',
+            'suicideMethodChart',
+            'unmarriedBirthChart'
+        ];
+
+
+        charts.forEach(id => {
+
+            const canvas = document.getElementById(id);
+
+            if (canvas && canvas.chart) {
+                canvas.chart.update();
+            }
+
+        });
+
+
+
+        // ============================
+        // تحويل Chart إلى صورة
+        // ============================
+
+        function getChartImage(id){
+
+            const canvas = document.getElementById(id);
+
+            if(!canvas){
+                return "";
+            }
+
+
+            try{
+
+                if(canvas.chart){
+
+    canvas.chart.resize();
+    canvas.chart.update();
+
+}
+
+
+return canvas.toDataURL(
+    "image/png",
+    1.0
+);
+
+            }
+
+            catch(e){
+
+                console.log(
+                    "Erreur canvas : ",
+                    id,
+                    e
+                );
+
+                return "";
+
+            }
+
+        }
+
+
+
+        const images = {
+
+
+            notifications:
+            getChartImage("notificationsChart"),
+
+
+            age:
+            getChartImage("ageChart"),
+
+
+            gender:
+            getChartImage("genderChart"),
+
+
+            place:
+            getChartImage("placeChart"),
+
+
+            source:
+            getChartImage("sourceChart"),
+
+
+            edu:
+            getChartImage("eduChart"),
+
+
+            suicide:
+            getChartImage("suicideChart"),
+
+
+            suicideMethod:
+            getChartImage("suicideMethodChart"),
+
+
+            unmarried:
+            getChartImage("unmarriedBirthChart")
+
+        };
+
+
+
+
+        // ============================
+        // أخذ الجداول فقط
+        // ============================
+
+
+        const clone =
+        document
+        .getElementById("statistics-section")
+        .cloneNode(true);
+
+
+
+        // حذف جميع canvas
+        clone
+        .querySelectorAll("canvas")
+        .forEach(c => c.remove());
+
+
+
+        // حذف أماكن الرسومات
+        clone
+        .querySelectorAll(".chart-wrapper")
+        .forEach(div => {
+
+            div.innerHTML="";
+
+        });
+
+
+
+        const tablesHTML =
+        clone.innerHTML;
+
+
+
+
+
+        // ============================
+        // إنشاء ملف Word
+        // ============================
+
+
+        let html = `
+
+
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+xmlns:w='urn:schemas-microsoft-com:office:word'
+xmlns='http://www.w3.org/TR/REC-html40'>
+
+
+<head>
+
+<meta charset="utf-8">
+
+
+<style>
+
+
+body{
+
+font-family:Arial;
+direction:rtl;
+
+}
+
+
+
+h1,h2,h3{
+
+text-align:center;
+color:#020725;
+
+}
+
+
+
+table{
+
+border-collapse:collapse;
+width:100%;
+margin-bottom:25px;
+
+}
+
+
+
+td,th{
+
+border:1px solid black;
+padding:8px;
+text-align:center;
+
+}
+
+
+
+th{
+
+background:#B7DB6A;
+
+}
+
+
+
+img{
+
+display:block;
+margin:auto;
+max-width:650px;
+
+}
+
+
+
+.card{
+
+margin-bottom:20px;
+
+}
+
+
+
+.page-break{
+
+page-break-before:always;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body dir="rtl">
+
+
+
+<h1>
+الإحصائيات الجهوية للإشعارات
+</h1>
+
+
+
+<h2>
+ولاية {{ request.user.delegate_profile.get_wilaya_display }}
+</h2>
+
+
+
+<h3>
+السنة {{ current_year }}
+</h3>
+
+
+
+<hr>
+
+
+
+<h2>
+الجداول الإحصائية
+</h2>
+
+
+
+${tablesHTML}
+
+
+
+<hr>
+
+
+
+`;
+
+
+
+
+
+        // ============================
+        // إضافة الصور
+        // ============================
+
+
+        function addChart(title,img){
+
+
+            if(img){
+
+
+                html += `
+
+
+<div class="page-break">
+
+
+<h2>
+
+${title}
+
+</h2>
+
+
+<img src="${img}">
+
+
+</div>
+
+
+`;
+
+            }
+
+
+        }
+
+
+
+
+        addChart(
+        "توزيع الإشعارات حسب الأشهر",
+        images.notifications
+        );
+
+
+
+        addChart(
+        "توزيع الإشعارات حسب الفئة العمرية",
+        images.age
+        );
+
+
+
+        addChart(
+        "توزيع الإشعارات حسب الجنس",
+        images.gender
+        );
+
+
+
+        addChart(
+        "توزيع الإشعارات حسب مكان التهديد",
+        images.place
+        );
+
+
+
+        addChart(
+        "توزيع الإشعارات حسب مصدر الإشعار",
+        images.source
+        );
+
+
+
+        addChart(
+        "الوضعية التربوية للطفل",
+        images.edu
+        );
+
+
+
+        addChart(
+        "محاولات انتحار الأطفال حسب الجنس",
+        images.suicide
+        );
+
+
+
+        addChart(
+        "محاولات الانتحار حسب الوسيلة",
+        images.suicideMethod
+        );
+
+
+
+        addChart(
+        "الولادات خارج إطار الزواج",
+        images.unmarried
+        );
+
+
+
+
+        html += `
+
+</body>
+
+</html>
+
+`;
+
+
+
+
+
+        // ============================
+        // Télécharger Word
+        // ============================
+
+
+        const blob =
+        new Blob(
+
+            [
+                '\ufeff',
+                html
+            ],
+
+            {
+
+                type:
+                "application/msword"
+
+            }
+
+        );
+
+
+
+        const url =
+        URL.createObjectURL(blob);
+
+
+
+        const link =
+        document.createElement("a");
+
+
+
+        link.href=url;
+
+
+
+        link.download =
+        "Statistiques_Notifications_{{ current_year }}.doc";
+
+
+
+        document.body.appendChild(link);
+
+
+
+        link.click();
+
+
+
+        setTimeout(()=>{
+
+
+            document
+            .body
+            .removeChild(link);
+
+
+
+            URL
+            .revokeObjectURL(url);
+
+
+
+        },500);
+
+
+
+    }
+
+
+
+    catch(error){
+
+
+        console.error(
+            "Erreur Word : ",
+            error
+        );
+
+
+        alert(
+        "حدث خطأ أثناء تحميل ملف Word"
+        );
+
+
+    }
+    console.log(images.notifications);
+
+}
+
+
+
+
+
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>

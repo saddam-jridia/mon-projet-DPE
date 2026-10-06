@@ -1,0 +1,512 @@
+{% extends "account/base-login.html" %}
+{% load static %}
+
+{% block title %}تم إنشاء الحساب بنجاح{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===============================
+   PAGE SUCCÈS - STYLE NOIR/DORÉ
+   CENTRAGE PARFAIT VERTICAL ET HORIZONTAL
+   Harmonisé avec la sidebar
+================================= */
+
+/* Wrapper principal - centrage parfait avec Flexbox */
+.success-wrapper {
+    min-height: calc(100vh - 150px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(184, 134, 11, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(184, 134, 11, 0.04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+/* Carte de succès - centrée horizontalement */
+.success-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    max-width: 650px;
+    width: 100%;
+    border: 1px solid rgba(184, 134, 11, 0.15);
+    transition: all 0.3s ease;
+    animation: slideIn 0.4s ease-out;
+    margin: 0 auto;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.success-card:hover {
+    box-shadow: 0 12px 35px rgba(184, 134, 11, 0.12);
+    transform: translateY(-2px);
+}
+
+/* Icône de succès */
+.success-icon {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: 2px solid #b8860b;
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.success-icon i {
+    font-size: 2.8rem;
+    color: #b8860b;
+}
+
+.success-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.success-message {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+/* Section informations de connexion */
+.credentials-box {
+    background: linear-gradient(135deg, #fef9e6 0%, #fef3cd 100%);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid #b8860b;
+    text-align: center;
+    position: relative;
+}
+
+.credentials-box::before {
+    content: '🔐';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    border: 2px solid #b8860b;
+}
+
+.credentials-title {
+    color: #8c6d0b;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.credential-item {
+    background: white;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    border-right: 4px solid #b8860b;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.credential-item:last-child {
+    margin-bottom: 0;
+}
+
+.credential-label {
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.credential-label i {
+    color: #b8860b;
+}
+
+.credential-value {
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    direction: ltr;
+}
+
+.copy-btn {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    color: white;
+    border: 2px solid #b8860b;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+}
+
+.copy-btn:hover {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    transform: translateY(-1px);
+}
+
+.warning-text {
+    color: #8c6d0b;
+    font-size: 0.75rem;
+    margin-top: 0.75rem;
+    font-weight: 500;
+}
+
+/* Détails du compte */
+.account-details {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-right: 4px solid #b8860b;
+    text-align: right;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.detail-item i {
+    color: #b8860b;
+    font-size: 0.9rem;
+    width: 18px;
+}
+
+.detail-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #1a1a1a;
+    font-weight: 600;
+    margin-right: auto;
+}
+
+/* Boutons d'action */
+.btn-group {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: white;
+    border: 2px solid #b8860b;
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+}
+
+.btn-secondary-custom {
+    background: white;
+    color: #1a1a1a;
+    border: 2px solid #e0e0e0;
+}
+
+.btn-secondary-custom:hover {
+    background: #f8f9fa;
+    border-color: #b8860b;
+    transform: translateY(-2px);
+    color: #b8860b;
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .success-wrapper {
+        padding: 1rem;
+        min-height: calc(100vh - 120px);
+    }
+    
+    .success-card {
+        padding: 1.5rem;
+        max-width: 95%;
+    }
+    
+    .success-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .success-icon i {
+        font-size: 2rem;
+    }
+    
+    .success-title {
+        font-size: 1.3rem;
+    }
+    
+    .success-message {
+        font-size: 0.85rem;
+    }
+    
+    .credential-value {
+        font-size: 0.85rem;
+    }
+    
+    .credential-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .credentials-box {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .success-wrapper {
+        padding: 0.75rem;
+        min-height: calc(100vh - 100px);
+    }
+    
+    .success-card {
+        padding: 1rem;
+    }
+    
+    .success-title {
+        font-size: 1.1rem;
+    }
+    
+    .detail-item {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .detail-value {
+        margin-right: 0;
+        width: 100%;
+        margin-top: 2px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-wrapper" dir="rtl">
+    <div class="success-card">
+        <!-- Icône de succès -->
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+
+        <!-- Titres -->
+        <h1 class="success-title">✅ تم إنشاء الحساب بنجاح!</h1>
+        
+        <p class="success-message">
+            تم إنشاء حساب المندوب الجديد بنجاح. يرجى تسجيل المعلومات التالية وإرسالها إلى المندوب.
+        </p>
+
+        {% if delegate %}
+        <!-- Identifiants de connexion -->
+        <div class="credentials-box">
+            <div class="credentials-title">🔐 معلومات تسجيل الدخول</div>
+            
+            <div class="credential-item">
+                <div class="credential-label">
+                    <i class="fas fa-id-card"></i>
+                    معرف المستخدم:
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="credential-value" id="delegateCode">{{ delegate.delegate_code }}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('delegateCode')">
+                        <i class="fas fa-copy"></i> نسخ
+                    </button>
+                </div>
+            </div>
+            
+            <div class="credential-item">
+                <div class="credential-label">
+                    <i class="fas fa-lock"></i>
+                    كلمة المرور:
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="credential-value" id="passwordDisplay">********</span>
+                    <button class="copy-btn" onclick="togglePassword()" id="toggleBtn">
+                        <i class="fas fa-eye"></i> إظهار
+                    </button>
+                </div>
+            </div>
+            
+            <div class="warning-text">
+                ⚠️ <strong>تنبيه:</strong> يرجى نسخ هذه المعلومات وإرسالها بشكل آمن إلى المندوب. لن تُعرض كلمة المرور مرة أخرى!
+            </div>
+        </div>
+
+        <!-- Détails du compte -->
+        <div class="account-details">
+            <div class="detail-item">
+                <i class="fas fa-user"></i>
+                <span class="detail-label">الاسم الكامل:</span>
+                <span class="detail-value">{{ delegate.first_name }} {{ delegate.last_name }}</span>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-barcode"></i>
+                <span class="detail-label">الرمز التعريفي:</span>
+                <span class="detail-value">{{ delegate.unique_id }}</span>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span class="detail-label">الولاية:</span>
+                <span class="detail-value">{{ delegate.get_wilaya_display }}</span>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-user-tag"></i>
+                <span class="detail-label">الصفة:</span>
+                <span class="detail-value">{{ delegate.get_role_display }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Boutons d'action -->
+        <div class="btn-group">
+            <a href="{% url 'register_delegate' %}" class="btn-action btn-primary-custom">
+                <i class="fas fa-user-plus"></i>
+                إنشاء مندوب جديد
+            </a>
+            
+            <a href="{% url 'delegate_list' %}" class="btn-action btn-secondary-custom">
+                <i class="fas fa-list"></i>
+                قائمة المندوبين
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mot de passe depuis le serveur Django
+    const generatedPassword = "{{ generated_password|default:'غير متوفر'|escapejs }}";
+    let passwordVisible = false;
+    
+    function togglePassword() {
+        const passwordDisplay = document.getElementById('passwordDisplay');
+        const btn = document.getElementById('toggleBtn');
+        
+        if (!passwordVisible) {
+            passwordDisplay.textContent = generatedPassword;
+            btn.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء';
+            btn.style.background = '#dc3545';
+            btn.style.borderColor = '#dc3545';
+            passwordVisible = true;
+        } else {
+            passwordDisplay.textContent = '********';
+            btn.innerHTML = '<i class="fas fa-eye"></i> إظهار';
+            btn.style.background = 'linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%)';
+            btn.style.borderColor = '#b8860b';
+            passwordVisible = false;
+        }
+    }
+
+    function copyToClipboard(elementId) {
+        const text = document.getElementById(elementId).textContent;
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            btn.innerHTML = '<i class="fas fa-check"></i> تم النسخ';
+            btn.style.background = '#28a745';
+            btn.style.borderColor = '#28a745';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.background = 'linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%)';
+                btn.style.borderColor = '#b8860b';
+            }, 2000);
+        }).catch(() => {
+            // Fallback pour les anciens navigateurs
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('تم النسخ: ' + text);
+        });
+    }
+</script>
+{% endblock %}

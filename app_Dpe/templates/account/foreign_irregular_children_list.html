@@ -1,0 +1,163 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    
+    .content {
+      margin-right: 290px;
+      margin-top: 100px;
+      padding: 20px;
+    }
+.btn-dark-blue {
+  background-color: #090909;
+  border-color: #050505;
+}
+.btn-dark-blue:hover {
+  background-color: #060606;
+  border-color: #050505;
+}
+</style>
+
+
+
+<div class="content">
+
+<h2 class="text-center" style="font-family:'Amiri'; font-weight:900;">   قائمة الأطفال الأجانب خارج إطار الزواج
+</h2>
+
+<h2 class="text-center" style="font-family:'Amiri'; font-weight:900;"> 
+    ذوي الوضعية الغير القانونية للإقامة بالتراب التونسي  بولاية {{ request.user.delegate_profile.get_wilaya_display }}
+        
+</h2>
+
+ <div style="background:#d4a520;padding:10px;border-right:4px solid #0d0d0e;
+                font-size:15px;font-weight:bold;text-align:right;margin-top:10px;">
+ عدد الأطفال الأجانب خارج إطار الزواج ذوي الوضعية الغير القانونية للإقامة بالتراب التونسي:
+
+        <span style="color:#050505;">{{ total_children }}</span>
+    </div>
+<table class="table table-bordered text-end">
+ 
+
+   <thead>
+            
+            <table class="table table-bordered text-end" style="text-align:center;">
+  <thead style="background-color:#0c0c0c; color:white;">
+                <th>تاريخ التسجيل</th>
+                <th>المعرف الوحيد</th>
+                <th>الاسم</th>
+                <th>اللقب</th>
+                <th>تاريخ الميلاد</th>
+                <th>الجنس</th>
+                <th>الجنسية</th>
+                <th>الدولة</th>
+                <th>الوضعية القانونية</th>
+               
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for child in children %}
+             <tr style="background-color:#f0f0f0; font-size: 14px; ">
+                <td>{{ child.created_at|date:"d/m/Y H:i" }}</td>
+                <td>{{ child.uid }}</td>
+                <td>{{ child.first_name }}</td>
+                <td>{{ child.last_name }}</td>
+                <td>{{ child.birth_date|date:"d/m/Y" }}</td>
+                <td>{{ child.get_gender_display }}</td>
+                <td>{{ child.get_nationality_display }}</td>
+                
+    <td>
+        {% if child.foreign_country %}
+            {% if child.foreign_country == "AF" %}أفغانستان
+            {% elif child.foreign_country == "AL" %}ألبانيا
+            {% elif child.foreign_country == "DZ" %}الجزائر
+            {% elif child.foreign_country == "AD" %}أندورا
+            {% elif child.foreign_country == "AO" %}أنغولا
+            {% elif child.foreign_country == "AG" %}أنتيغوا وباربودا
+            {% elif child.foreign_country == "AR" %}الأرجنتين
+            {% elif child.foreign_country == "AM" %}أرمينيا
+            {% elif child.foreign_country == "AU" %}أستراليا
+            {% elif child.foreign_country == "AT" %}النمسا
+            {% elif child.foreign_country == "AZ" %}أذربيجان
+            {% elif child.foreign_country == "BH" %}البحرين
+            {% elif child.foreign_country == "BD" %}بنغلاديش
+            {% elif child.foreign_country == "BB" %}باربادوس
+            {% elif child.foreign_country == "BE" %}بلجيكا
+            {% elif child.foreign_country == "BZ" %}بليز
+            {% elif child.foreign_country == "BJ" %}بنين
+            {% elif child.foreign_country == "BO" %}بوليفيا
+            {% elif child.foreign_country == "BR" %}البرازيل
+            {% elif child.foreign_country == "BG" %}بلغاريا
+            {% elif child.foreign_country == "CM" %}الكاميرون
+            {% elif child.foreign_country == "CA" %}كندا
+            {% elif child.foreign_country == "TD" %}تشاد
+            {% elif child.foreign_country == "CL" %}تشيلي
+            {% elif child.foreign_country == "CN" %}الصين
+            {% elif child.foreign_country == "CO" %}كولومبيا
+            {% elif child.foreign_country == "CR" %}كوستاريكا
+            {% elif child.foreign_country == "CI" %}ساحل العاج
+            {% elif child.foreign_country == "CU" %}كوبا
+            {% elif child.foreign_country == "DK" %}الدنمارك
+            {% elif child.foreign_country == "DJ" %}جيبوتي
+            {% elif child.foreign_country == "DO" %}جمهورية الدومينيكان
+            {% elif child.foreign_country == "EG" %}مصر
+            {% elif child.foreign_country == "SV" %}السلفادور
+            {% elif child.foreign_country == "EE" %}إستونيا
+            {% elif child.foreign_country == "ET" %}إثيوبيا
+            {% elif child.foreign_country == "FI" %}فنلندا
+            {% elif child.foreign_country == "FR" %}فرنسا
+            {% elif child.foreign_country == "DE" %}ألمانيا
+            {% elif child.foreign_country == "GH" %}غانا
+            {% elif child.foreign_country == "GR" %}اليونان
+            {% elif child.foreign_country == "IN" %}الهند
+            {% elif child.foreign_country == "ID" %}إندونيسيا
+            {% elif child.foreign_country == "IR" %}إيران
+            {% elif child.foreign_country == "IQ" %}العراق
+            {% elif child.foreign_country == "IE" %}إيرلندا
+            {% elif child.foreign_country == "IT" %}إيطاليا
+            {% elif child.foreign_country == "JP" %}اليابان
+            {% elif child.foreign_country == "JO" %}الأردن
+            {% elif child.foreign_country == "KW" %}الكويت
+            {% elif child.foreign_country == "LB" %}لبنان
+            {% elif child.foreign_country == "LY" %}ليبيا
+            {% elif child.foreign_country == "MA" %}المغرب
+            {% elif child.foreign_country == "MR" %}موريتانيا
+            {% elif child.foreign_country == "NL" %}هولندا
+            {% elif child.foreign_country == "NO" %}النرويج
+            {% elif child.foreign_country == "OM" %}عُمان
+            {% elif child.foreign_country == "PK" %}باكستان
+            {% elif child.foreign_country == "QA" %}قطر
+            {% elif child.foreign_country == "SA" %}السعودية
+            {% elif child.foreign_country == "SN" %}السنغال
+            {% elif child.foreign_country == "SO" %}الصومال
+            {% elif child.foreign_country == "ES" %}إسبانيا
+            {% elif child.foreign_country == "SD" %}السودان
+            {% elif child.foreign_country == "SE" %}السويد
+            {% elif child.foreign_country == "CH" %}سويسرا
+            {% elif child.foreign_country == "SY" %}سوريا
+            {% elif child.foreign_country == "TN" %}تونس
+            {% elif child.foreign_country == "TR" %}تركيا
+            {% elif child.foreign_country == "AE" %}الإمارات
+            {% elif child.foreign_country == "GB" %}المملكة المتحدة
+            {% elif child.foreign_country == "US" %}الولايات المتحدة
+            {% elif child.foreign_country == "YE" %}اليمن
+            {% else %}-{% endif %}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+
+       
+      </tr>
+
+               
+            </tr>
+
+            {% endfor %}
+        </tbody>
+</table>
+</div>
+{% endblock %}

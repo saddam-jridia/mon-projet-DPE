@@ -1,0 +1,633 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .content {
+        padding: 20px;
+        min-height: 100vh;
+        margin-right: 280px;
+    }
+    
+    .detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* ==================== EN-TÊTE ==================== */
+    .detail-header {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .detail-header h3 {
+        color: #d4a520;
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    
+    .detail-header h3 i {
+        margin-left: 12px;
+    }
+    
+    .detail-header p {
+        margin-top: 10px;
+        opacity: 0.9;
+    }
+    
+    /* Badge de statut */
+    .badge-status {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 40px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+    }
+    
+    .badge-status.pending {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        color: #000;
+        box-shadow: 0 2px 10px rgba(255, 193, 7, 0.3);
+    }
+    
+    /* ==================== CARTES ==================== */
+    .info-card {
+        background: white;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .info-card-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 18px 25px;
+        border-bottom: 3px solid #d4a520;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #1a1a2e;
+    }
+    
+    .info-card-header i {
+        color: #dc3545;
+        margin-left: 10px;
+        font-size: 1.2rem;
+    }
+    
+    .info-card-body {
+        padding: 22px 25px;
+    }
+    
+    /* Lignes d'information */
+    .info-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+        padding: 12px;
+        border-bottom: 1px solid #e9ecef;
+        transition: background 0.2s ease;
+        border-radius: 8px;
+    }
+    
+    .info-row:hover {
+        background: #f8f9fa;
+    }
+    
+    .info-label {
+        width: 200px;
+        font-weight: bold;
+        color: #495057;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .info-label i {
+        color: #d4a520;
+        font-size: 0.9rem;
+    }
+    
+    .info-value {
+        flex: 1;
+        color: #1a1a2e;
+    }
+    
+    /* Tags */
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .tag {
+        background: #e9ecef;
+        padding: 6px 14px;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        color: #495057;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .tag:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .tag i {
+        font-size: 0.8rem;
+    }
+    
+    .tag.highlight {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+    }
+    
+    /* Message vide */
+    .empty-message {
+        color: #6c757d;
+        font-style: italic;
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .empty-message i {
+        color: #ffc107;
+    }
+    
+    /* ==================== BOUTONS ==================== */
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .btn-edit, .btn-back, .btn-delete {
+        padding: 12px 28px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        color: #000;
+    }
+    
+    .btn-edit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        color: #000;
+    }
+    
+    .btn-back {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+    }
+    
+    .btn-back:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        color: white;
+    }
+    
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+    
+    /* ==================== ANIMATIONS ==================== */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .info-card {
+        animation: fadeInUp 0.4s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    .info-card:nth-child(1) { animation-delay: 0.05s; }
+    .info-card:nth-child(2) { animation-delay: 0.10s; }
+    .info-card:nth-child(3) { animation-delay: 0.15s; }
+    .info-card:nth-child(4) { animation-delay: 0.20s; }
+    .info-card:nth-child(5) { animation-delay: 0.25s; }
+    .info-card:nth-child(6) { animation-delay: 0.30s; }
+    
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 768px) {
+        .content {
+            margin-right: 70px;
+            padding: 15px;
+        }
+        
+        .detail-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .info-label {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        
+        .info-row {
+            flex-direction: column;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn-edit, .btn-back, .btn-delete {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .tags-container {
+            margin-top: 5px;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .info-label {
+            width: 180px;
+        }
+    }
+</style>
+
+<div class="content">
+    <div class="detail-container">
+        <!-- En-tête -->
+        <div class="detail-header">
+            <div>
+                <h3>
+                    <i class="fas fa-handcuffs"></i>
+                    تفاصيل إشعار الاتجار بالأطفال
+                </h3>
+                <p class="mb-0 mt-2">
+                    <i class="fas fa-child"></i> الطفل: {{ notification.child.first_name }} {{ notification.child.last_name }}
+                </p>
+            </div>
+            <div>
+                {% if notification.is_completed %}
+                    <span class="badge-status">
+                        <i class="fas fa-check-circle"></i> مكتمل
+                    </span>
+                {% else %}
+                    <span class="badge-status pending">
+                        <i class="fas fa-clock"></i> قيد الانتظار
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Informations générales -->
+        <div class="info-card">
+            <div class="info-card-header">
+                <i class="fas fa-info-circle"></i>
+                معلومات عن الطفل
+            </div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-user"></i> الطفل:
+                    </div>
+                    <div class="info-value">{{ notification.child.first_name }} {{ notification.child.last_name }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-id-card"></i> المعرف الوحيد:
+                    </div>
+                    <div class="info-value">{{ notification.child.uid }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-calendar-alt"></i> تاريخ الإشعار:
+                    </div>
+                    <div class="info-value">{{ notification.notification_date|date:"d/m/Y" }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-globe"></i> الجنسية:
+                    </div>
+                    <div class="info-value">{{ notification.child.get_nationality_display|default:"تونسية" }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-birthday-cake"></i> مكان الولادة:
+                    </div>
+                    <div class="info-value">{{ notification.child.get_birth_place_display }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Méthode d'entrée (pour les enfants étrangers) -->
+        {% if notification.child.birth_place == 'ABROAD' %}
+        <div class="info-card">
+            <div class="info-card-header">
+                <i class="fas fa-passport"></i>
+                طريقة الدخول للتراب التونسي
+            </div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-door-open"></i> طريقة الدخول:
+                    </div>
+                    <div class="info-value">
+                        {% if notification.entry_method_regular %}
+                            <span class="tag highlight">
+                                <i class="fas fa-check-circle"></i> بطريقة نظامية
+                            </span>
+                        {% elif notification.entry_method_irregular %}
+                            <span class="tag highlight">
+                                <i class="fas fa-exclamation-triangle"></i> بطريقة غير نظامية
+                            </span>
+                            <div class="tags-container mt-2">
+                                {% if notification.entry_irregular_sea %}
+                                    <span class="tag">
+                                        <i class="fas fa-water"></i> بحـرا
+                                    </span>
+                                {% endif %}
+                                {% if notification.entry_irregular_land %}
+                                    <span class="tag">
+                                        <i class="fas fa-mountain"></i> بـرا
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <span class="empty-message">
+                                <i class="fas fa-question-circle"></i> لم يتم تحديد
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- مكان الاستغلال -->
+        <div class="info-card">
+            <div class="info-card-header">
+                <i class="fas fa-map-marker-alt"></i>
+                مكان استغلال الأطفال
+            </div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-location-dot"></i> موقع الاستغلال:
+                    </div>
+                    <div class="info-value">
+                        {% if notification.exploitation_location_abroad %}
+                            <span class="tag highlight">
+                                <i class="fas fa-globe"></i> خارج البلاد التونسية
+                            </span>
+                        {% elif notification.exploitation_location_tunisia %}
+                            <span class="tag highlight">
+                                <i class="fas fa-map"></i> داخل البلاد التونسية
+                            </span>
+                            {% if notification.exploitation_governorate %}
+                                <span class="tag">
+                                    <i class="fas fa-city"></i> {{ notification.exploitation_governorate }}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="empty-message">
+                                <i class="fas fa-question-circle"></i> لم يتم تحديد
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-building"></i> أماكن الاستغلال:
+                    </div>
+                    <div class="info-value">
+                        <div class="tags-container">
+                            {% if notification.exploitation_home %}
+                                <span class="tag"><i class="fas fa-home"></i> المنزل</span>
+                            {% endif %}
+                            {% if notification.exploitation_relatives_home %}
+                                <span class="tag"><i class="fas fa-users"></i> منزل الأقارب</span>
+                            {% endif %}
+                            {% if notification.exploitation_other_residence %}
+                                <span class="tag"><i class="fas fa-building"></i> مقر إقامة آخر</span>
+                            {% endif %}
+                            {% if notification.exploitation_employer_home %}
+                                <span class="tag"><i class="fas fa-briefcase"></i> منزل المشغل</span>
+                            {% endif %}
+                            {% if notification.exploitation_legal_workshop %}
+                                <span class="tag"><i class="fas fa-gavel"></i> ورشة تشغيل قانونية</span>
+                            {% endif %}
+                            {% if notification.exploitation_illegal_workshop %}
+                                <span class="tag"><i class="fas fa-ban"></i> ورشة تشغيل غير قانونية</span>
+                            {% endif %}
+                            {% if notification.exploitation_private_place %}
+                                <span class="tag"><i class="fas fa-lock"></i> مكان خاص</span>
+                            {% endif %}
+                            {% if notification.exploitation_fields %}
+                                <span class="tag"><i class="fas fa-tractor"></i> الحقول الفلاحية</span>
+                            {% endif %}
+                            {% if notification.exploitation_factories %}
+                                <span class="tag"><i class="fas fa-industry"></i> المصانع</span>
+                            {% endif %}
+                            {% if notification.exploitation_street %}
+                                <span class="tag"><i class="fas fa-road"></i> الشارع</span>
+                            {% endif %}
+                            {% if notification.exploitation_markets %}
+                                <span class="tag"><i class="fas fa-store"></i> الأسواق</span>
+                            {% endif %}
+                            {% if notification.exploitation_public_places %}
+                                <span class="tag"><i class="fas fa-park"></i> الأماكن العامة</span>
+                            {% endif %}
+                            {% if notification.exploitation_other %}
+                                <span class="tag"><i class="fas fa-ellipsis-h"></i> {{ notification.exploitation_other_text|default:"أخرى" }}</span>
+                            {% endif %}
+                        </div>
+                        {% if not notification.exploitation_home and not notification.exploitation_street and not notification.exploitation_markets %}
+                            <span class="empty-message">
+                                <i class="fas fa-info-circle"></i> لم يتم تحديد أماكن استغلال
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- أطراف الاستغلال -->
+        <div class="info-card">
+            <div class="info-card-header">
+                <i class="fas fa-users"></i>
+                أطراف الاستغلال
+            </div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-user-tag"></i> أطراف الاستغلال:
+                    </div>
+                    <div class="info-value">
+                        <div class="tags-container">
+                            {% if notification.exploiter_parents %}
+                                <span class="tag highlight"><i class="fas fa-family"></i> الوالدين</span>
+                            {% endif %}
+                            {% if notification.exploiter_father %}
+                                <span class="tag"><i class="fas fa-male"></i> الأب</span>
+                            {% endif %}
+                            {% if notification.exploiter_mother %}
+                                <span class="tag"><i class="fas fa-female"></i> الأم</span>
+                            {% endif %}
+                            {% if notification.exploiter_guardian %}
+                                <span class="tag"><i class="fas fa-shield-alt"></i> الحاضن/الكافل</span>
+                            {% endif %}
+                            {% if notification.exploiter_relative %}
+                                <span class="tag"><i class="fas fa-handshake"></i> أحد الأقارب</span>
+                            {% endif %}
+                            {% if notification.exploiter_outside_family %}
+                                <span class="tag"><i class="fas fa-building"></i> خارج المحيط العائلي</span>
+                            {% endif %}
+                            {% if notification.exploiter_unknown %}
+                                <span class="tag"><i class="fas fa-question-circle"></i> شخص مجهول</span>
+                            {% endif %}
+                            {% if notification.exploiter_employer %}
+                                <span class="tag"><i class="fas fa-briefcase"></i> المشغل</span>
+                            {% endif %}
+                            {% if notification.exploiter_other %}
+                                <span class="tag"><i class="fas fa-ellipsis-h"></i> {{ notification.exploiter_other_text|default:"أخرى" }}</span>
+                            {% endif %}
+                        </div>
+                        {% if not notification.exploiter_parents and not notification.exploiter_employer %}
+                            <span class="empty-message">
+                                <i class="fas fa-info-circle"></i> لم يتم تحديد أطراف الاستغلال
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- العناصر المكونة لجريمة الاتجار -->
+        <div class="info-card">
+            <div class="info-card-header">
+                <i class="fas fa-gavel"></i>
+                العناصر المكونة لجريمة الاتجار
+            </div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-list"></i> عناصر الجريمة:
+                    </div>
+                    <div class="info-value">
+                        <div class="tags-container">
+                            {% if notification.crime_recruitment %}
+                                <span class="tag highlight"><i class="fas fa-user-plus"></i> استقطاب</span>
+                            {% endif %}
+                            {% if notification.crime_enlistment %}
+                                <span class="tag highlight"><i class="fas fa-user-check"></i> تجنيد</span>
+                            {% endif %}
+                            {% if notification.crime_transport %}
+                                <span class="tag highlight"><i class="fas fa-truck"></i> نقل</span>
+                            {% endif %}
+                            {% if notification.crime_relocation %}
+                                <span class="tag highlight"><i class="fas fa-exchange-alt"></i> تنقيل</span>
+                            {% endif %}
+                            {% if notification.crime_diversion %}
+                                <span class="tag highlight"><i class="fas fa-random"></i> تحويل وجهة</span>
+                            {% endif %}
+                            {% if notification.crime_deportation %}
+                                <span class="tag highlight"><i class="fas fa-plane"></i> ترحيل</span>
+                            {% endif %}
+                            {% if notification.crime_reception %}
+                                <span class="tag highlight"><i class="fas fa-hotel"></i> استقبال وإيواء</span>
+                            {% endif %}
+                        </div>
+                        <!-- تم إزالة رسالة "لم يتم تحديد عناصر الجريمة" -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Numéro du notifieur -->
+        {% if notification.notifier_number %}
+        <div class="info-card">
+            <div class="info-card-header">
+                <i class="fas fa-phone-alt"></i>
+                معلومات المبلغ
+            </div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-phone"></i> رقم المبلغ:
+                    </div>
+                    <div class="info-value">
+                        <span class="tag">
+                            <i class="fas fa-phone-alt"></i> {{ notification.notifier_number }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Boutons d'action -->
+        <div class="btn-group">
+            <a href="{% url 'trafficking_notification_edit' notification.id %}" class="btn-edit">
+                <i class="fas fa-edit"></i> تعديل الإشعار
+            </a>
+            <a href="{% url 'trafficking_notification_list' %}" class="btn-back">
+                <i class="fas fa-arrow-right"></i> العودة إلى القائمة
+            </a>
+            <a href="{% url 'trafficking_notification_delete' notification.id %}" class="btn-delete" 
+               onclick="return confirm('هل أنت متأكد من حذف هذا الإشعار؟\nهذا الإجراء لا يمكن التراجع عنه.')">
+                <i class="fas fa-trash-alt"></i> حذف الإشعار
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

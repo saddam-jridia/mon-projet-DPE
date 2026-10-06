@@ -1,0 +1,1783 @@
+{% extends "account/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% load dict_extras %}
+
+{% block head_title %}إضافة طفل جديد{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --primary: #b8860b;
+    --primary-dark: #8c6d0b;
+    --primary-light: #f4e4bc;
+    --accent: #d4a520;
+    --danger: #c41230;
+    --bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-light: #5a5b5d;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+    --radius: 20px;
+    --radius-sm: 12px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(184, 134, 11, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(184, 134, 11, 0.04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* Main Content */
+.main-content {
+    min-height: calc(100vh - 200px);
+}
+
+/* Header */
+.modern-header {
+    background: linear-gradient(135deg, #b8860b 0%, #b8860b 100%);
+    color: rgb(6, 6, 6);
+    padding: 2.5rem 0 5rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid #b8860b;
+}
+
+.modern-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: rgba(184, 134, 11, 0.05);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.modern-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, var(--bg), transparent);
+    pointer-events: none;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+}
+
+.brand-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.system-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    font-family: 'Tajawal', sans-serif;
+}
+
+.system-title i {
+    font-size: 2rem;
+    opacity: 0.9;
+    color: #b8860b;
+}
+
+.subtitle {
+    font-size: 1rem;
+    opacity: 0.85;
+    font-weight: 400;
+    color: #e0e0e0;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.user-badge {
+    background: rgba(184, 134, 11, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(184, 134, 11, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(184, 134, 11, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    border: 2px solid rgba(184, 134, 11, 0.4);
+    color: #b8860b;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.user-role {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    font-weight: 500;
+    color: #f4e4bc;
+    font-family: 'Tajawal', sans-serif;
+}
+
+/* Formulaire Container */
+.form-wrapper {
+    max-width: 1000px;
+    margin: -8rem auto 3rem;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.form-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.02);
+    overflow: hidden;
+    border: 1px solid rgba(184, 134, 11, 0.1);
+    animation: slideUp 0.6s ease-out;
+
+    
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 3px solid #b8860b;
+    position: relative;
+}
+
+.form-header h2 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.form-header h2 i {
+    color: #b8860b;
+}
+
+.form-body {
+    padding: 2rem;
+}
+
+/* Bouton Retour */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: var(--text);
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 2px solid #e2e8f0;
+    transition: var(--transition);
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+    font-family: 'Tajawal', sans-serif;
+}
+
+.btn-back:hover {
+    border-color: #b8860b;
+    color: #b8860b;
+    transform: translateX(-5px);
+    text-decoration: none;
+    box-shadow: var(--shadow);
+}
+
+/* Sections */
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+    border-right: 4px solid #b8860b;
+    padding-right: 12px;
+    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.section-title:first-of-type {
+    margin-top: 0;
+}
+
+.section-title i {
+    color: #b8860b;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label, .form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: 'Tajawal', sans-serif;
+}
+
+/* Label compact pour les champs en ligne */
+.inline-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.inline-label i {
+    color: #b8860b;
+    font-size: 0.75rem;
+    margin-left: 4px;
+}
+
+/* Sous-labels pour champs conditionnels */
+.sub-field-label {
+    display: block;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 0.35rem;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.sub-field-label i {
+    color: #b8860b;
+    font-size: 0.75rem;
+    margin-left: 4px;
+    opacity: 0.7;
+}
+
+/* Animations pour champs conditionnels */
+#birth_place_fields {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#birth_place_fields[style*="block"] {
+    opacity: 1;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#gov_dept_section, #country_section {
+    animation: slideDown 0.3s ease;
+}
+
+.form-control, .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    font-family: 'Tajawal', sans-serif !important;
+    font-size: 0.9rem !important;
+    transition: var(--transition);
+    background: #f8fafc;
+}
+
+.form-control:focus, .form-select:focus {
+    outline: none;
+    border-color: #b8860b;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.1);
+}
+
+.form-control[readonly] {
+    background: #f1f5f9;
+    cursor: not-allowed;
+}
+
+/* Info Boxes */
+.info-box {
+    border: 2px solid #e2e8f0;
+    background: linear-gradient(135deg, #fafbfe, #ffffff);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin: 1.25rem 0;
+    position: relative;
+    transition: var(--transition);
+}
+
+.info-box:hover {
+    border-color: #b8860b;
+    box-shadow: var(--shadow-sm);
+}
+
+.info-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(135deg, #b8860b, #d4a520);
+    border-radius: 4px 0 0 4px;
+}
+
+.info-box h5 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.info-box h5 i {
+    color: #b8860b;
+}
+
+/* Submit Button */
+.btn-submit {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: white;
+    border: 2px solid #b8860b;
+    padding: 0.9rem 2rem;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(184, 134, 11, 0.3);
+}
+
+/* Alert Success */
+.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border: 2px solid #28a745;
+    border-radius: 14px;
+    color: #155724;
+    font-weight: 600;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    animation: slideDownAlert 0.4s ease;
+    font-family: 'Tajawal', sans-serif;
+}
+
+@keyframes slideDownAlert {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 20px !important;
+    overflow: hidden;
+    border: none;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+    border-bottom: 3px solid #b8860b;
+    padding: 1.25rem;
+}
+
+.modal-header .modal-title {
+    font-weight: 800;
+    color: white;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.modal-body {
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    padding: 2rem;
+    text-align: center;
+}
+
+.modal-badge {
+    font-size: 1.25rem;
+    font-weight: 800;
+    background: white;
+    border: 2px solid #28a745;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    display: inline-block;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.btn-choice-threatened {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    border-radius: 50px;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    color: white;
+    transition: var(--transition);
+    font-family: 'Tajawal', sans-serif;
+}
+
+.btn-choice-threatened:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40,167,69,0.4);
+}
+
+.btn-choice-delinquent {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+    border: none;
+    border-radius: 50px;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    color: white;
+    transition: var(--transition);
+    font-family: 'Tajawal', sans-serif;
+}
+
+.btn-choice-delinquent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220,53,69,0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modern-header {
+        padding: 2rem 0 4rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+        align-items: center;
+    }
+    
+    .form-wrapper {
+        margin: -3rem auto 2rem;
+    }
+    
+    .form-body {
+        padding: 1.25rem;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+    }
+    
+    .info-box {
+        padding: 1rem;
+    }
+    
+    .btn-choice-threatened,
+    .btn-choice-delinquent {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-wrapper {
+        margin: -2rem auto 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .form-body {
+        padding: 1rem;
+    }
+    
+    .system-title {
+        font-size: 1.25rem;
+    }
+    
+    .system-title i {
+        font-size: 1.5rem;
+    }
+    
+    .user-badge {
+        padding: 0.75rem 1rem;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-back {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+}
+.back-container {
+    display: flex;
+    justify-content: flex-start;
+    direction: ltr; /* هذا هو الحل */
+}
+
+.btn-black {
+    color: #000 !important;
+    border: 2px solid #000 !important;
+    background-color: transparent !important;
+}
+
+.btn-black:hover {
+    color: #fff !important;
+    background-color: #000 !important;
+    border-color: #000 !important;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    
+    <!-- Header -->
+    <div class="modern-header">
+        
+        <div class="header-content">
+            <div class="brand-section">
+               
+                <div class="system-title">
+                    <i class="fas fa-child" style=" color: #080808"></i>
+                    <span>إضافة طفل جديد</span>
+                </div>
+                
+            </div>
+            
+           
+        </div>
+    </div>
+  <div class="back-container">
+    <a href="{% url 'recherche_enfants' %}" class="btn-back">
+        <i class="fas fa-arrow-right"></i>
+        العودة إلى صفحة البحث
+    </a>
+</div>
+    <!-- Formulaire -->
+    <div class="form-wrapper">
+      
+
+        {% if success_message %}
+        <div class="alert-success">
+            <i class="fas fa-check-circle"></i>
+            {{ success_message }}
+        </div>
+        {% endif %}
+
+        <div class="form-card">
+            <div class="form-header">
+                <h2>
+                    <i class="fas fa-edit"></i>
+                    استمارة إدخال طفل جديد
+                </h2>
+            </div>
+            <div class="form-body">
+                <form method="post" action="{% url 'child_create' %}">
+                    {% csrf_token %}
+                    
+                    <!-- Section 1: Données de base -->
+                    <div class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        المعطيات الأساسية
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>المعرف الوحيد</label>
+                                {{ form.uid|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>الاسم *</label>
+                                {{ form.first_name|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>اللقب *</label>
+                                {{ form.last_name|add_class:"form-control" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ligne: الجنس | تاريخ الميلاد | مكان الولادة -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>الجنس *</label>
+                                {{ form.gender|add_class:"form-select" }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>تاريخ الولادة</label>
+                                {{ form.birth_date|add_class:"form-control"|attr:"type:date" }}
+
+                                {% if form.birth_date.errors %}
+    <div class="text-danger">
+        {{ form.birth_date.errors }}
+    </div>
+{% endif %}
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>مكان الولادة</label>
+                                {{ form.birth_place|add_class:"form-select" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Champs conditionnels مكان الولادة -->
+                    <div id="birth_place_fields" style="display:none;">
+                        
+                        <!-- Cas 1: داخل البلاد -->
+                        <div id="gov_dept_section" class="row mb-3" style="display:none;">
+                            <div class="col-md-6 mb-2 mb-md-0">
+                                <label for="id_birth_governorate" class="sub-field-label">
+                                    <i class="fas fa-building"></i> الولاية
+                                </label>
+                                {{ form.birth_governorate|add_class:"form-select" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="departments" class="sub-field-label">
+                                    <i class="fas fa-map-pin"></i> المعتمدية
+                                </label>
+                                <select id="departments" name="birth_department" class="form-select">
+                                    <option value="">اختر المعتمدية</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Cas 2: خارج البلاد -->
+                        <div id="country_section" class="row mb-3" style="display:none;">
+                            <div class="col-6">
+                                <label for="id_birth_country" class="sub-field-label">
+                                    <i class="fas fa-globe"></i> الدولة
+                                </label>
+                                <select name="birth_country" id="id_birth_country" class="form-select">
+                                    <option value="">اختر الدولة</option>
+                                    <option value="TN">تونس</option>
+        <option value="AF">أفغانستان</option>
+        <option value="AL">ألبانيا</option>
+        <option value="DZ">الجزائر</option>
+        <option value="AD">أندورا</option>
+        <option value="AO">أنغولا</option>
+        <option value="AG">أنتيغوا وباربودا</option>
+        <option value="AR">الأرجنتين</option>
+        <option value="AM">أرمينيا</option>
+        <option value="AU">أستراليا</option>
+        <option value="AT">النمسا</option>
+        <option value="AZ">أذربيجان</option>
+        <option value="BS">الباهاما</option>
+        <option value="BH">البحرين</option>
+        <option value="BD">بنغلاديش</option>
+        <option value="BB">باربادوس</option>
+        <option value="BY">بيلاروس</option>
+        <option value="BE">بلجيكا</option>
+        <option value="BZ">بليز</option>
+        <option value="BJ">بنين</option>
+        <option value="BT">بوتان</option>
+        <option value="BO">بوليفيا</option>
+        <option value="BA">البوسنة والهرسك</option>
+        <option value="BW">بوتسوانا</option>
+        <option value="BR">البرازيل</option>
+        <option value="BN">بروناي</option>
+        <option value="BG">بلغاريا</option>
+        <option value="BF">بوركينا فاسو</option>
+        <option value="BI">بوروندي</option>
+        <option value="KH">كمبوديا</option>
+        <option value="CM">الكاميرون</option>
+        <option value="CA">كندا</option>
+        <option value="CV">الرأس الأخضر</option>
+        <option value="CF">جمهورية أفريقيا الوسطى</option>
+        <option value="TD">تشاد</option>
+        <option value="CL">تشيلي</option>
+        <option value="CN">الصين</option>
+        <option value="CO">كولومبيا</option>
+        <option value="KM">جزر القمر</option>
+        <option value="CG">الكونغو</option>
+        <option value="CD">الكونغو الديمقراطية</option>
+        <option value="CR">كوستاريكا</option>
+        <option value="CI">ساحل العاج</option>
+        <option value="HR">كرواتيا</option>
+        <option value="CU">كوبا</option>
+        <option value="CY">قبرص</option>
+        <option value="CZ">التشيك</option>
+        <option value="DK">الدنمارك</option>
+        <option value="DJ">جيبوتي</option>
+        <option value="DM">دومينيكا</option>
+        <option value="DO">جمهورية الدومينيكان</option>
+        <option value="EC">الإكوادور</option>
+        <option value="EG">مصر</option>
+        <option value="SV">السلفادور</option>
+        <option value="GQ">غينيا الاستوائية</option>
+        <option value="ER">إريتريا</option>
+        <option value="EE">إستونيا</option>
+        <option value="SZ">إسواتيني</option>
+        <option value="ET">إثيوبيا</option>
+        <option value="FJ">فيجي</option>
+        <option value="FI">فنلندا</option>
+        <option value="FR">فرنسا</option>
+        <option value="GA">الغابون</option>
+        <option value="GM">غامبيا</option>
+        <option value="GE">جورجيا</option>
+        <option value="DE">ألمانيا</option>
+        <option value="GH">غانا</option>
+        <option value="GR">اليونان</option>
+        <option value="GD">غرينادا</option>
+        <option value="GT">غواتيمالا</option>
+        <option value="GN">غينيا</option>
+        <option value="GW">غينيا بيساو</option>
+        <option value="GY">غيانا</option>
+        <option value="HT">هايتي</option>
+        <option value="HN">هندوراس</option>
+        <option value="HU">هنغاريا</option>
+        <option value="IS">آيسلندا</option>
+        <option value="IN">الهند</option>
+        <option value="ID">إندونيسيا</option>
+        <option value="IR">إيران</option>
+        <option value="IQ">العراق</option>
+        <option value="IE">إيرلندا</option>
+        <option value="IL">فلسطين </option>
+        <option value="IT">إيطاليا</option>
+        <option value="JM">جامايكا</option>
+        <option value="JP">اليابان</option>
+        <option value="JO">الأردن</option>
+        <option value="KZ">كازاخستان</option>
+        <option value="KE">كينيا</option>
+        <option value="KI">كيريباتي</option>
+        <option value="KP">كوريا الشمالية</option>
+        <option value="KR">كوريا الجنوبية</option>
+        <option value="KW">الكويت</option>
+        <option value="KG">قيرغيزستان</option>
+        <option value="LA">لاوس</option>
+        <option value="LV">لاتفيا</option>
+        <option value="LB">لبنان</option>
+        <option value="LS">ليسوتو</option>
+        <option value="LR">ليبيريا</option>
+        <option value="LY">ليبيا</option>
+        <option value="LI">ليختنشتاين</option>
+        <option value="LT">ليتوانيا</option>
+        <option value="LU">لوكسمبورغ</option>
+        <option value="MG">مدغشقر</option>
+        <option value="MW">مالاوي</option>
+        <option value="MY">ماليزيا</option>
+        <option value="MV">المالديف</option>
+        <option value="ML">مالي</option>
+        <option value="MT">مالطا</option>
+        <option value="MH">جزر مارشال</option>
+        <option value="MR">موريتانيا</option>
+        <option value="MU">موريشيوس</option>
+        <option value="MX">المكسيك</option>
+        <option value="FM">ميكرونيزيا</option>
+        <option value="MD">مولدوفا</option>
+        <option value="MC">موناكو</option>
+        <option value="MN">منغوليا</option>
+        <option value="ME">الجبل الأسود</option>
+        <option value="MA">المغرب</option>
+        <option value="MZ">موزمبيق</option>
+        <option value="MM">ميانمار</option>
+        <option value="NA">ناميبيا</option>
+        <option value="NR">ناورو</option>
+        <option value="NP">نيبال</option>
+        <option value="NL">هولندا</option>
+        <option value="NZ">نيوزيلندا</option>
+        <option value="NI">نيكاراغوا</option>
+        <option value="NE">النيجر</option>
+        <option value="NG">نيجيريا</option>
+        <option value="NO">النرويج</option>
+        <option value="OM">عُمان</option>
+        <option value="PK">باكستان</option>
+        <option value="PW">بالاو</option>
+        <option value="PA">بنما</option>
+        <option value="PG">بابوا غينيا الجديدة</option>
+        <option value="PY">الباراغواي</option>
+        <option value="PE">بيرو</option>
+        <option value="PH">الفلبين</option>
+        <option value="PL">بولندا</option>
+        <option value="PT">البرتغال</option>
+        <option value="QA">قطر</option>
+        <option value="RO">رومانيا</option>
+        <option value="RU">روسيا</option>
+        <option value="RW">رواندا</option>
+        <option value="KN">سانت كيتس ونيفيس</option>
+        <option value="LC">سانت لوسيا</option>
+        <option value="VC">سانت فنسنت والغرينادين</option>
+        <option value="WS">ساموا</option>
+        <option value="SM">سان مارينو</option>
+        <option value="ST">ساو تومي وبرنسيب</option>
+        <option value="SA">السعودية</option>
+        <option value="SN">السنغال</option>
+        <option value="RS">صربيا</option>
+        <option value="SC">سيشل</option>
+        <option value="SL">سيراليون</option>
+        <option value="SG">سنغافورة</option>
+        <option value="SK">سلوفاكيا</option>
+        <option value="SI">سلوفينيا</option>
+        <option value="SB">جزر سليمان</option>
+        <option value="SO">الصومال</option>
+        <option value="ZA">جنوب أفريقيا</option>
+       
+        <option value="ES">إسبانيا</option>
+        <option value="LK">سريلانكا</option>
+        <option value="SD">السودان</option>
+        <option value="SR">سورينام</option>
+        <option value="SE">السويد</option>
+        <option value="CH">سويسرا</option>
+        <option value="SY">سوريا</option>
+        <option value="TJ">طاجيكستان</option>
+        <option value="TZ">تنزانيا</option>
+        <option value="TH">تايلاند</option>
+        <option value="TL">تيمور الشرقية</option>
+        <option value="TG">توغو</option>
+        <option value="TO">تونغا</option>
+        <option value="TT">ترينيداد وتوباغو</option>
+        
+        <option value="TR">تركيا</option>
+        <option value="TM">تركمانستان</option>
+        <option value="TV">توفالو</option>
+        <option value="UG">أوغندا</option>
+        <option value="UA">أوكرانيا</option>
+        <option value="AE">الإمارات</option>
+        <option value="GB">المملكة المتحدة</option>
+        <option value="US">الولايات المتحدة</option>
+        <option value="UY">الأوروغواي</option>
+        <option value="UZ">أوزبكستان</option>
+        <option value="VU">فانواتو</option>
+        <option value="VA">الفاتيكان</option>
+        <option value="VE">فنزويلا</option>
+        <option value="VN">فيتنام</option>
+        <option value="YE">اليمن</option>
+        <option value="ZM">زامبيا</option>
+        <option value="ZW">زيمبابوي</option>
+   </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>الترسيم بدفاتر الحالة المدنية</label>
+                                {{ form.registration_type|add_class:"form-select" }}
+                            </div>
+                        </div>
+                                      <div class="col-md-3" id="registration_number_row" style="display:none;">
+                            <div class="form-group">
+                                <label>عدد الرسم</label>
+    {{ form.registration_number|add_class:"form-control" }}
+
+    {% if form.registration_number.errors %}
+        <div class="text-danger mt-1">
+            {% for error in form.registration_number.errors %}
+                <small>{{ error }}</small><br>
+            {% endfor %}
+        </div>
+    {% endif %}
+    </div>
+</div>
+
+                        <div class="col-md-3" id="registration_date_row" style="display:none;">
+                            <div class="form-group">
+                                <label>تاريخ الرسم</label>
+                                {{ form.registration_date|add_class:"form-control"|attr:"type:date" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>جنسية الطفل</label>
+                                {{ form.nationality|add_class:"form-select" }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>الولادة</label>
+                                {{ form.birth_status|add_class:"form-select" }}
+                            </div>
+                        </div>
+                    </div>
+
+                
+
+
+
+
+
+                    <div id="second_nationality_field" class="info-box" style="display:none;">
+                        <h5><i class="fas fa-globe"></i> معطيات إضافية عن الجنسية </h5>
+                       <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+    <label>الجنسية</label>
+    <select name="second_nationality" class="form-select">
+            <option value="AF">أفغانستان</option>
+        <option value="AL">ألبانيا</option>
+        <option value="DZ">الجزائر</option>
+        <option value="AD">أندورا</option>
+        <option value="AO">أنغولا</option>
+        <option value="AG">أنتيغوا وباربودا</option>
+        <option value="AR">الأرجنتين</option>
+        <option value="AM">أرمينيا</option>
+        <option value="AU">أستراليا</option>
+        <option value="AT">النمسا</option>
+        <option value="AZ">أذربيجان</option>
+        <option value="BS">الباهاما</option>
+        <option value="BH">البحرين</option>
+        <option value="BD">بنغلاديش</option>
+        <option value="BB">باربادوس</option>
+        <option value="BY">بيلاروس</option>
+        <option value="BE">بلجيكا</option>
+        <option value="BZ">بليز</option>
+        <option value="BJ">بنين</option>
+        <option value="BT">بوتان</option>
+        <option value="BO">بوليفيا</option>
+        <option value="BA">البوسنة والهرسك</option>
+        <option value="BW">بوتسوانا</option>
+        <option value="BR">البرازيل</option>
+        <option value="BN">بروناي</option>
+        <option value="BG">بلغاريا</option>
+        <option value="BF">بوركينا فاسو</option>
+        <option value="BI">بوروندي</option>
+        <option value="KH">كمبوديا</option>
+        <option value="CM">الكاميرون</option>
+        <option value="CA">كندا</option>
+        <option value="CV">الرأس الأخضر</option>
+        <option value="CF">جمهورية أفريقيا الوسطى</option>
+        <option value="TD">تشاد</option>
+        <option value="CL">تشيلي</option>
+        <option value="CN">الصين</option>
+        <option value="CO">كولومبيا</option>
+        <option value="KM">جزر القمر</option>
+        <option value="CG">الكونغو</option>
+        <option value="CD">الكونغو الديمقراطية</option>
+        <option value="CR">كوستاريكا</option>
+        <option value="CI">ساحل العاج</option>
+        <option value="HR">كرواتيا</option>
+        <option value="CU">كوبا</option>
+        <option value="CY">قبرص</option>
+        <option value="CZ">التشيك</option>
+        <option value="DK">الدنمارك</option>
+        <option value="DJ">جيبوتي</option>
+        <option value="DM">دومينيكا</option>
+        <option value="DO">جمهورية الدومينيكان</option>
+        <option value="EC">الإكوادور</option>
+        <option value="EG">مصر</option>
+        <option value="SV">السلفادور</option>
+        <option value="GQ">غينيا الاستوائية</option>
+        <option value="ER">إريتريا</option>
+        <option value="EE">إستونيا</option>
+        <option value="SZ">إسواتيني</option>
+        <option value="ET">إثيوبيا</option>
+        <option value="FJ">فيجي</option>
+        <option value="FI">فنلندا</option>
+        <option value="FR">فرنسا</option>
+        <option value="GA">الغابون</option>
+        <option value="GM">غامبيا</option>
+        <option value="GE">جورجيا</option>
+        <option value="DE">ألمانيا</option>
+        <option value="GH">غانا</option>
+        <option value="GR">اليونان</option>
+        <option value="GD">غرينادا</option>
+        <option value="GT">غواتيمالا</option>
+        <option value="GN">غينيا</option>
+        <option value="GW">غينيا بيساو</option>
+        <option value="GY">غيانا</option>
+        <option value="HT">هايتي</option>
+        <option value="HN">هندوراس</option>
+        <option value="HU">هنغاريا</option>
+        <option value="IS">آيسلندا</option>
+        <option value="IN">الهند</option>
+        <option value="ID">إندونيسيا</option>
+        <option value="IR">إيران</option>
+        <option value="IQ">العراق</option>
+        <option value="IE">إيرلندا</option>
+        <option value="IL">فلسطين </option>
+        <option value="IT">إيطاليا</option>
+        <option value="JM">جامايكا</option>
+        <option value="JP">اليابان</option>
+        <option value="JO">الأردن</option>
+        <option value="KZ">كازاخستان</option>
+        <option value="KE">كينيا</option>
+        <option value="KI">كيريباتي</option>
+        <option value="KP">كوريا الشمالية</option>
+        <option value="KR">كوريا الجنوبية</option>
+        <option value="KW">الكويت</option>
+        <option value="KG">قيرغيزستان</option>
+        <option value="LA">لاوس</option>
+        <option value="LV">لاتفيا</option>
+        <option value="LB">لبنان</option>
+        <option value="LS">ليسوتو</option>
+        <option value="LR">ليبيريا</option>
+        <option value="LY">ليبيا</option>
+        <option value="LI">ليختنشتاين</option>
+        <option value="LT">ليتوانيا</option>
+        <option value="LU">لوكسمبورغ</option>
+        <option value="MG">مدغشقر</option>
+        <option value="MW">مالاوي</option>
+        <option value="MY">ماليزيا</option>
+        <option value="MV">المالديف</option>
+        <option value="ML">مالي</option>
+        <option value="MT">مالطا</option>
+        <option value="MH">جزر مارشال</option>
+        <option value="MR">موريتانيا</option>
+        <option value="MU">موريشيوس</option>
+        <option value="MX">المكسيك</option>
+        <option value="FM">ميكرونيزيا</option>
+        <option value="MD">مولدوفا</option>
+        <option value="MC">موناكو</option>
+        <option value="MN">منغوليا</option>
+        <option value="ME">الجبل الأسود</option>
+        <option value="MA">المغرب</option>
+        <option value="MZ">موزمبيق</option>
+        <option value="MM">ميانمار</option>
+        <option value="NA">ناميبيا</option>
+        <option value="NR">ناورو</option>
+        <option value="NP">نيبال</option>
+        <option value="NL">هولندا</option>
+        <option value="NZ">نيوزيلندا</option>
+        <option value="NI">نيكاراغوا</option>
+        <option value="NE">النيجر</option>
+        <option value="NG">نيجيريا</option>
+        <option value="NO">النرويج</option>
+        <option value="OM">عُمان</option>
+        <option value="PK">باكستان</option>
+        <option value="PW">بالاو</option>
+        <option value="PA">بنما</option>
+        <option value="PG">بابوا غينيا الجديدة</option>
+        <option value="PY">الباراغواي</option>
+        <option value="PE">بيرو</option>
+        <option value="PH">الفلبين</option>
+        <option value="PL">بولندا</option>
+        <option value="PT">البرتغال</option>
+        <option value="QA">قطر</option>
+        <option value="RO">رومانيا</option>
+        <option value="RU">روسيا</option>
+        <option value="RW">رواندا</option>
+        <option value="KN">سانت كيتس ونيفيس</option>
+        <option value="LC">سانت لوسيا</option>
+        <option value="VC">سانت فنسنت والغرينادين</option>
+        <option value="WS">ساموا</option>
+        <option value="SM">سان مارينو</option>
+        <option value="ST">ساو تومي وبرنسيب</option>
+        <option value="SA">السعودية</option>
+        <option value="SN">السنغال</option>
+        <option value="RS">صربيا</option>
+        <option value="SC">سيشل</option>
+        <option value="SL">سيراليون</option>
+        <option value="SG">سنغافورة</option>
+        <option value="SK">سلوفاكيا</option>
+        <option value="SI">سلوفينيا</option>
+        <option value="SB">جزر سليمان</option>
+        <option value="SO">الصومال</option>
+        <option value="ZA">جنوب أفريقيا</option>
+       
+        <option value="ES">إسبانيا</option>
+        <option value="LK">سريلانكا</option>
+        <option value="SD">السودان</option>
+        <option value="SR">سورينام</option>
+        <option value="SE">السويد</option>
+        <option value="CH">سويسرا</option>
+        <option value="SY">سوريا</option>
+        <option value="TJ">طاجيكستان</option>
+        <option value="TZ">تنزانيا</option>
+        <option value="TH">تايلاند</option>
+        <option value="TL">تيمور الشرقية</option>
+        <option value="TG">توغو</option>
+        <option value="TO">تونغا</option>
+        <option value="TT">ترينيداد وتوباغو</option>
+        
+        <option value="TR">تركيا</option>
+        <option value="TM">تركمانستان</option>
+        <option value="TV">توفالو</option>
+        <option value="UG">أوغندا</option>
+        <option value="UA">أوكرانيا</option>
+        <option value="AE">الإمارات</option>
+        <option value="GB">المملكة المتحدة</option>
+        <option value="US">الولايات المتحدة</option>
+        <option value="UY">الأوروغواي</option>
+        <option value="UZ">أوزبكستان</option>
+        <option value="VU">فانواتو</option>
+        <option value="VA">الفاتيكان</option>
+        <option value="VE">فنزويلا</option>
+        <option value="VN">فيتنام</option>
+        <option value="YE">اليمن</option>
+        <option value="ZM">زامبيا</option>
+        <option value="ZW">زيمبابوي</option>
+       </select>
+     </div>
+     </div>
+     </div>  
+</div>
+                    <!-- Section Enfant étranger -->
+                    <div id="foreign_fields" class="info-box" style="display:none;">
+                        <h5><i class="fas fa-globe"></i> معطيات إضافية للطفل الأجنبي</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>الدولة</label>
+                                    <select name="foreign_country" class="form-select">
+                                        <option value="TN">تونس</option>
+        <option value="AF">أفغانستان</option>
+        <option value="AL">ألبانيا</option>
+        <option value="DZ">الجزائر</option>
+        <option value="AD">أندورا</option>
+        <option value="AO">أنغولا</option>
+        <option value="AG">أنتيغوا وباربودا</option>
+        <option value="AR">الأرجنتين</option>
+        <option value="AM">أرمينيا</option>
+        <option value="AU">أستراليا</option>
+        <option value="AT">النمسا</option>
+        <option value="AZ">أذربيجان</option>
+        <option value="BS">الباهاما</option>
+        <option value="BH">البحرين</option>
+        <option value="BD">بنغلاديش</option>
+        <option value="BB">باربادوس</option>
+        <option value="BY">بيلاروس</option>
+        <option value="BE">بلجيكا</option>
+        <option value="BZ">بليز</option>
+        <option value="BJ">بنين</option>
+        <option value="BT">بوتان</option>
+        <option value="BO">بوليفيا</option>
+        <option value="BA">البوسنة والهرسك</option>
+        <option value="BW">بوتسوانا</option>
+        <option value="BR">البرازيل</option>
+        <option value="BN">بروناي</option>
+        <option value="BG">بلغاريا</option>
+        <option value="BF">بوركينا فاسو</option>
+        <option value="BI">بوروندي</option>
+        <option value="KH">كمبوديا</option>
+        <option value="CM">الكاميرون</option>
+        <option value="CA">كندا</option>
+        <option value="CV">الرأس الأخضر</option>
+        <option value="CF">جمهورية أفريقيا الوسطى</option>
+        <option value="TD">تشاد</option>
+        <option value="CL">تشيلي</option>
+        <option value="CN">الصين</option>
+        <option value="CO">كولومبيا</option>
+        <option value="KM">جزر القمر</option>
+        <option value="CG">الكونغو</option>
+        <option value="CD">الكونغو الديمقراطية</option>
+        <option value="CR">كوستاريكا</option>
+        <option value="CI">ساحل العاج</option>
+        <option value="HR">كرواتيا</option>
+        <option value="CU">كوبا</option>
+        <option value="CY">قبرص</option>
+        <option value="CZ">التشيك</option>
+        <option value="DK">الدنمارك</option>
+        <option value="DJ">جيبوتي</option>
+        <option value="DM">دومينيكا</option>
+        <option value="DO">جمهورية الدومينيكان</option>
+        <option value="EC">الإكوادور</option>
+        <option value="EG">مصر</option>
+        <option value="SV">السلفادور</option>
+        <option value="GQ">غينيا الاستوائية</option>
+        <option value="ER">إريتريا</option>
+        <option value="EE">إستونيا</option>
+        <option value="SZ">إسواتيني</option>
+        <option value="ET">إثيوبيا</option>
+        <option value="FJ">فيجي</option>
+        <option value="FI">فنلندا</option>
+        <option value="FR">فرنسا</option>
+        <option value="GA">الغابون</option>
+        <option value="GM">غامبيا</option>
+        <option value="GE">جورجيا</option>
+        <option value="DE">ألمانيا</option>
+        <option value="GH">غانا</option>
+        <option value="GR">اليونان</option>
+        <option value="GD">غرينادا</option>
+        <option value="GT">غواتيمالا</option>
+        <option value="GN">غينيا</option>
+        <option value="GW">غينيا بيساو</option>
+        <option value="GY">غيانا</option>
+        <option value="HT">هايتي</option>
+        <option value="HN">هندوراس</option>
+        <option value="HU">هنغاريا</option>
+        <option value="IS">آيسلندا</option>
+        <option value="IN">الهند</option>
+        <option value="ID">إندونيسيا</option>
+        <option value="IR">إيران</option>
+        <option value="IQ">العراق</option>
+        <option value="IE">إيرلندا</option>
+        <option value="IL">فلسطين </option>
+        <option value="IT">إيطاليا</option>
+        <option value="JM">جامايكا</option>
+        <option value="JP">اليابان</option>
+        <option value="JO">الأردن</option>
+        <option value="KZ">كازاخستان</option>
+        <option value="KE">كينيا</option>
+        <option value="KI">كيريباتي</option>
+        <option value="KP">كوريا الشمالية</option>
+        <option value="KR">كوريا الجنوبية</option>
+        <option value="KW">الكويت</option>
+        <option value="KG">قيرغيزستان</option>
+        <option value="LA">لاوس</option>
+        <option value="LV">لاتفيا</option>
+        <option value="LB">لبنان</option>
+        <option value="LS">ليسوتو</option>
+        <option value="LR">ليبيريا</option>
+        <option value="LY">ليبيا</option>
+        <option value="LI">ليختنشتاين</option>
+        <option value="LT">ليتوانيا</option>
+        <option value="LU">لوكسمبورغ</option>
+        <option value="MG">مدغشقر</option>
+        <option value="MW">مالاوي</option>
+        <option value="MY">ماليزيا</option>
+        <option value="MV">المالديف</option>
+        <option value="ML">مالي</option>
+        <option value="MT">مالطا</option>
+        <option value="MH">جزر مارشال</option>
+        <option value="MR">موريتانيا</option>
+        <option value="MU">موريشيوس</option>
+        <option value="MX">المكسيك</option>
+        <option value="FM">ميكرونيزيا</option>
+        <option value="MD">مولدوفا</option>
+        <option value="MC">موناكو</option>
+        <option value="MN">منغوليا</option>
+        <option value="ME">الجبل الأسود</option>
+        <option value="MA">المغرب</option>
+        <option value="MZ">موزمبيق</option>
+        <option value="MM">ميانمار</option>
+        <option value="NA">ناميبيا</option>
+        <option value="NR">ناورو</option>
+        <option value="NP">نيبال</option>
+        <option value="NL">هولندا</option>
+        <option value="NZ">نيوزيلندا</option>
+        <option value="NI">نيكاراغوا</option>
+        <option value="NE">النيجر</option>
+        <option value="NG">نيجيريا</option>
+        <option value="NO">النرويج</option>
+        <option value="OM">عُمان</option>
+        <option value="PK">باكستان</option>
+        <option value="PW">بالاو</option>
+        <option value="PA">بنما</option>
+        <option value="PG">بابوا غينيا الجديدة</option>
+        <option value="PY">الباراغواي</option>
+        <option value="PE">بيرو</option>
+        <option value="PH">الفلبين</option>
+        <option value="PL">بولندا</option>
+        <option value="PT">البرتغال</option>
+        <option value="QA">قطر</option>
+        <option value="RO">رومانيا</option>
+        <option value="RU">روسيا</option>
+        <option value="RW">رواندا</option>
+        <option value="KN">سانت كيتس ونيفيس</option>
+        <option value="LC">سانت لوسيا</option>
+        <option value="VC">سانت فنسنت والغرينادين</option>
+        <option value="WS">ساموا</option>
+        <option value="SM">سان مارينو</option>
+        <option value="ST">ساو تومي وبرنسيب</option>
+        <option value="SA">السعودية</option>
+        <option value="SN">السنغال</option>
+        <option value="RS">صربيا</option>
+        <option value="SC">سيشل</option>
+        <option value="SL">سيراليون</option>
+        <option value="SG">سنغافورة</option>
+        <option value="SK">سلوفاكيا</option>
+        <option value="SI">سلوفينيا</option>
+        <option value="SB">جزر سليمان</option>
+        <option value="SO">الصومال</option>
+        <option value="ZA">جنوب أفريقيا</option>
+     
+        <option value="ES">إسبانيا</option>
+        <option value="LK">سريلانكا</option>
+        <option value="SD">السودان</option>
+        <option value="SR">سورينام</option>
+        <option value="SE">السويد</option>
+        <option value="CH">سويسرا</option>
+        <option value="SY">سوريا</option>
+        <option value="TJ">طاجيكستان</option>
+        <option value="TZ">تنزانيا</option>
+        <option value="TH">تايلاند</option>
+        <option value="TL">تيمور الشرقية</option>
+        <option value="TG">توغو</option>
+        <option value="TO">تونغا</option>
+        <option value="TT">ترينيداد وتوباغو</option>
+        
+        <option value="TR">تركيا</option>
+        <option value="TM">تركمانستان</option>
+        <option value="TV">توفالو</option>
+        <option value="UG">أوغندا</option>
+        <option value="UA">أوكرانيا</option>
+        <option value="AE">الإمارات</option>
+        <option value="GB">المملكة المتحدة</option>
+        <option value="US">الولايات المتحدة</option>
+        <option value="UY">الأوروغواي</option>
+        <option value="UZ">أوزبكستان</option>
+        <option value="VU">فانواتو</option>
+        <option value="VA">الفاتيكان</option>
+        <option value="VE">فنزويلا</option>
+        <option value="VN">فيتنام</option>
+        <option value="YE">اليمن</option>
+        <option value="ZM">زامبيا</option>
+        <option value="ZW">زيمبابوي</option>
+   </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>وثائق الهوية</label>
+                                    {{ form.identity_documents_available|add_class:"form-select" }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>الوضعية العائلية للطفل الأجنبي</label>
+                                    {{ form.foreign_family_status|add_class:"form-select" }}
+                                </div>
+                            </div>
+                           
+                        </div>
+                    </div>
+
+                    <!-- Section Hors Mariage -->
+                    <div id="unmarried_box" class="info-box" style="display:none;">
+                        <h5><i class="fas fa-ring"></i> المعطيات الإضافية للأطفال المولودين خارج إطار الزواج</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>هوية الطفل</label>
+                                    {{ form.child_identity_type|add_class:"form-select" }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>إثبات الهوية</label>
+                                    {{ form.identity_proof|add_class:"form-select" }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>سن الأم عند الولادة</label>
+                                    {{ form.mother_age_at_birth|add_class:"form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>مكان الإنجاب</label>
+                                    {{ form.birth_place_detail|add_class:"form-select" }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>عدد الإخوة خارج إطار الزواج</label>
+                                    {{ form.siblings_outside_marriage|add_class:"form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>عدد الإخوة في صحبة الأم</label>
+                                    {{ form.siblings_outside|add_class:"form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>عدد الإخوة المتخلي عنهم</label>
+                                    {{ form.siblings_out|add_class:"form-control" }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <label class="fw-bold mt-2">الموقف الأولي من الطفل عند الولادة</label>
+                        <div class="row text-center mt-2">
+                            {% for p in persons %}
+                            <div class="col-md-4">
+                                <label class="fw-bold d-block mb-2">{{ p }} :</label>
+                                <select name="initial_{{ p }}" class="form-select">
+                                    <option value="">---</option>
+                                    {% for val, txt in zip_values %}
+                                    <option value="{{ val }}" {% if initial_status|get_item:p == val %}selected{% endif %}>
+                                        {{ txt }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i>
+                            إضافة الطفل
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ DEPARTMENTS|json_script:"departments-data" }}
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    // --- مكان الولادة ---
+    const birthPlace = document.getElementById("id_birth_place");
+    const birthPlaceFields = document.getElementById("birth_place_fields");
+    const govDeptSection = document.getElementById("gov_dept_section");
+    const countrySection = document.getElementById("country_section");
+    const govSelect = document.getElementById("id_birth_governorate");
+    const deptSelect = document.getElementById("departments");
+
+    const departmentsData = JSON.parse(document.getElementById("departments-data").textContent);
+
+    function loadDepartments(governorate) {
+        deptSelect.innerHTML = '<option value="">اختر المعتمدية</option>';
+        if (governorate && departmentsData[governorate]) {
+            departmentsData[governorate].forEach(function(dept) {
+                let opt = document.createElement("option");
+                opt.value = dept;
+                opt.textContent = dept;
+                deptSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function toggleBirthPlace() {
+        const value = birthPlace ? birthPlace.value : '';
+        
+        if (!value) {
+            if (birthPlaceFields) {
+                birthPlaceFields.style.opacity = '0';
+                setTimeout(() => birthPlaceFields.style.display = "none", 200);
+            }
+            return;
+        }
+        
+        if (birthPlaceFields) {
+            birthPlaceFields.style.display = "block";
+            void birthPlaceFields.offsetWidth;
+            birthPlaceFields.style.opacity = '1';
+        }
+        
+        if (value === "IN_COUNTRY") {
+            if (govDeptSection) {
+                govDeptSection.style.display = "flex";
+                govDeptSection.style.animation = "slideDown 0.3s ease";
+            }
+            if (countrySection) countrySection.style.display = "none";
+            if (govSelect && govSelect.value) loadDepartments(govSelect.value);
+        } else if (value === "ABROAD") {
+            if (govDeptSection) govDeptSection.style.display = "none";
+            if (countrySection) {
+                countrySection.style.display = "block";
+                countrySection.style.animation = "slideDown 0.3s ease";
+            }
+        }
+    }
+
+    if (birthPlace) {
+        birthPlace.addEventListener("change", toggleBirthPlace);
+        if (govSelect) {
+            govSelect.addEventListener("change", function() { 
+                loadDepartments(this.value); 
+            });
+        }
+        toggleBirthPlace();
+    }
+
+    // --- الترسيم بدفاتر الحالة المدنية ---
+    const registrationType = document.getElementById("id_registration_type");
+    const numberRow = document.getElementById("registration_number_row");
+    const dateRow = document.getElementById("registration_date_row");
+
+    function toggleRegistrationFields() {
+        if (registrationType && registrationType.value === "REGISTERED") {
+            if (numberRow) numberRow.style.display = "block";
+            if (dateRow) dateRow.style.display = "block";
+        } else {
+            if (numberRow) numberRow.style.display = "none";
+            if (dateRow) dateRow.style.display = "none";
+        }
+    }
+
+    if (registrationType) {
+        registrationType.addEventListener("change", toggleRegistrationFields);
+        toggleRegistrationFields();
+    }
+
+    // --- جنسية الطفل ---
+    const nationality = document.getElementById("id_nationality");
+    const foreignBox = document.getElementById("foreign_fields");
+    const secondNationalityField = document.getElementById("second_nationality_field");
+
+    function toggleForeignFields() {
+    
+    
+
+      if (!nationality) return;
+
+    if (nationality.value === "FOREIGN") {
+        if (foreignBox) foreignBox.style.display = "block";
+        if (secondNationalityField) secondNationalityField.style.display = "none";
+
+    } else if (nationality.value === "TUNFOR") {
+        if (foreignBox) foreignBox.style.display = "none";
+        if (secondNationalityField) secondNationalityField.style.display = "block";
+
+    } else {
+        if (foreignBox) foreignBox.style.display = "none";
+        if (secondNationalityField) secondNationalityField.style.display = "none";
+    }
+    }
+
+    if (nationality) {
+        nationality.addEventListener("change", toggleForeignFields);
+        toggleForeignFields();
+    }
+
+    // --- الولادة ---
+    const birthStatus = document.getElementById("id_birth_status");
+    const unmarriedBox = document.getElementById("unmarried_box");
+
+    function toggleUnmarried() {
+        if (birthStatus && birthStatus.value === "UNMARRIED") {
+            if (unmarriedBox) unmarriedBox.style.display = "block";
+        } else {
+            if (unmarriedBox) unmarriedBox.style.display = "none";
+        }
+    }
+
+    if (birthStatus) {
+        birthStatus.addEventListener("change", toggleUnmarried);
+        toggleUnmarried();
+    }
+
+    // --- Tri alphabétique des pays ---
+const countrySelect = document.getElementById("id_birth_country");
+
+if (countrySelect) {
+    const firstOption = countrySelect.options[0];
+
+    const countries = Array.from(countrySelect.options).slice(1);
+
+    countries.sort(function(a, b) {
+        return a.textContent.trim().localeCompare(
+            b.textContent.trim(),
+            'ar'
+        );
+    });
+
+    countrySelect.innerHTML = "";
+
+    countrySelect.appendChild(firstOption);
+
+    countries.forEach(function(option) {
+        countrySelect.appendChild(option);
+    });
+}
+
+});
+
+
+const healthStatus = document.getElementById("id_health_status");
+const disabilityType = document.getElementById("id_disability_type");
+
+const disabilityTypeField = document.getElementById("disability_type_field");
+const disabilityDegreeField = document.getElementById("disability_degree_field");
+
+function toggleDisabilityFields() {
+    if (!healthStatus) return;
+
+    if (healthStatus.value === "DISABLED") {
+        disabilityTypeField.style.display = "block";
+    } else {
+        disabilityTypeField.style.display = "none";
+        disabilityDegreeField.style.display = "none";
+    }
+}
+
+function toggleDegreeField() {
+    if (!disabilityType) return;
+
+    if (disabilityType.value === "PHYSICAL") {
+        disabilityDegreeField.style.display = "block";
+    } else {
+        disabilityDegreeField.style.display = "none";
+    }
+}
+
+// events
+if (healthStatus) {
+    healthStatus.addEventListener("change", toggleDisabilityFields);
+    toggleDisabilityFields();
+}
+
+if (disabilityType) {
+    disabilityType.addEventListener("change", toggleDegreeField);
+    toggleDegreeField();
+}
+
+// Auto-fermer l'alerte après 5 secondes
+setTimeout(function() {
+    const alert = document.querySelector('.alert-success');
+    if (alert) {
+        alert.style.transition = 'opacity 0.5s ease';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500);
+    }
+}, 5000);
+</script>
+
+<!-- Modal Succès -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title mx-auto">
+                    <i class="fas fa-check-circle me-2"></i>
+                     تمّت إضافة الطفل بنجاح
+                </h5>
+            </div>
+            <div class="modal-body">
+                <i class="fas fa-child" style="font-size: 50px; color: #b8860b; margin-bottom: 15px;"></i>
+                <h5 class="fw-bold">رقم الملف</h5>
+                <div class="modal-badge mb-4">
+                    {{ child.numero_dossier }}
+                </div>
+                <h4 class="fw-bold text-dark mb-3">
+          هل الطفل مهدد أم في خلاف مع القانون؟
+        </h4>
+                {% if child and child.id %}
+                <form method="post" action="{% url 'set_child_status' child.id %}">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                       <button type="submit" name="status" value="THREATENED"
+        class="btn btn-black px-4 py-2 fw-bold">
+    طفل مهدد
+</button>
+
+<button type="submit" name="status" value="DELINQUENT"
+        class="btn btn-black px-4 py-2 fw-bold">
+    طفل في خلاف مع القانون
+</button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if show_success_modal %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let modalEl = document.getElementById('successModal');
+    if (modalEl) {
+        let successModal = new bootstrap.Modal(modalEl);
+        successModal.show();
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

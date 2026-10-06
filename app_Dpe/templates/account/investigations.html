@@ -1,0 +1,231 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Bootstrap, Font Awesome & HTMX -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+<style>
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+    .main-content {
+        margin-right: 20px;
+        padding: 5px;
+    }
+    .investigation-file {
+        background: #ffffff;
+        border: 2px solid #d4a520;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .investigation-file:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+    .file-header {
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        color: #d4a520;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .file-header h5 {
+        margin: 0;
+        font-family: 'Amiri';
+        font-weight: 700;
+    }
+    .file-number {
+        background: #d4a520;
+        color: #000;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    .file-body {
+        padding: 20px;
+    }
+    .file-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-right: 4px solid #d4a520;
+    }
+    .file-section-title {
+        color: #000;
+        font-weight: bold;
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+    .file-section-title i {
+        color: #d4a520;
+        margin-left: 8px;
+    }
+    .data-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px dashed #dee2e6;
+    }
+    .data-item:last-child {
+        border-bottom: none;
+    }
+    .data-label {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+    .data-value {
+        font-weight: 600;
+        color: #000;
+    }
+    .data-value.empty {
+        color: #adb5bd;
+        font-style: italic;
+    }
+    .status-badge {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+    .status-completed {
+        background-color: #28a745;
+        color: white;
+    }
+    .status-pending {
+        background-color: #ffc107;
+        color: #000;
+    }
+    .btn-gold {
+        background-color: #d4a520;
+        color: #000000;
+        border: none;
+        font-weight: bold;
+    }
+    .btn-gold:hover {
+        background-color: #b8860b;
+        color: #000000;
+    }
+    .btn-edit-file {
+        background: transparent;
+        border: 2px solid #d4a520;
+        color: #d4a520;
+        padding: 5px 15px;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+    .btn-edit-file:hover {
+        background: #d4a520;
+        color: #000;
+    }
+    .child-info-card {
+        background: linear-gradient(135deg, #000000 0%, #333333 100%);
+        color: #d4a520;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .child-info-card h4 {
+        margin: 0;
+        font-family: 'Amiri';
+    }
+    .page-title {
+        font-family: 'Amiri';
+        font-weight: 900;
+        color: #000000;
+    }
+    .inline-form .form-control {
+        border: 2px solid #d4a520;
+    }
+    .inline-form .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(212, 165, 32, 0.25);
+    }
+    .summons-row, .visit-row {
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #e9ecef;
+    }
+    .htmx-swapping { opacity: 0; transition: opacity 0.3s; }
+    .htmx-added { opacity: 0; animation: fadeIn 0.3s forwards; }
+    @keyframes fadeIn { to { opacity: 1; } }
+</style>
+
+<div class="content">
+    <div class="main-content">
+        
+        <!-- Bouton retour -->
+        <div class="mb-3" style="text-align: left;">
+            <a href="{% url 'child_list_Investigation' %}" class="btn btn-gold">
+                <i class="fas fa-arrow-right me-2"></i>
+             العودة إلى إجراءات صلاحيات تقدير جدية الإشعار
+            </a>
+        </div>
+        
+        <!-- Titre -->
+        <h2 class="text-center page-title mb-4">
+            <i class="fas fa-folder-open me-2"></i>
+            ملفات إجراءات صلاحيات تقدير جدية الإشعار
+        </h2>
+        
+        <!-- Info de l'enfant -->
+        <div class="child-info-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4>
+                        <i class="fas fa-child me-2"></i>
+                        {{ child.first_name }} {{ child.last_name }}
+                    </h4>
+                    <small class="text-light">
+                        <i class="fas fa-id-card me-1"></i>
+                        المعرف الوحيد: {{ child.uid }}
+                    </small>
+                </div>
+                <div>
+                    <span class="badge bg-warning text-dark fs-6">
+                        <i class="fas fa-folder me-1"></i>
+                        {{ investigations.count }} ملف(ات)
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Liste des fichiers d'investigation -->
+        {% if investigations %}
+            <div id="investigations-container">
+                {% for inv in investigations %}
+                    {% include 'account/partials/investigation_card.html' %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">لا توجد ملفات مسجلة لهذا الطفل</h4>
+                <p class="text-muted">قم بإضافة إجراء تقصي جديد</p>
+                <a href="{% url 'recherche_child_list' %}" class="btn btn-gold mt-2">
+                    <i class="fas fa-plus me-2"></i>
+                    إجراء تقصي جديد
+                </a>
+            </div>
+        {% endif %}
+        
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

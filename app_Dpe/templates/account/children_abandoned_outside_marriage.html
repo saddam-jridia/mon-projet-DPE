@@ -1,0 +1,84 @@
+{% extends 'account/Header.html' %}
+
+{% block content %}
+
+<style>
+    
+    .content {
+      margin-right: 290px;
+      margin-top: 100px;
+      padding: 20px;
+    }
+.btn-dark-blue {
+  background-color: #0d0d0e;
+  border-color: #0a0a0a;
+}
+.btn-dark-blue:hover {
+  background-color: #0c0c0c;
+  border-color: #090909;
+}
+
+ table thead th {
+    background-color: #090909 !important;
+    color: white !important;
+    text-align: center;
+}
+ 
+  table th,
+table td {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+</style>
+
+
+<div class="content">
+
+  <h2 class="text-center" style="font-family:'Amiri'; font-weight:900;">
+        الأطفال في وضعية:
+       
+            التخلي عن طفل مولود خارج اطار الزواج
+        
+    </h2>
+
+    
+
+    <div style="background:#d4a520; padding:10px; border-right:4px solid #003154;
+            font-size:14px; font-weight:bold; text-align:right; margin-top:10px;">
+ عدد الأطفال  :
+    <span style="color:#0e0e0e;">{{ children_count }}</span>
+</div>
+    <table class="table table-bordered text-center">
+        <thead style="background-color:#070707; color:white;">
+            <tr>
+                  <th>
+                   رقم الملف
+                </th>
+                <th>المعرف الوحيد</th>
+                <th>الاسم</th>
+                <th>اللقب</th>
+                <th>تاريخ التسجيل</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for child in children %}
+                <tr>
+                    <td>{{ child.numero_dossier }}</td>
+                    <td>{{ child.uid }}</td>
+                    <td>{{ child.first_name }}</td>
+                    <td>{{ child.last_name }}</td>
+                    
+                    <td>{{ child.created_at|date:"Y-m-d" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="fw-bold">
+                        لا توجد معطيات
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

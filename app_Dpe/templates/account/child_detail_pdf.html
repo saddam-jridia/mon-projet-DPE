@@ -1,0 +1,282 @@
+{% load static %}
+{% load country_filters %}
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>الملف الاجتماعي للطفل</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        body {
+            font-family: 'Arial', 'DejaVu Sans', sans-serif;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.8;
+            direction: rtl;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #b8860b;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #1a1a1a;
+            font-size: 22px;
+            margin: 0;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        .child-info {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .child-info table {
+            width: 100%;
+        }
+        .child-info td {
+            padding: 5px 10px;
+        }
+        .child-info .label {
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .section {
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+        .section-title {
+            background: #1a1a1a;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 0;
+        }
+        .section-title .icon-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #b8860b;
+            margin-left: 6px;
+        }
+        .section-body {
+            padding: 10px 15px;
+        }
+        .section-body table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .section-body td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+        .section-body td:first-child {
+            width: 35%;
+            font-weight: bold;
+            color: #555;
+        }
+        .section-body td:last-child {
+            width: 65%;
+        }
+        .section-body tr:last-child td {
+            border-bottom: none;
+        }
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 10px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <h1>الملف الاجتماعي للطفل</h1>
+        <div class="subtitle">
+            {% if child_type == 'menaced' %}
+                {{ child.first_name }} {{ child.last_name }}
+            {% else %}
+                {{ child.prenom }} {{ child.nom }}
+            {% endif %}
+        </div>
+        <div style="margin-top: 5px; font-size: 11px; color: #888;">
+            تاريخ التوليد: {{ date_generation }}
+        </div>
+    </div>
+
+    <!-- ===== IDENTITÉ DE L'ENFANT ===== -->
+    <div class="child-info">
+        <table>
+            <tr>
+                <td class="label">المعرف الوحيد:</td>
+                <td>{{ child.uid|default:"غير محدد" }}</td>
+                <td class="label">تاريخ الميلاد:</td>
+                <td>
+                    {% if child_type == 'menaced' %}
+                        {{ child.birth_date|date:"d/m/Y"|default:"غير محدد" }}
+                    {% else %}
+                        {{ child.date_naissance|date:"d/m/Y"|default:"غير محدد" }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="label">الجنس:</td>
+                <td>
+                    {% if child_type == 'menaced' %}
+                        {% if child.gender == "M" %}ذكر{% elif child.gender == "F" %}أنثى{% else %}غير محدد{% endif %}
+                    {% else %}
+                        {% if child.sexe == "M" %}ذكر{% elif child.sexe == "F" %}أنثى{% else %}غير محدد{% endif %}
+                    {% endif %}
+                </td>
+                <td class="label">رقم الإشعار:</td>
+                <td>{{ social_file.notification.notifier_number|default:"غير محدد" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ===== SECTION 1: DONNÉES DE L'ENFANT ===== -->
+    <div class="section">
+        <div class="section-title"><span class="icon-dot"></span>بيانات الطفل</div>
+        <div class="section-body">
+            <table>
+                <tr><td>عنوان الإقامة الحالية</td><td>{{ social_file.current_address|default:"غير محدد" }}</td></tr>
+                <tr><td>الولاية</td><td>{{ social_file.get_governorate_display|default:"غير محدد" }}</td></tr>
+                <tr><td>المعتمدية</td><td>{{ social_file.delegation|default:"غير محدد" }}</td></tr>
+                <tr><td>الوضعية التربوية</td><td>{{ social_file.get_educational_status_display|default:"غير محدد" }}</td></tr>
+                <tr><td>النتائج المدرسية</td><td>{{ social_file.get_academic_results_display|default:"غير محدد" }}</td></tr>
+                <tr><td>الوضعية الصحية</td><td>{{ social_file.get_health_status_display|default:"غير محدد" }}</td></tr>
+                <tr><td>المنحة المخصصة</td><td>{{ social_file.get_social_allowance_display|default:"غير محدد" }}</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== SECTION 2: DONNÉES DE LA FAMILLE ===== -->
+    <div class="section">
+        <div class="section-title"><span class="icon-dot"></span>بيانات العائلة</div>
+        <div class="section-body">
+            <table>
+                <tr><td>الإطار العائلي</td><td>{{ social_file.get_family_type_display|default:"غير محدد" }}</td></tr>
+                <tr>
+                    <td>وضعية الأبوين</td>
+                    <td>
+                        {% if social_file.parents_relationship == 'married' or social_file.parents_relationship == 'marriage' %}
+                            زواج
+                        {% elif social_file.parents_relationship == 'divorced' %}
+                            طلاق
+                        {% elif social_file.parents_relationship == 'separated' %}
+                            فراق
+                        {% elif social_file.parents_relationship == 'mother_deceased' %}
+                            وفاة الأم
+                        {% elif social_file.parents_relationship == 'father_deceased' %}
+                            وفاة الأب
+                        {% elif social_file.parents_relationship == 'both_deceased' %}
+                            الوالدين متوفيان
+                        {% elif social_file.parents_relationship == 'irregular' %}
+                            علاقة على خلاف الصيغ القانونية
+                        {% else %}
+                            {{ social_file.parents_relationship|default:"غير محدد" }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr><td>مصدر الدخل</td><td>{{ social_file.get_family_income_source_display|default:"غير محدد" }}</td></tr>
+                <tr><td>الوضعية الاجتماعية</td><td>{{ social_file.get_family_social_status_display|default:"غير محدد" }}</td></tr>
+                <tr><td>التغطية الصحية</td><td>{{ social_file.get_health_access_display|default:"غير محدد" }}</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== SECTION 3: DONNÉES DU PÈRE ===== -->
+    <div class="section">
+        <div class="section-title"><span class="icon-dot"></span>بيانات الأب</div>
+        <div class="section-body">
+            <table>
+                <tr><td>الاسم واللقب</td><td>{{ social_file.father_first_name|default:"" }} {{ social_file.father_last_name|default:"" }}</td></tr>
+                <tr><td>الجنسية 1</td><td>{{ social_file.father_nationality_1_ar|default:"غير محدد" }}</td></tr>
+                <tr><td>الجنسية 2</td><td>{{ social_file.father_nationality_2_ar|default:"غير محدد" }}</td></tr>
+                <tr><td>مكان الإقامة</td><td>{{ social_file.get_father_residence_location_display|default:"غير محدد" }}</td></tr>
+                <tr><td>الولاية</td><td>{{ social_file.get_father_governorate_display|default:"غير محدد" }}</td></tr>
+                <tr><td>المعتمدية</td><td>{{ social_file.father_delegation|default:"غير محدد" }}</td></tr>
+                <tr>
+                    <td>الدولة</td>
+                    <td>{{ social_file.father_country_abroad|country_ar }}</td>
+                </tr>
+                <tr><td>المستوى التعليمي</td><td>
+                    {% if social_file.father_education_level == 'illiterate' %}
+                        أمي
+                    {% elif social_file.father_education_level == 'primary' or social_file.father_education_level == 'basic' %}
+                        تعليم أساسي
+                    {% elif social_file.father_education_level == 'secondary' %}
+                        تعليم ثانوي
+                    {% elif social_file.father_education_level == 'higher' %}
+                        تعليم عالي
+                    {% else %}
+                        {{ social_file.father_education_level|default:"غير محدد" }}
+                    {% endif %}
+                </td></tr>
+                <tr><td>الوضعية المهنية</td><td>{{ social_file.get_father_job_status_display|default:"غير محدد" }}</td></tr>
+                <tr><td>الوضعية الصحية</td><td>{{ social_file.get_father_health_status_display|default:"غير محدد" }}</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== SECTION 4: DONNÉES DE LA MÈRE ===== -->
+    <div class="section">
+        <div class="section-title"><span class="icon-dot"></span>بيانات الأم</div>
+        <div class="section-body">
+            <table>
+                <tr><td>الاسم واللقب</td><td>{{ social_file.mother_first_name|default:"" }} {{ social_file.mother_last_name|default:"" }}</td></tr>
+                <tr><td>الجنسية 1</td><td>{{ social_file.mother_nationality_1_ar }}</td></tr>
+                <tr><td>الجنسية 2</td><td>{{ social_file.mother_nationality_2_ar }}</td></tr>
+                <tr><td>مكان الإقامة</td><td>{{ social_file.get_mother_residence_location_display|default:"غير محدد" }}</td></tr>
+                <tr><td>الولاية</td><td>{{ social_file.get_mother_governorate_display|default:"غير محدد" }}</td></tr>
+                <tr><td>المعتمدية</td><td>{{ social_file.mother_delegation|default:"غير محدد" }}</td></tr>
+                <tr>
+                    <td>الدولة</td>
+                    <td>{{ social_file.mother_country_abroad|country_ar }}</td>
+                </tr>
+                <tr><td>المستوى التعليمي</td><td>
+                    {% if social_file.mother_education_level == 'illiterate' %}
+                        أمي
+                    {% elif social_file.mother_education_level == 'primary' or social_file.mother_education_level == 'basic' %}
+                        تعليم أساسي
+                    {% elif social_file.mother_education_level == 'secondary' %}
+                        تعليم ثانوي
+                    {% elif social_file.mother_education_level == 'higher' %}
+                        تعليم عالي
+                    {% else %}
+                        {{ social_file.mother_education_level|default:"غير محدد" }}
+                    {% endif %}
+                </td></tr>
+                <tr><td>الوضعية المهنية</td><td>{{ social_file.get_mother_job_status_display|default:"غير محدد" }}</td></tr>
+                <tr><td>الوضعية الصحية</td><td>{{ social_file.get_mother_health_status_display|default:"غير محدد" }}</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+        تم إنشاء هذا الملف بواسطة مندوب حماية الطفولة<br>
+        تاريخ التوليد: {{ date_generation }}
+    </div>
+
+</body>
+</html>

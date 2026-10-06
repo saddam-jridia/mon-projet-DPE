@@ -1,0 +1,473 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load social_filters %}
+
+{% block head_title %}   قائمة الأطفال الجانحين{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="main-content">
+    <!-- Header -->
+    <div class="modern-header">
+        <div class="header-content">
+            <div class="brand-section">
+                <div class="system-title">
+                    <span> الحماية القضائية </span>
+                </div>
+
+            </div>
+             
+                     <div style="top: 50px;" class="menu-container">
+            <a href="{% url 'index2' %}" class="menu-btn">
+                <i class="fas fa-chart-line"></i>
+                <span>المعطيات العامة</span>
+            </a>
+
+            <a href="{% url 'enfant_list' %}" class="menu-btn">
+                <i class="fas fa-users"></i>
+                <span>الأطفال الجانحين</span>
+            </a>
+
+            <a href="{% url 'child_create' %}" class="menu-btn">
+                <i class="fas fa-user-plus"></i>
+                <span>إضافة طفل</span>
+            </a>
+
+            <a href="/recherche-enfants" class="menu-btn">
+                <i class="fas fa-search"></i>
+                <span>البحث عن طفل</span>
+            </a>
+        </div>
+        <!--
+            {% if request.user.delegate_profile %}
+           
+            <div class="user-badge">
+                <div class="user-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name">{{ request.user.delegate_profile.first_name }} {{ request.user.delegate_profile.last_name }}</span>
+                    <span class="user-role">مندوب حماية الطفولة</span>
+                </div>
+                
+            </div>
+            {% endif %}
+            -->
+
+        </div>
+
+    </div>
+
+ 
+<style>
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 25px;
+        margin-top: 25px;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #420197;
+        padding: 20px 22px;
+        border-radius: 14px;
+        border: 1px solid #eee;
+        transition: all 0.25s ease;
+    }
+
+    .stat-card:hover {
+        border-color: #ddd;
+        box-shadow: 0 8px 25px rgba(252, 253, 253, 0.07);
+        transform: translateY(-3px);
+    }
+
+    .stat-content {
+        text-align: right;
+    }
+
+    .stat-card .number {
+        font-size: 26px;
+        font-weight: 700;
+        color: #fffefe;
+    }
+
+    .stat-card .label {
+        font-size: 13px;
+        color: #ffffff;
+        margin-top: 4px;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: rgb(0, 15, 153);
+    }
+
+    .bg-blue { background: #3b82f6; }
+    .bg-green { background: #10b981; }
+    .bg-pink { background: #ec4899; }
+    .bg-orange { background: #f59e0b; }
+
+    .rtl {
+        direction: rtl;
+    }
+    .custom-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px; 
+    background: #fff3cd;
+    color: #856404;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    font-size: 14px;
+    z-index: 9999;
+    animation: slideIn 0.4s ease;
+}
+
+/* animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
+<style>
+    .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card.pro {
+    background: linear-gradient(135deg, #10078f, #002a4e);
+    border: 1px solid #e3e6ea;
+    border-radius: 10px;
+    padding: 22px 15px;
+    text-align: center;
+}
+
+.stat-card.pro .number {
+    font-size: 34px;
+    font-weight: 700;
+    color: #fdfdfd; 
+}
+
+.stat-card.pro .label {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+
+.stat-card.pro:hover {
+    background-color: #f9fafb;
+}
+.menu-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #2e0294, #00f2fe);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.menu-btn i {
+    font-size: 16px;
+}
+
+.menu-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, #034e1c, #38f9d7);
+}
+
+.menu-btn:active {
+    transform: scale(0.97);
+}
+</style>
+
+<style>
+.judicial-section {
+    max-width: 700px;
+    margin: auto;
+}
+
+.top-card {
+    background: #1e3a8a;
+    color: white;
+    padding: 18px;
+    border-radius: 10px;
+    width: 280px;
+    margin: auto;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.lines {
+    display: flex;
+    justify-content: center;
+    gap: 120px;
+    margin: 15px 0;
+}
+
+.line {
+    width: 2px;
+    height: 35px;
+    background: #94a3b8;
+}
+
+.bottom-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.child-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    padding: 15px 18px;
+    border-radius: 10px;
+    width: 260px;
+    text-decoration: none;
+    color: #111827;
+    font-size: 14px;
+    transition: 0.25s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.child-card:hover {
+    border-color: #1e3a8a;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.rtl { direction: rtl; }
+.stat-box { background: linear-gradient(135deg, #10078f, #002a4e); color: white; padding: 15px 25px; border-radius: 15px; text-align: center; min-width: 150px; font-size: 14px; box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+.stat-box b { font-size: 22px; }
+table th, table td { text-align: center; vertical-align: middle; }
+table tbody tr:hover { background-color: #eef5ff; transition: 0.2s; }
+.truncate {
+    max-width: 90px;   
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+</style>
+
+<div style="margin-left: 20px; margin-right: 20px;" class=" mt-4">
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+   
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 gap-2">
+        <input id="searchBox" type="search" class="form-control w-100 w-md-50" placeholder="ابحث بالاسم أو اللقب أو المعرف...">
+         <a href="{% url 'child_list_institutions' %}" class="btn btn-primary">
+           قائمة الاطفال المهددين
+        </a> 
+    </div>
+
+    <div class="table-responsive shadow-sm rounded" id="tableWrapper">
+        
+     <table class="table table-striped table-hover text-center rtl">
+
+    <thead class="table-dark">
+        <tr>
+            <th>رقم الإشعار</th>
+            <th>الاسم</th>
+            <th>اللقب</th>
+            <th>المعرف الوحيد</th>
+            <th> المندوب</th>
+            <th>تاريخ الإشعار</th>
+            <th>  </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+<tbody>
+{% for n in notifications %}
+
+<tr class="main-row">
+    <td>{{ n.id }}</td>
+    <td>{{ n.child.first_name }}</td>
+    <td>{{ n.child.last_name }}</td>
+    <td>{{ n.child.uid }}</td>
+    <td>{{ n.child.delegate_unique_id }}</td>
+    <td>{{ n.notif_at|date:"d/m/Y H:i" }}</td>
+
+    <td>        <div class="details-box">
+
+            <a href="{% url 'production_request_list' n.child.id %}" class="btn btn-primary btn-sm">
+    قائمة مطالب الحماية
+</a>
+<button class="toggle-btn">+</button>
+          
+
+        </div>
+       
+    </td>
+</tr>
+
+<tr class="details-row">
+    <td colspan="7">
+        <div class="details-box">
+            <a href="{% url 'list_notification' n.child.id %}" class="btn btn-secondary btn-sm">
+                قائمة الإشعارات
+            </a>
+
+            <a href="{% url 'new_notification' n.child.id %}" class="btn btn-success btn-sm">
+                إضافة إشعار
+            </a>
+
+        </div>
+    </td>
+</tr>
+
+{% empty %}
+<tr>
+    <td colspan="7">لا توجد إشعارات</td>
+</tr>
+
+{% endfor %}
+</tbody>
+
+    </tbody>
+
+</table>
+        
+    </div>
+</div>
+<script>
+document.getElementById("searchBox").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase();
+    let rows = document.querySelectorAll("tbody tr.main-row");
+
+    rows.forEach(function (row) {
+
+        let text = row.innerText.toLowerCase();
+
+        let nextRow = row.nextElementSibling;
+
+        if (text.includes(value)) {
+            row.style.display = "";
+            if (nextRow && nextRow.classList.contains("details-row")) {
+                nextRow.style.display = "none";
+            }
+        } else {
+            row.style.display = "none";
+            if (nextRow && nextRow.classList.contains("details-row")) {
+                nextRow.style.display = "none";
+            }
+        }
+
+    });
+
+});
+</script>
+<script>
+document.querySelectorAll(".toggle-btn").forEach((btn, i) => {
+    btn.addEventListener("click", () => {
+        let rows = document.querySelectorAll(".details-row");
+        let row = rows[i];
+
+        if (row.style.display === "table-row") {
+            row.style.display = "none";
+            btn.textContent = "+";
+        } else {
+            row.style.display = "table-row";
+            btn.textContent = "-";
+        }
+    });
+});
+</script>
+<style>
+.details-row {
+    display: none;
+    background: #f3f6ff;
+}
+
+.details-box {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    justify-content: center;
+}
+
+.toggle-btn {
+    background: #1e3a8a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+
+
+
+.rtl { direction: rtl; }
+.stat-box { background: linear-gradient(135deg, #10078f, #002a4e); color: white; padding: 15px 25px; border-radius: 15px; text-align: center; min-width: 150px; font-size: 14px; box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+.stat-box b { font-size: 22px; }
+table th, table td { text-align: center; vertical-align: middle; }
+table tbody tr:hover { background-color: #eef5ff; transition: 0.2s; }
+.truncate {
+    max-width: 90px;   
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+</style>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

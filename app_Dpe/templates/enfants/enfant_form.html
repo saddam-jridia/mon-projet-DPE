@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}إضافة / تعديل طفل{% endblock %}
+
+{% block content %}
+
+<style>
+.rtl { direction: rtl; text-align: right; }
+
+.modern-card {
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.modern-title {
+    text-align: center;
+    color: #002a4e;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+label { font-weight: bold; }
+
+.modern-input {
+    border-radius: 12px;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    transition: 0.3s;
+}
+.modern-input:focus {
+    border-color: #10078f;
+    box-shadow: 0 0 6px rgba(16,7,143,0.3);
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #0d6efd, #002a4e);
+    color: white;
+    border-radius: 12px;
+    padding: 10px 30px;
+    font-weight: bold;
+}
+.btn-save:hover { opacity: 0.9; }
+
+.btn-back {
+    background: #6c757d;
+    color: white;
+    border-radius: 12px;
+    padding: 10px 30px;
+    font-weight: bold;
+}
+</style>
+
+<div class="container mt-4 rtl">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="modern-card">
+                <h3 class="modern-title"> طفل في خلاف مع القانون</h3>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>الاسم</label>
+                            <input type="text" name="nom" class="form-control modern-input" required
+                                   placeholder="أدخل الاسم" value="{{ enfant.nom|default:'' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>اللقب</label>
+                            <input type="text" name="prenom" class="form-control modern-input" required
+                                   placeholder="أدخل اللقب" value="{{ enfant.prenom|default:'' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>الجنس</label>
+                            <select name="sexe" class="form-control modern-input" required>
+                                <option value="" disabled {% if not enfant.sexe %}selected{% endif %}>اختر الجنس</option>
+                                <option value="M" {% if enfant.sexe == "M" %}selected{% endif %}>ذكر</option>
+                                <option value="F" {% if enfant.sexe == "F" %}selected{% endif %}>أنثى</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>تاريخ الميلاد</label>
+                            <input type="date" name="date_naissance" class="form-control modern-input" required
+                                  value="{{ enfant.date_naissance|date:'Y-m-d' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>رسم المضمون</label>
+                            <input name="num_extrait_naissance" class="form-control modern-input"
+                                      placeholder="أدخل رسم المضمون"
+                                      value="{{ enfant.num_extrait_naissance|default:'' }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>المندوب: {{ request.user.delegate_profile.unique_id }}</label>
+                            
+                            <input type="hidden"  name="delegue" class="form-control modern-input" required
+                                   placeholder="أدخل المندوب"
+                                   readonly
+                                   value="{{ request.user.delegate_profile.id }}">
+                            <input type="text"  class="form-control modern-input" required
+                                   placeholder=""
+                                   readonly
+                                   value="{{ request.user.delegate_profile.first_name }} {{ request.user.delegate_profile.last_name }}">
+                            
+                        
+                        
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="submit" class="btn" style="background-color: #10078f; color: #fff;">💾تسجيل</button>
+                        <a href="{% url 'enfant_list' %}" class="btn btn-back">↩ رجوع للقائمة</a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

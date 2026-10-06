@@ -1,0 +1,381 @@
+<!-- app_Dpe/templates/app_Dpe/child_list_institutions.html -->
+
+{% extends 'account/Header.html' %}
+{% load dict_extras %}
+ {% load static %}
+{% load widget_tweaks %} 
+
+{% block content %}
+ 
+
+
+
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+
+    /* Contenu principal */
+    .main-content {
+        margin-right: 300px;
+        padding: 5px;
+        margin-top: 100px;
+    }
+
+    /* ================================
+       CONTAINER PRINCIPAL
+    ================================= */
+    .children-container {
+        width: 95%;
+        max-width: 1400px;
+        margin: 35px auto;
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        direction: rtl;
+    }
+
+    /* ================================
+       TITRE
+    ================================= */
+    .children-title {
+        text-align: right;
+        font-size: 28px;
+        font-weight: bold;
+        color: #151515;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #d4a520;
+    }
+
+    .children-title i {
+        color: #d4a520;
+        margin-left: 10px;
+    }
+
+    /* ================================
+       INFORMATIONS
+    ================================= */
+    .children-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .children-count {
+        background: #f8f9fa;
+        border-right: 4px solid #d4a520;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 17px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .children-count span {
+        color: #d4a520;
+        font-size: 20px;
+    }
+
+    /* ================================
+       TABLEAU
+    ================================= */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 12px;
+    }
+
+    .children-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+    }
+
+    .children-table thead th {
+        background: #151515 !important;
+        color: #d4a520 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 16px 12px;
+        font-size: 17px;
+        border: none;
+    }
+
+    .children-table thead th:first-child {
+        border-top-right-radius: 10px;
+    }
+
+    .children-table thead th:last-child {
+        border-top-left-radius: 10px;
+    }
+
+    .children-table tbody td {
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 15px 12px;
+        font-size: 16px;
+        border-bottom: 1px solid #eeeeee;
+        background: #ffffff;
+    }
+
+    /* Effet au passage de la souris */
+    .children-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .children-table tbody tr:hover td {
+        background: #fffaf0;
+    }
+
+    /* ================================
+       IDENTIFIANT
+    ================================= */
+    .child-id {
+        font-weight: bold;
+        color: #555;
+        background: #f8f9fa !important;
+        border-radius: 6px;
+    }
+
+    /* ================================
+       NOM ENFANT
+    ================================= */
+    .child-name {
+        font-weight: bold;
+        color: #222;
+        font-size: 17px;
+    }
+
+    /* ================================
+       NOMBRE NOTIFICATIONS
+    ================================= */
+    .notification-count {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 10px;
+        border-radius: 50%;
+        background: #f1f1f1;
+        color: #151515;
+        font-weight: bold;
+    }
+
+    /* ================================
+       BOUTON ACTION
+    ================================= */
+    .btn-suivi {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: #151515;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        transition: all 0.25s ease;
+        border: 1px solid #151515;
+    }
+
+    .btn-suivi:hover {
+        background: #d4a520;
+        border-color: #d4a520;
+        color: #151515 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-suivi i {
+        font-size: 15px;
+    }
+
+    /* ================================
+       MESSAGE VIDE
+    ================================= */
+    .empty-message {
+        text-align: center;
+        padding: 35px !important;
+        color: #777;
+        font-size: 18px;
+    }
+
+    .empty-message i {
+        display: block;
+        font-size: 35px;
+        margin-bottom: 10px;
+        color: #d4a520;
+    }
+
+    /* ================================
+       RESPONSIVE
+    ================================= */
+    @media (max-width: 768px) {
+
+        .children-container {
+            width: 98%;
+            padding: 15px;
+            margin: 20px auto;
+        }
+
+        .children-title {
+            font-size: 23px;
+        }
+
+        .children-table thead th,
+        .children-table tbody td {
+            font-size: 14px;
+            padding: 10px 7px;
+        }
+
+        .btn-suivi {
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        .children-info {
+            justify-content: flex-start;
+        }
+    }
+</style>
+
+
+<div class="children-container">
+
+    <!-- Titre -->
+    <div class="children-title">
+        <i class="fas fa-child"></i>
+        تقييم وضعية الأطفال
+    </div>
+
+    
+
+    <!-- Tableau -->
+    <div class="table-container">
+
+        <table class="table children-table">
+
+            <thead>
+                <tr>
+                    <th>
+                   رقم الملف
+                </th>
+                    <th>المعرف الوحيد</th>
+                    <th>الاسم و اللقب</th>
+                    
+                    <th>الإجراءات</th>
+                    <th>ملخص متابعة وضعية الطفل</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for enfant in enfants %}
+
+                <tr>
+
+                    <!-- ID -->
+                      <td> <span class="child-numerodossier">
+                            {{ enfant.numero_dossier }} 
+                        </span></td>
+                    <td>
+                        <span class="child-id">
+                            {{ enfant.uid }} 
+                        </span>
+                    </td>
+
+                    <!-- Nom -->
+                    <td>
+                        <span class="child-name">
+                            {{ enfant.first_name }} {{ enfant.last_name }}
+                        </span>
+                    </td>
+
+                    
+
+                    <!-- Action -->
+                    <td>
+                        <a href="{% url 'ajouter_suivi' enfant.id %}"
+                           class="btn-suivi">
+
+                            <i class="fas fa-chart-line"></i>
+
+                            تقييم وضعية الطفل
+
+                        </a>
+                    </td>
+
+                    <!-- Nombre notifications -->
+                    <td>
+                        {% with dernier_suivi=enfant.suivis.first %}
+
+    {% if dernier_suivi %}
+
+        <a href="{% url 'resume_suivi' enfant.id dernier_suivi.id %}"
+           class="btn-suivi">
+
+            <i class="fas fa-chart-line"></i>
+
+            ملخص متابعة وضعية الطفل
+
+        </a>
+
+    {% else %}
+
+        <a href="{% url 'ajouter_suivi' enfant.id %}"
+           class="btn-suivi">
+
+            <i class="fas fa-plus"></i>
+
+            إضافة متابعة
+
+        </a>
+
+    {% endif %}
+
+{% endwith %}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="4" class="empty-message">
+
+                        <i class="fas fa-child"></i>
+
+                        لا يوجد أطفال مهددون
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

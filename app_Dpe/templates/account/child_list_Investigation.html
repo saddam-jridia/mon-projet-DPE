@@ -1,0 +1,844 @@
+<!-- app_Dpe/templates/app_Dpe/child_list_institutions.html -->
+
+{% extends 'account/Header.html' %}
+{% load dict_extras %}
+{% load static %}
+{% load widget_tweaks %} 
+
+{% block content %}
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+    .main-content {
+        margin-right: 20px;
+        padding: 5px;
+    }
+    .btn-gray {
+        background-color: #8c8f90;
+        color: #fff;
+        border: none;
+    }
+    .btn-gray:hover {
+        background-color: #767677;
+        color: #fff;
+    }
+    .btn-dark-blue {
+        background-color: #121213;
+        border-color: #050505;
+    }
+    .btn-dark-blue:hover {
+        background-color: #111111;
+        border-color: #0f0f10;
+    }
+    form {
+        direction: rtl;
+        text-align: right;
+    }
+    form label {
+        display: block;
+        text-align: right;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    form input[type="text"],
+    form input[type="date"],
+    form textarea,
+    form select {
+        text-align: right;
+        direction: rtl;
+    }
+    form input[type="radio"],
+    form input[type="checkbox"] {
+        float: right;
+        margin-left: 10px;
+    }
+    .card-body p {
+        text-align: right;
+    }
+    .card-body div > label {
+        display: inline-block;
+        margin-right: 5px;
+        text-align: right;
+    }
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    table input[type="radio"] {
+        appearance: auto !important;
+        -webkit-appearance: radio !important;
+        opacity: 1 !important;
+        position: static !important;
+        display: inline-block !important;
+        margin: auto !important;
+        float: none !important;
+        width: 16px;
+        height: 16px;
+    }
+    table thead th {
+        background-color: #090909 !important;
+        color: #d4a520 !important;
+        text-align: center;
+    }
+    table th, table td {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+    .success-modal {
+        z-index: 1060 !important;
+    }
+    .success-modal .modal-content {
+        border: 3px solid #d4a520;
+    }
+    .success-modal .modal-header {
+        background-color: #000000;
+        color: #d4a520;
+    }
+    .success-modal .modal-footer {
+        background-color: #000000;
+    }
+    .section-title {
+        background-color: #111112;
+        color: white;
+        padding: 8px 15px;
+        margin: 20px 0 10px 0;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .section-title i {
+        margin-left: 8px;
+    }
+    .btn-submit {
+        background-color: #000000;
+        color: #d4a520;
+        border: 2px solid #d4a520;
+        padding: 10px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        margin-top: 15px;
+    }
+    .btn-submit:hover {
+        background-color: #d4a520;
+        color: #000000;
+    }
+</style>
+
+<div class="content">
+    <div class="mb-3" style="text-align: left;">
+        <a href="{% url 'child_list_institutions' %}" 
+           class="btn btn-sm" 
+           style="background-color: #d4a520; color: #000000; border-color: #d4a520;">
+            <i class="fas fa-arrow-right me-2"></i>
+            العودة إلى قائمة الاشعارات 
+        </a>
+    </div>
+    
+    <h2 class="text-center" style="font-family:'Amiri'; font-weight:900;">
+ صلاحيات تقدير جدية الإشعار </h2>
+    
+     <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;">
+        <form action="{% url 'recherche_investigation_list' %}" method="get" class="d-flex align-items-center">
+            <input type="text" name="uid" placeholder="أدخل المعرف الوحيد" class="form-control"
+                   style="width:200px; height: 30px;" value="{{ uid_query|default:'' }}">
+            <button type="submit" class="btn btn-dark-blue text-white fw-bold" style="margin-left:5px; width:50px; height: 30px;">
+                بحث
+            </button>
+        </form>
+    </div>
+    
+    <br>
+    
+    <table class="table table-bordered text-center">
+        <thead style="background:#c4c0c0;">
+            <tr>
+                <th>المعرف الوحيد</th>
+                <th>الاسم و اللقب </th>
+                <th>عدد الإشعارات</th>
+                <th>قائمة الاشعارات </th>
+                <th>إجراءات صلاحيات تقدير جدية الإشعار</th>
+                <th>قائمة الإشعارات صلاحيات تقدير جدية الإشعار</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for item in children_with_notifications %}
+            <tr>
+                <td>{{ item.child.uid }}</td>
+                <td>{{ item.child.first_name }} {{ item.child.last_name }}</td>
+                <td>{{ item.notifications.count }}</td>
+
+                <td>
+                    <a href="{% url 'list_notification' item.child.id %}" style="font-weight: bold; color: #040404;">
+                        قائمة الإشعارات
+                    </a>
+                </td>
+
+                <td>
+                    <select class="form-select form-select-sm" 
+                            id="notifSelect{{ item.child.uid }}"
+                            style="background-color: #060606; color: #d4a520; border-color: #000;">
+                        <option value="" selected disabled style="background-color: #050505; color: #d4a520;">
+                           صلاحيات تقدير جدية الإشعار
+                        </option>
+                        {% for notif in item.notifications %}
+                            <option value="{{ notif.id }}" style="background-color: #0a0a0a; color: #d4a520;">
+                                صلاحيات تقدير جدية الإشعار على الاشعار رقم ({{ notif.notifier_number }})
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    {% for notif in item.notifications %}
+                        <!-- Modal d'investigation -->
+                        <div class="modal fade"
+                             id="investigationModal{{ notif.id }}"
+                             tabindex="-1"
+                             aria-labelledby="investigationModalLabel{{ notif.id }}"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header text-white" style="background:#003154">
+                                        <h5 class="modal-title" id="investigationModalLabel{{ notif.id }}">بيانات إجراءات التقصي</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body text-end">
+                                        <div class="card">
+                                            <div class="btn btn-dark text-white fw-bold">
+                                                <h2>صلاحيات تقدير جدية الإشعار</h2>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <form method="post" 
+                                                      action="{% url 'create_investigation' notif.id %}"
+                                                      id="form{{ notif.id }}"
+                                                      data-notif-id="{{ notif.id }}">
+                                                    {% csrf_token %}
+
+                                                    <!-- معلومات أساسية -->
+                                                    <div class="section-title">
+                                                        <i class="fas fa-info-circle"></i>
+                                                        معلومات الإشعار
+                                                    </div>
+                                                    <div class="card mb-3" style="background-color: #f6d784;">
+                                                        <div class="card-body child-info">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <h5><strong>رقم الإشعار:</strong> {{ notif.notifier_number }}</h5>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <h5><strong>المعرف الوحيد:</strong> {{ item.child.uid }}</h5>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <h5><strong>الاسم:</strong> {{ item.child.first_name }}</h5>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <h5><strong>اللقب:</strong> {{ item.child.last_name }}</h5>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- الإجراءات -->
+<div class="section-title">
+    <i class="fas fa-balance-scale"></i>
+    الإجراءات 
+</div>
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label class="form-label fw-bold">تاريخ طلب الإذن القضائي</label>
+        <input type="date" name="court_request_date" class="form-control"
+               value="{{ notif.investigation.court_request_date|date:'Y-m-d'|default:'' }}"
+               placeholder="YYYY-MM-DD">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-bold">تاريخ الشروع في الأبحاث</label>
+        <input type="date" name="investigation_start" class="form-control"
+               value="{{ notif.investigation.investigation_start|date:'Y-m-d'|default:'' }}"
+               placeholder="YYYY-MM-DD">
+    </div>
+</div>
+
+
+                                                    <!-- استدعاء الأطراف -->
+                                                    <div class="section-title">
+                                                        <i class="fas fa-users"></i>
+                                                        استدعاء الطفل وأبويه والأطراف المعنية 
+                                                    </div>
+
+                                                    <div id="summons-container-{{ notif.id }}">
+                                                        <!-- Les lignes seront injectées par JS -->
+                                                    </div>
+
+                                                    <div class="text-start mb-3">
+                                                        <button type="button" class="btn btn-success btn-sm" onclick="addSummonsRow('{{ notif.id }}')">
+                                                            <i class="fas fa-plus"></i>
+                                                            إضافة استدعاء
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- زيارة الطفل -->
+                                                    <div class="section-title">
+                                                        <i class="fas fa-home"></i>
+                                                        الدخول إلى المكان الذي يوجد به الطفل 
+                                                    </div>
+
+                                                    <div id="visit-container-{{ notif.id }}">
+                                                        <!-- Les lignes seront injectées par JS -->
+                                                    </div>
+
+                                                    <div class="text-start mb-3">
+                                                        <button type="button" class="btn btn-success btn-sm" onclick="addVisitRow('{{ notif.id }}')">
+                                                            <i class="fas fa-plus"></i>
+                                                            إضافة زيارة
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- التقييم النفسي -->
+                                                    <div class="section-title">
+                                                        <i class="fas fa-brain"></i>
+                                                        التقييم النفسي
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label fw-bold">تاريخ طلب عرض الطفل</label>
+                                                            <input type="date" name="psychological_request" class="form-control"
+                                                                   value="{% if notif.investigation and notif.investigation.psychological_request %}{{ notif.investigation.psychological_request|date:'Y-m-d' }}{% endif %}">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label fw-bold">تاريخ الحصول على التقارير</label>
+                                                            <input type="date" name="psychological_result" class="form-control"
+                                                                   value="{% if notif.investigation and notif.investigation.psychological_result %}{{ notif.investigation.psychological_result|date:'Y-m-d' }}{% endif %}">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- التقييم الطبي النفسي -->
+                                                    <div class="section-title">
+                                                        <i class="fas fa-user-md"></i>
+                                                        التقييم الطبي النفسي
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label fw-bold">تاريخ طلب عرض الطفل</label>
+                                                            <input type="date" name="medical_psych_request" class="form-control"
+                                                                   value="{% if notif.investigation and notif.investigation.medical_psych_request %}{{ notif.investigation.medical_psych_request|date:'Y-m-d' }}{% endif %}">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label fw-bold">تاريخ الحصول على التقارير</label>
+                                                            <input type="date" name="medical_psych_result" class="form-control"
+                                                                   value="{% if notif.investigation and notif.investigation.medical_psych_result %}{{ notif.investigation.medical_psych_result|date:'Y-m-d' }}{% endif %}">
+                                                        </div>
+                                                    </div>
+
+                                                 <!-- التقارير الاجتماعية -->
+<!-- التقارير الاجتماعية -->
+<div class="section-title">
+    <i class="fas fa-file-alt"></i>
+    التقارير الاجتماعية
+</div>
+
+<div id="social-report-container-{{ notif.id }}">
+    {% for report in notif.investigation.social_report_list.all %}
+    <div class="row mb-3 social-report-row">
+        <!-- ✅ تاريخ طلب البحث / التقرير -->
+        <div class="col-md-5">
+            <label class="form-label fw-bold">تاريخ طلب البحث / التقرير</label>
+            <input type="date" name="social_report_request_{{ forloop.counter0 }}" class="form-control"
+                   value="{{ report.report_request|date:'Y-m-d'|default:'' }}">
+        </div>
+        <!-- ✅ تاريخ الحصول على البحث / التقرير -->
+        <div class="col-md-5">
+            <label class="form-label fw-bold">تاريخ الحصول على البحث / التقرير</label>
+            <input type="date" name="social_report_receive_{{ forloop.counter0 }}" class="form-control"
+                   value="{{ report.report_receive|date:'Y-m-d'|default:'' }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeSocialReportRow(this)">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="text-start mb-3">
+    <button type="button" class="btn btn-success btn-sm" onclick="addSocialReportRow('{{ notif.id }}')">
+        <i class="fas fa-plus"></i>
+        إضافة تقرير اجتماعي
+    </button>
+</div>
+
+                                                    <!-- نهاية الأبحاث -->
+                                                    <div class="section-title">
+                                                        <i class="fas fa-flag-checkered"></i>
+                                                        نهاية الأبحاث
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label fw-bold">تاريخ انتهاء الأبحاث</label>
+                                                        <input type="date" name="investigation_end" class="form-control"
+                                                               value="{% if notif.investigation and notif.investigation.investigation_end %}{{ notif.investigation.investigation_end|date:'Y-m-d' }}{% endif %}">
+                                                    </div>
+
+                                                    <!-- زر الحفظ -->
+                                                    <div class="text-center">
+                                                        <button type="submit" class="btn-submit">
+                                                            <i class="fas fa-save"></i>
+                                                           تسجيل الاجراء
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Script de pré-remplissage pour ce modal -->
+                        <script>
+                        (function() {
+                            const notifId = '{{ notif.id }}';
+                            
+                            // Données des استدعاءات
+                            const summonsData = [
+                                {% if notif.investigation %}
+                                    {% for summons in notif.investigation.summons_list.all %}
+                                {
+                                    summons_date: '{{ summons.summons_date|date:"Y-m-d"|default:"" }}',
+                                    summons_method: '{{ summons.summons_method|default:"" }}',
+                                    attendance_date: '{{ summons.attendance_date|date:"Y-m-d"|default:"" }}'
+                                }{% if not forloop.last %},{% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            ];
+                            
+                            // Données des زيارات
+                            const visitData = [
+                                {% if notif.investigation %}
+                                    {% for visit in notif.investigation.visit_list.all %}
+                                {
+                                    visit_date: '{{ visit.visit_date|date:"Y-m-d"|default:"" }}',
+                                    visit_place: '{{ visit.visit_place|default:"" }}'
+                                }{% if not forloop.last %},{% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            ];
+
+                            // Quand le modal s'ouvre
+                            document.getElementById('investigationModal{{ notif.id }}').addEventListener('shown.bs.modal', function() {
+                                const summonsContainer = document.getElementById('summons-container-' + notifId);
+                                const visitContainer = document.getElementById('visit-container-' + notifId);
+                                
+                                // Vider les conteneurs
+                                summonsContainer.innerHTML = '';
+                                visitContainer.innerHTML = '';
+                                
+                                // Injecter les استدعاءات (ou ligne vide par défaut)
+                                if (summonsData.length > 0) {
+                                    summonsData.forEach(function(data) {
+                                        addSummonsRow(notifId, data);
+                                    });
+                                } else {
+                                    addSummonsRow(notifId);
+                                }
+                                
+                                // Injecter les زيارات (ou ligne vide par défaut)
+                                if (visitData.length > 0) {
+                                    visitData.forEach(function(data) {
+                                        addVisitRow(notifId, data);
+                                    });
+                                } else {
+                                    addVisitRow(notifId);
+                                }
+                            });
+                        })();
+                        </script>
+
+                        <!-- Script pour le select -->
+                        <script>
+                            document.getElementById('notifSelect{{ item.child.uid }}').addEventListener('change', function() {
+                                var notifId = this.value;
+                                if (notifId) {
+                                    var modalEl = document.getElementById('investigationModal' + notifId);
+                                    var modal = new bootstrap.Modal(modalEl);
+                                    modal.show();
+                                    this.value = '';
+                                }
+                            });
+                        </script>
+                    {% endfor %}
+                </td>
+                
+                <td>
+                    <a href="{% url 'investigation_list' item.child.id %}" 
+                       class="btn btn-sm" 
+                       style="background-color: #d4a520; color: #000000; border-color: #d4a520;">
+                        <i class="fas fa-search"></i>
+                        قائمة الإشعارات
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+     {% if show_error_modal %}
+    <div class="modal fade show" id="errorModal" tabindex="-1" style="display: block;" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> خطأ</h5>
+                        </div>
+                <div class="modal-body text-center">
+                    <i class="fas fa-user-slash fa-3x text-danger mb-3"></i>
+                    <h5>{{ error_message }}</h5>
+                    <p class="text-muted">المعرف المبحوث عنه: <strong>{{ uid_query }}</strong></p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <a href="{% url 'child_create' %}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> إضافة طفل جديد
+                    </a>
+                    <button type="button" class="btn btn-secondary" onclick="closeErrorModal()">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+
+    <script>
+    function closeErrorModal() {
+        document.getElementById('errorModal').style.display = 'none';
+        document.querySelector('.modal-backdrop').remove();
+        document.body.classList.remove('modal-open');
+    }
+    </script>
+    {% endif %}
+
+
+
+    <!-- Modals de succès -->
+    {% for item in children_with_notifications %}
+        {% for notif in item.notifications %}
+            <div class="modal fade success-modal"
+                 id="successModal{{ notif.id }}"
+                 tabindex="-1"
+                 aria-labelledby="successModalLabel{{ notif.id }}"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title mx-auto" id="successModalLabel{{ notif.id }}">
+                                تمّت إضافة الاجراء بنجاح
+                            </h5>
+                        </div>
+                        <div class="modal-body text-center" style="background-color: #f8f9fa;">
+                            <p style="font-size: 18px; color: #333;">
+                                تم تسجيل إجراء التقصي على الإشعار رقم {{ notif.notifier_number }} بنجاح
+                            </p>
+                            <i class="fas fa-clipboard-check fa-3x" style="color: #d4a520;"></i>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <a href="{% url 'investigation_list' item.child.id %}" class="btn" style="background-color: #d4a520; color: #000000; font-weight: bold;">
+                                <i class="fas fa-list me-2"></i>
+                                الذهاب إلى قائمة الإشعارات
+                            </a>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #6c757d; color: white;">
+                                إغلاق
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Fonctions globales pour les lignes dynamiques -->
+<script>
+// ========== FONCTIONS POUR LES استدعاءات ==========
+function addSummonsRow(notifId, existingData = null) {
+    const container = document.getElementById('summons-container-' + notifId);
+    if (!container) return;
+    
+    const rows = container.querySelectorAll('.summons-row');
+    const index = rows.length;
+    
+    const row = document.createElement('div');
+    row.className = 'summons-row row mb-3';
+    row.setAttribute('data-index', index);
+    
+    const summonsDate = (existingData && existingData.summons_date) ? existingData.summons_date : '';
+    const summonsMethod = (existingData && existingData.summons_method) ? existingData.summons_method : '';
+    const attendanceDate = (existingData && existingData.attendance_date) ? existingData.attendance_date : '';
+    
+    row.innerHTML = `
+        <div class="col-md-4">
+            <label class="inline-label fw-bold">تاريخ الاستدعاء</label>
+            <input type="date" name="summons_date_${index}" class="form-control" value="${summonsDate}">
+        </div>
+        <div class="col-md-4">
+            <label class="inline-label fw-bold">طريقة الاستدعاء</label>
+            <select name="summons_method_${index}" class="form-select">
+                <option value="">---</option>
+                <option value="PHONE" ${summonsMethod === 'PHONE' ? 'selected' : ''}>عبر الهاتف</option>
+                <option value="WRITTEN" ${summonsMethod === 'WRITTEN' ? 'selected' : ''}>كتابياً</option>
+                <option value="SECURITY" ${summonsMethod === 'SECURITY' ? 'selected' : ''}>جهة أمنية</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="inline-label fw-bold">تاريخ الحضور</label>
+            <input type="date" name="attendance_date_${index}" class="form-control" value="${attendanceDate}">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm remove-summons" onclick="removeSummonsRow(this)" ${index === 0 ? 'style="display:none;"' : ''}>
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    container.appendChild(row);
+}
+
+function removeSummonsRow(button) {
+    const row = button.closest('.summons-row');
+    if (!row) return;
+    
+    const container = row.closest('[id^="summons-container-"]');
+    row.remove();
+    
+    // Réindexer
+    const rows = container.querySelectorAll('.summons-row');
+    rows.forEach((r, newIndex) => {
+        r.setAttribute('data-index', newIndex);
+        r.querySelector('[name^="summons_date_"]').name = `summons_date_${newIndex}`;
+        r.querySelector('[name^="summons_method_"]').name = `summons_method_${newIndex}`;
+        r.querySelector('[name^="attendance_date_"]').name = `attendance_date_${newIndex}`;
+    });
+}
+
+// ========== FONCTIONS POUR LES زيارات ==========
+function addVisitRow(notifId, existingData = null) {
+    const container = document.getElementById('visit-container-' + notifId);
+    if (!container) return;
+    
+    const rows = container.querySelectorAll('.visit-row');
+    const index = rows.length;
+    
+    const row = document.createElement('div');
+    row.className = 'visit-row row mb-3';
+    row.setAttribute('data-index', index);
+    
+    const visitDate = (existingData && existingData.visit_date) ? existingData.visit_date : '';
+    const visitPlace = (existingData && existingData.visit_place) ? existingData.visit_place : '';
+    
+    const places = {
+        'HOME': 'المنزل',
+        'STREET': 'الشارع',
+        'EARLY_PRIVATE': 'مؤسسة طفولة مبكرة قطاع خاص',
+        'EARLY_PUBLIC': 'مؤسسة طفولة مبكرة قطاع عام',
+        'SCHOOL': 'المدارس',
+        'INSTITUTE': 'المعاهد',
+        'VOCATIONAL': 'مراكز التكوين المهني',
+        'ASSOCIATION': 'الجمعيات',
+        'CARE_CENTER': 'مراكز الرعاية الاجتماعية',
+        'PROTECTION_CENTER': 'مراكز الحماية الاجتماعية',
+        'HEALTH_FACILITY': 'مؤسسة صحية',
+        'PUBLIC_PLACE': 'فضاء عمومي'
+    };
+    
+    let optionsHtml = '<option value="">---</option>';
+    for (const [key, label] of Object.entries(places)) {
+        optionsHtml += `<option value="${key}" ${visitPlace === key ? 'selected' : ''}>${label}</option>`;
+    }
+    
+    row.innerHTML = `
+        <div class="col-md-5">
+            <label class="inline-label fw-bold">تاريخ الزيارة</label>
+            <input type="date" name="visit_date_${index}" class="form-control" value="${visitDate}">
+        </div>
+        <div class="col-md-6">
+            <label class="inline-label fw-bold">مكان الزيارة</label>
+            <select name="visit_place_${index}" class="form-select">${optionsHtml}</select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm remove-visit" onclick="removeVisitRow(this)" ${index === 0 ? 'style="display:none;"' : ''}>
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    container.appendChild(row);
+}
+
+function removeVisitRow(button) {
+    const row = button.closest('.visit-row');
+    if (!row) return;
+    
+    const container = row.closest('[id^="visit-container-"]');
+    row.remove();
+    
+    // Réindexer
+    const rows = container.querySelectorAll('.visit-row');
+    rows.forEach((r, newIndex) => {
+        r.setAttribute('data-index', newIndex);
+        r.querySelector('[name^="visit_date_"]').name = `visit_date_${newIndex}`;
+        r.querySelector('[name^="visit_place_"]').name = `visit_place_${newIndex}`;
+    });
+}
+
+// ========== FONCTIONS POUR LES تقارير اجتماعية ==========
+function addSocialReportRow(notifId, existingData = null) {
+    const container = document.getElementById('social-report-container-' + notifId);
+    if (!container) return;
+    
+    const rows = container.querySelectorAll('.social-report-row');
+    const index = rows.length;
+    
+    const row = document.createElement('div');
+    row.className = 'social-report-row row mb-3';
+    row.setAttribute('data-index', index);
+    
+    const reportRequest = (existingData && existingData.report_request) ? existingData.report_request : '';
+    const reportReceive = (existingData && existingData.report_receive) ? existingData.report_receive : '';
+    
+    row.innerHTML = `
+        <div class="col-md-5">
+            <label class="inline-label fw-bold">تاريخ طلب البحث / التقرير</label>
+            <input type="date" name="social_report_request_${index}" class="form-control" value="${reportRequest}">
+        </div>
+        <div class="col-md-5">
+            <label class="inline-label fw-bold">تاريخ الحصول على البحث / التقرير</label>
+            <input type="date" name="social_report_receive_${index}" class="form-control" value="${reportReceive}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm remove-social-report" onclick="removeSocialReportRow(this)" ${index === 0 ? 'style="display:none;"' : ''}>
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    container.appendChild(row);
+}
+
+function removeSocialReportRow(button) {
+    const row = button.closest('.social-report-row');
+    if (!row) return;
+    
+    const container = row.closest('[id^="social-report-container-"]');
+    row.remove();
+    
+    const rows = container.querySelectorAll('.social-report-row');
+    rows.forEach((r, newIndex) => {
+        r.setAttribute('data-index', newIndex);
+        r.querySelector('[name^="social_report_request_"]').name = `social_report_request_${newIndex}`;
+        r.querySelector('[name^="social_report_receive_"]').name = `social_report_receive_${newIndex}`;
+    });
+}
+</script>
+
+<!-- Gestionnaire AJAX -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    const csrftoken = getCookie('csrftoken');
+    
+    document.querySelectorAll('form[id^="form"]').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const notifId = form.getAttribute('data-notif-id');
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.message || response.status); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour les champs simples
+                    const fields = [
+                        'court_request_date', 'investigation_start',
+                        'psychological_request', 'psychological_result',
+                        'medical_psych_request', 'medical_psych_result',
+                       
+                        'investigation_end'
+                    ];
+                    
+                    fields.forEach(function(field) {
+                        const input = form.querySelector('[name="' + field + '"]');
+                        if (input) {
+                            input.value = data.data[field] || '';
+                        }
+                    });
+                    
+                    // Fermer le modal d'investigation
+                    const investigationModalEl = document.getElementById('investigationModal' + notifId);
+                    const investigationModal = bootstrap.Modal.getInstance(investigationModalEl);
+                    if (investigationModal) {
+                        investigationModal.hide();
+                    }
+                    
+                    // Afficher le modal de succès
+                    setTimeout(function() {
+                        const successModalEl = document.getElementById('successModal' + notifId);
+                        const successModal = new bootstrap.Modal(successModalEl);
+                        successModal.show();
+                    }, 300);
+                } else {
+                    alert('حدث خطأ أثناء التسجيل: ' + (data.message || 'خطأ غير معروف'));
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('حدث خطأ أثناء الاتصال بالخادم: ' + error.message);
+            });
+        });
+    });
+});
+</script>
+
+{% endblock %}

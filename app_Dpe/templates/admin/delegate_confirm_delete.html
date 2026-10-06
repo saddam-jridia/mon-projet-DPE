@@ -1,0 +1,268 @@
+{% extends "admin/base_admin.html" %}
+{% load static %}
+
+{% block title %}تأكيد حذف المندوب{% endblock %}
+
+{% block extra_css %}
+<style>
+.delete-container {
+    min-height: calc(100vh - 150px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.delete-card {
+    background: white;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-top: 5px solid #dc3545;
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.delete-header {
+    background: #dc3545;
+    color: white;
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.delete-header h3 {
+    margin: 0;
+    font-weight: 700;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.delete-header i {
+    margin-left: 10px;
+}
+
+.delete-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+.delete-icon {
+    font-size: 64px;
+    color: #dc3545;
+    margin-bottom: 1rem;
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.delete-body h4 {
+    color: #2c2c2c;
+    margin-bottom: 1rem;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.delegate-info {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border: 1px solid #e0e0e0;
+    text-align: right;
+}
+
+.delegate-info p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.delegate-info strong {
+    color: #b8860b;
+}
+
+.warning-text {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.warning-text i {
+    margin-left: 5px;
+}
+
+.alert-warning-custom {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    color: #856404;
+    text-align: right;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.alert-warning-custom i {
+    margin-left: 8px;
+    color: #ffc107;
+}
+
+.btn-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+.btn-danger:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    color: white;
+}
+
+@media (max-width: 576px) {
+    .delete-container {
+        padding: 1rem;
+    }
+    .delete-card {
+        max-width: 100%;
+    }
+    .delete-body {
+        padding: 1.5rem;
+    }
+    .btn-group {
+        flex-direction: column;
+    }
+    .btn-danger, .btn-secondary {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container" dir="rtl">
+    <div class="delete-card">
+        <div class="delete-header">
+            <h3>
+                <i class="fas fa-exclamation-triangle"></i>
+                تأكيد حذف المندوب
+            </h3>
+        </div>
+        <div class="delete-body">
+            <div class="delete-icon">
+                <i class="fas fa-user-times"></i>
+            </div>
+            <h4>⚠️ هل أنت متأكد من حذف هذا المندوب؟</h4>
+            
+            <div class="delegate-info">
+                <p><strong>الاسم الكامل:</strong> {{ delegate.first_name }} {{ delegate.last_name }}</p>
+                <p><strong>المعرف:</strong> {{ delegate.delegate_code }}</p>
+                <p><strong>الولاية:</strong> {{ delegate.get_wilaya_display }}</p>
+                <p><strong>الدور:</strong> {{ delegate.get_role_display }}</p>
+                <p><strong>البريد الإلكتروني:</strong> {{ delegate.email|default:"غير متوفر" }}</p>
+                <p><strong>الهاتف:</strong> {{ delegate.phone|default:"غير متوفر" }}</p>
+            </div>
+            
+            <!-- تنبيه إذا كان هناك أطفال مرتبطون -->
+            {% with children_count=delegate.children.count %}
+                {% if children_count > 0 %}
+                <div class="alert-warning-custom">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>تنبيه:</strong> هذا المندوب لديه {{ children_count }} طفل(أطفال) مرتبط(ين) به.
+                    لن يتم حذف الأطفال عند حذف المندوب، لكنهم لن يكونوا مرتبطين بأي مندوب بعد الآن.
+                </div>
+                {% endif %}
+            {% endwith %}
+            
+            <p class="warning-text">
+                <i class="fas fa-info-circle"></i>
+                ⚠️ هذا الإجراء لا يمكن التراجع عنه! سيتم حذف حساب المستخدم وجميع بيانات المندوب بشكل نهائي.
+            </p>
+            
+            <div class="btn-group">
+                <form method="POST" id="deleteForm">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger" id="confirmDeleteBtn">
+                        <i class="fas fa-trash"></i> نعم، أحذف
+                    </button>
+                </form>
+                <a href="{% url 'admin_delegate_list' %}" class="btn-secondary">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteForm = document.getElementById('deleteForm');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function(e) {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحذف...';
+            deleteForm.submit();
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,6 @@
+<form method="post">
+    {% csrf_token %}
+    <h4>هل أنت متأكد من حذف الطفل {{ child.first_name }} {{ child.last_name }} ؟</h4>
+    <button type="submit" class="btn btn-danger">نعم، حذف</button>
+    <a href="{% url 'child_list_institutions' %}" class="btn btn-secondary">إلغاء</a>
+</form>

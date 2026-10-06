@@ -5,123 +5,317 @@
 
 {% block extra_head %}
 <style>
-    .login-wrapper {
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        margin: 0;
+        font-family: "Times New Roman", serif !important;
+        background: 
+            radial-gradient(circle at 10% 20%, rgba(100, 100, 100, .03) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(150, 150, 150, .04) 0%, transparent 40%),
+            linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+        min-height: 100vh;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 70vh;
-        padding: 2rem 0;
+        flex-direction: column;
+        color: #2c2c2c;
+    }
+    
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        opacity: .02;
+        z-index: 0;
+        pointer-events: none;
     }
 
+    /* ---------- carte login ---------- */
+    .login-wrapper {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    
     .card-login {
         width: 100%;
         max-width: 450px;
-        border-radius: 16px;
-        border: none;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.12);
         overflow: hidden;
+        transition: all .3s ease;
     }
-
+    
+    .card-login:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,.15);
+    }
+    
     .card-login-header {
-        background: var(--primary-color);
-        color: white;
+        background: #1a1a1a;
+        color: #ffffff;
         text-align: center;
         font-size: 1.4rem;
         font-weight: bold;
         padding: 1.2rem;
+        border-bottom: 3px solid #b8860b;
     }
-
+    
     .card-login-body {
         padding: 2rem 1.5rem;
     }
-
+    
     .form-label {
         font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .form-control {
-        border-radius: 10px;
-        padding: 0.75rem;
-        direction: rtl;
+        margin-bottom: .5rem;
+        display: block;
         text-align: right;
-        border: 1px solid #b3cde0;
+        color: #2c2c2c;
     }
-
+    
+    .form-control {
+        width: 100%;
+        border-radius: 10px;
+        padding: .75rem;
+        border: 1px solid #d0d0d0;
+        background: #f8f8f8;
+        color: #2c2c2c;
+        text-align: right;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
     .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 6px rgba(0, 123, 255, 0.25);
+        outline: none;
+        border-color: #b8860b;
+        box-shadow: 0 0 6px rgba(184,134,11,.25);
     }
-
+    
+    /* ====== BOUTON دخول - STYLE GRIS/DORÉ ====== */
     .btn-login {
         width: 100%;
-        padding: 0.75rem;
-        background-color: var(--primary-color);
-        color: white;
+        padding: .75rem;
+        background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+        color: #ffffff;
         font-weight: bold;
         font-size: 1.1rem;
-        border-radius: 10px;
-        border: none;
-        transition: 0.3s ease;
+        border-radius: 50px;
+        border: 2px solid #b8860b;
+        cursor: pointer;
+        transition: all .3s ease;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
     }
-
+    
+    .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(184,134,11,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
     .btn-login:hover {
-        background-color: #0075c9;
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        border-color: #d4a520;
     }
-
+    
+    .btn-login:hover::before {
+        left: 100%;
+    }
+    
+    .btn-login:active {
+        transform: translateY(0);
+    }
+    
+    .btn-login i {
+        margin-left: 8px;
+        color: #b8860b;
+    }
+    
     .card-login-footer {
         text-align: center;
         padding: 1rem;
-        background: var(--secondary-color);
-        font-size: 0.9rem;
+        background: #f5f5f5;
+        font-size: .9rem;
+        border-top: 1px solid #e0e0e0;
     }
-
+    
     .card-login-footer a {
-        color: var(--primary-color);
+        color: #b8860b;
         text-decoration: none;
+        font-weight: 600;
     }
-
+    
     .card-login-footer a:hover {
         text-decoration: underline;
+        color: #d4a520;
+    }
+    
+    .errorlist {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        list-style: none;
+        padding: 0;
+        text-align: right;
+    }
+    
+    .alert-danger {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        text-align: center;
+        border: 1px solid #fecaca;
+    }
+    
+    /* Message container caché mais accessible */
+    .messages-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    @media (max-width: 576px) {
+        .card-login {
+            margin: 0 .5rem;
+            border-radius: 16px;
+        }
+        
+        .card-login-body {
+            padding: 1.5rem 1rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- 
+    CONSOMMATION DES MESSAGES - Ne pas supprimer !
+    Cette boucle vide la session des messages pour éviter 
+    qu'ils ne s'affichent sur d'autres pages.
+-->
+{% if messages %}
+    <div class="messages-sr-only" aria-live="polite">
+        {% for message in messages %}{% endfor %}
+    </div>
+{% endif %}
+
 <div class="login-wrapper">
-    <div class="card card-login">
-        <div class="card-login-header">
+    <div class="card card-login" role="main" aria-labelledby="login-title">
+        <div class="card-login-header" id="login-title">
             تسجيل الدخول
-        </div>
+        </div> 
         <div class="card-login-body">
-            <form method="POST" action="{% url 'login' %}">
+            <form method="POST" action="{% url 'login_delegate' %}" novalidate>
                 {% csrf_token %}
-                {{ form.non_field_errors }}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
 
                 <div class="mb-3">
-                    <label class="form-label">البريد الإلكتروني</label>
-                    {{ form.email }}
-                    {{ form.email.errors }}
+                    <label for="id_unique_id" class="form-label">المعرف الوحيد</label>
+                    {{ form.unique_id }}
+                    {% if form.unique_id.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.unique_id.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">كلمة السر</label>
+                    <label for="id_password" class="form-label">كلمة السر</label>
                     {{ form.password }}
-                    {{ form.password.errors }}
+                    {% if form.password.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.password.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 </div>
 
-                <button type="submit" class="btn-login">دخول</button>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> دخول
+                </button>
             </form>
         </div>
 
-        <div class="card-login-footer">
-            <div class="small">
-                <a href="{% url 'delegate_create' %}">ليس لديك حساب؟ سجّل هنا</a><br>
+      <!--  <div class="card-login-footer">
+            <div class="mb-2">
                 <a href="{% url 'password_reset' %}">نسيت كلمة السر؟</a>
             </div>
-        </div>
+            <div>
+                ليس لديك حساب؟ <a href="{% url 'register_delegate' %}">إنشاء حساب جديد</a>
+            </div>
+        </div>-->
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector("form");
+        const uniqueIdField = document.querySelector("#id_unique_id");
+        
+        if (uniqueIdField) {
+            uniqueIdField.setAttribute('maxlength', '10');
+            uniqueIdField.setAttribute('inputmode', 'numeric');
+            uniqueIdField.setAttribute('pattern', '[0-9]*');
+            uniqueIdField.setAttribute('placeholder', 'أدخل 10 أرقام');
+        }
+        
+        form.addEventListener("submit", function(e) {
+            const value = uniqueIdField.value.trim();
+            
+            if (!/^\d{10}$/.test(value)) {
+                e.preventDefault();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger client-error';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle ml-2"></i> يجب أن يكون المعرف الوحيد مكوّنًا من 10 أرقام بالضبط.';
+                
+                const existingError = form.querySelector('.client-error');
+                if (!existingError) {
+                    form.insertBefore(errorDiv, form.firstChild);
+                }
+                
+                uniqueIdField.focus();
+                uniqueIdField.style.borderColor = '#ef4444';
+                
+                setTimeout(() => {
+                    errorDiv.remove();
+                    uniqueIdField.style.borderColor = '';
+                }, 3000);
+            }
+        });
+        
+        uniqueIdField.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+        });
+    });
+</script>
 {% endblock %}

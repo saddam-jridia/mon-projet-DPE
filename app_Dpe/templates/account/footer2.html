@@ -1,0 +1,70 @@
+{% load static %}
+
+<!-- FOOTER -->
+<footer class="gov-footer">
+    <div class="container">
+        <div class="footer-content">
+            <img src="{% static 'images/tunisie.png' %}" alt="علم تونس" class="flag-tn-footer">
+            <span class="footer-text">
+                وزارة الأسرة والمرأة والطفولة وكبار السن © 2026
+            </span>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .gov-footer {
+        background: #1a1a1a;
+        color: #ffffff;
+        padding: 15px 0;
+        margin-top: auto;
+        border-top: 3px solid #b8860b;
+        
+    }
+
+    .gov-footer .container {
+        background: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .footer-content {
+        background: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .flag-tn-footer {
+        height: 35px;
+        width: auto;
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+    }
+
+    .footer-text {
+        font-family: "Times New Roman", serif !important;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: #e0e0e0;
+    }
+
+    @media (max-width: 576px) {
+        .footer-content {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .flag-tn-footer {
+            height: 30px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+        }
+    }
+</style>

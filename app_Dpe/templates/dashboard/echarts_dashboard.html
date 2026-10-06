@@ -1,0 +1,305 @@
+{% extends "account/base-login.html" %}
+{% load static %}
+
+{% block title %}الإحصائيات المتقدمة - الإدارة المركزية{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --ink: #15181b;
+        --charcoal: #2a2e33;
+        --gold: #b8860b;
+        --gold-light: #d4a520;
+        --gold-pale: #f4e8c9;
+        --paper: #f6f5f2;
+        --line: #e4e1da;
+        --muted: #6f7278;
+        --danger: #a6383a;
+        --success: #3f7d52;
+        --accent2: #3c6e71;
+        --radius: 14px;
+    }
+
+    body {
+        background: var(--paper) !important;
+        font-family: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif !important;
+        color: var(--ink);
+    }
+
+    .ec-wrap { direction: rtl; max-width: 1360px; margin: 0 auto; }
+
+    .ec-letterhead {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        flex-wrap: wrap; gap: 16px;
+        border-bottom: 3px solid var(--gold);
+        padding-bottom: 18px; margin-bottom: 22px;
+    }
+    .ec-letterhead .eyebrow {
+        font-size: 11px; letter-spacing: 2px; color: var(--gold);
+        font-weight: 700; text-transform: uppercase; margin-bottom: 6px;
+        font-family: 'Tajawal', sans-serif;
+    }
+    .ec-letterhead h1 {
+        font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 1.85rem;
+        color: var(--ink); margin: 0;
+    }
+    .ec-meta { color: var(--muted); font-size: 0.85rem; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+    .ec-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .ec-meta i { color: var(--gold); }
+
+    /* ===== KPI CARDS ===== */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
+    .kpi-card {
+        background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 20px 22px; position: relative; overflow: hidden;
+    }
+    .kpi-card::before {
+        content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%;
+        background: var(--gold);
+    }
+    .kpi-card.danger::before { background: var(--danger); }
+    .kpi-card.success::before { background: var(--success); }
+    .kpi-card.accent::before { background: var(--accent2); }
+    .kpi-card .kpi-icon {
+        width: 40px; height: 40px; border-radius: 10px;
+        background: var(--gold-pale); color: var(--gold);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.05rem; margin-bottom: 12px; flex-shrink: 0;
+    }
+    .kpi-card.danger .kpi-icon { background: #f3dcdc; color: var(--danger); }
+    .kpi-card.success .kpi-icon { background: #dcefe1; color: var(--success); }
+    .kpi-card.accent .kpi-icon { background: #dbe9ea; color: var(--accent2); }
+    .kpi-card .kpi-label {
+        font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+        color: var(--gold); font-weight: 700; font-family: 'Tajawal', sans-serif;
+    }
+    .kpi-card.danger .kpi-label { color: var(--danger); }
+    .kpi-card.success .kpi-label { color: var(--success); }
+    .kpi-card.accent .kpi-label { color: var(--accent2); }
+    .kpi-card .kpi-value {
+        font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 2.1rem;
+        color: var(--ink); font-variant-numeric: tabular-nums; margin: 6px 0 2px;
+    }
+    .kpi-card .kpi-sub { font-size: 0.8rem; color: var(--muted); }
+
+    /* ===== PANEL / CHART CARDS ===== */
+    .panel {
+        background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+        overflow: hidden; margin-bottom: 22px;
+    }
+    .panel-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px; border-bottom: 2px solid var(--gold-pale);
+    }
+    .panel-header h6 {
+        margin: 0; font-family: 'Tajawal', sans-serif; font-weight: 700;
+        color: var(--ink); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+    }
+    .panel-header h6 i { color: var(--gold); }
+    .panel-body { padding: 18px 20px; }
+
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .chart-holder { width: 100%; height: 360px; }
+
+    .ec-footer { text-align: center; margin-top: 8px; color: var(--muted); font-size: 0.85rem; padding-bottom: 10px; }
+
+    @media (max-width: 992px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .charts-grid { grid-template-columns: 1fr; }
+        .chart-holder { height: 300px; }
+    }
+    @media (max-width: 560px) {
+        .kpi-grid { grid-template-columns: 1fr; }
+        .ec-letterhead { align-items: flex-start; }
+    }
+</style>
+
+<div class="ec-wrap">
+
+    <!-- ===== LETTERHEAD ===== -->
+    <div class="ec-letterhead">
+        <div>
+           
+            <h1>الإحصائيات</h1>
+            <div class="ec-meta">
+                <span><i class="fas fa-calendar-alt"></i>{{ current_date|date:"d/m/Y" }}</span>
+                <span><i class="fas fa-clock"></i>{{ current_time }}</span>
+                <span><i class="fas fa-sync-alt"></i>آخر تحديث: {{ last_update }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== KPIs ===== -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-label">إجمالي الحالات</div>
+            <div class="kpi-value">{{ kpis.total_global }}</div>
+        </div>
+        <div class="kpi-card danger">
+            <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="kpi-label">أطفال مهددون</div>
+            <div class="kpi-value">{{ kpis.total_menaces }}</div>
+          
+        </div>
+        <div class="kpi-card danger">
+            <div class="kpi-icon"><i class="fas fa-gavel"></i></div>
+            <div class="kpi-label">أطفال جانحون</div>
+            <div class="kpi-value">{{ kpis.total_delinquants }}</div>
+           
+        </div>
+        <div class="kpi-card accent">
+            <div class="kpi-icon"><i class="fas fa-globe"></i></div>
+            <div class="kpi-label">أطفال أجانب</div>
+            <div class="kpi-value">{{ kpis.etrangers }}</div>
+        </div>
+        <div class="kpi-card accent">
+            <div class="kpi-icon"><i class="fas fa-heart-broken"></i></div>
+            <div class="kpi-label">خارج إطار الزواج</div>
+            <div class="kpi-value">{{ kpis.unmarried }}</div>
+        </div>
+        <div class="kpi-card danger">
+            <div class="kpi-icon"><i class="fas fa-passport"></i></div>
+            <div class="kpi-label">وضعية غير قانونية</div>
+            <div class="kpi-value">{{ kpis.irregular }}</div>
+        </div>
+        
+        
+    </div>
+
+    <!-- ===== GRAPHIQUES ECHARTS ===== -->
+    <div class="panel">
+        <div class="panel-header"><h6><i class="fas fa-chart-line"></i>التطور الشهري (آخر 12 شهر)</h6></div>
+        <div class="panel-body"><div id="monthlyChart" class="chart-holder"></div></div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="panel">
+            <div class="panel-header"><h6><i class="fas fa-map-marker-alt"></i>أعلى 10 ولايات</h6></div>
+            <div class="panel-body"><div id="wilayaChart" class="chart-holder"></div></div>
+        </div>
+        <div class="panel">
+            <div class="panel-header"><h6><i class="fas fa-child"></i>التوزيع حسب الفئة العمرية</h6></div>
+            <div class="panel-body"><div id="ageChart" class="chart-holder"></div></div>
+        </div>
+    </div>
+
+    <div class="ec-footer">
+        <i class="fas fa-database me-1"></i>البيانات محدّثة آلياً عند كل تحميل للصفحة
+    </div>
+
+</div>
+
+<!-- ECharts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const goldColor = '#b8860b';
+    const inkColor = '#15181b';
+    const dangerColor = '#a6383a';
+
+    const monthlyChart = echarts.init(document.getElementById('monthlyChart'));
+    monthlyChart.setOption({
+        textStyle: { fontFamily: "'IBM Plex Sans Arabic', Tajawal, sans-serif" },
+        tooltip: { trigger: 'axis' },
+        legend: {
+            data: ['أطفال مهددون', 'أطفال جانحون'],
+            textStyle: { fontFamily: "'IBM Plex Sans Arabic', Tajawal, sans-serif" },
+            top: 0
+        },
+        grid: { left: '3%', right: '4%', bottom: '10%', top: '15%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            data: {{ monthly_labels|safe }},
+            axisLabel: { rotate: 45, fontSize: 10 }
+        },
+        yAxis: { type: 'value' },
+        series: [
+            {
+                name: 'أطفال مهددون',
+                type: 'line',
+                smooth: true,
+                data: {{ monthly_data_menaces|safe }},
+                itemStyle: { color: dangerColor },
+                areaStyle: { opacity: 0.08 }
+            },
+            {
+                name: 'أطفال جانحون',
+                type: 'line',
+                smooth: true,
+                data: {{ monthly_data_delinquants|safe }},
+                itemStyle: { color: goldColor },
+                areaStyle: { opacity: 0.08 }
+            }
+        ]
+    });
+
+    const wilayaChart = echarts.init(document.getElementById('wilayaChart'));
+    wilayaChart.setOption({
+        textStyle: { fontFamily: "'IBM Plex Sans Arabic', Tajawal, sans-serif" },
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: '3%', right: '6%', bottom: '3%', top: '3%', containLabel: true },
+        xAxis: { type: 'value' },
+        yAxis: {
+            type: 'category',
+            data: {{ wilaya_labels|safe }}.slice().reverse(),
+            axisLabel: { fontSize: 11 }
+        },
+        series: [{
+            type: 'bar',
+            data: {{ wilaya_data|safe }}.slice().reverse(),
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                    { offset: 0, color: inkColor },
+                    { offset: 1, color: goldColor }
+                ])
+            },
+            label: { show: true, position: 'right', fontSize: 11 }
+        }]
+    });
+
+    const ageChart = echarts.init(document.getElementById('ageChart'));
+    ageChart.setOption({
+        textStyle: { fontFamily: "'IBM Plex Sans Arabic', Tajawal, sans-serif" },
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: {
+            data: ['أطفال مهددون', 'أطفال جانحون'],
+            textStyle: { fontFamily: "'IBM Plex Sans Arabic', Tajawal, sans-serif" },
+            top: 0
+        },
+        grid: { left: '3%', right: '4%', bottom: '3%', top: '15%', containLabel: true },
+        xAxis: { type: 'category', data: {{ age_labels|safe }} },
+        yAxis: { type: 'value' },
+        series: [
+            {
+                name: 'أطفال مهددون',
+                type: 'bar',
+                data: {{ age_data_menaces|safe }},
+                itemStyle: { color: dangerColor, borderRadius: [6, 6, 0, 0] }
+            },
+            {
+                name: 'أطفال جانحون',
+                type: 'bar',
+                data: {{ age_data_delinquants|safe }},
+                itemStyle: { color: goldColor, borderRadius: [6, 6, 0, 0] }
+            }
+        ]
+    });
+
+    window.addEventListener('resize', function () {
+        monthlyChart.resize();
+        wilayaChart.resize();
+        ageChart.resize();
+    });
+
+    setTimeout(function () {
+        monthlyChart.resize();
+        wilayaChart.resize();
+        ageChart.resize();
+    }, 300);
+});
+</script>
+{% endblock %}

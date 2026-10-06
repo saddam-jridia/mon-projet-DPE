@@ -1,0 +1,269 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+   
+</style>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+
+   
+    
+<div class="content">
+  <div class="container">
+    <div class="row justify-content-center">
+<!--
+       <div class="row mb-4">
+         <div class="col-xl-3 col-md-6 mb-6">
+            <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1" >
+<a href="{% url 'child_create' %}" class="menu-link">
+         
+            
+            <span style="color: #0a0a0a; font-size: 20px;">إدخال طفل جديد</span>
+         
+        </a>                            </div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-person-plus fs-3" style="color: #b8860b;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <div class="col-xl-3 col-md-6 mb-6">
+            <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">
+<a href="{% url 'child_list_institutions' %}" class="menu-link">
+          
+            
+            <span style="color: #0a0a0a; font-size: 20px;" >قائمة الأطفال المهددين</span>
+          
+        </a>                            </div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people fs-3" style="color: #b8860b;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+   
+        
+   
+
+  
+
+
+        
+<div class="col-xl-3 col-md-6 mb-6">
+    <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-uppercase mb-1">
+                        <a href="{% url 'child_list_social_file' %}" class="menu-link">
+                            <span style="color: #0a0a0a; font-size: 20px;">
+                                الملف الاجتماعي للطفل
+                            </span>
+                        </a>
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                </div>
+                <div class="col-auto">
+                    <i class="fas fa-folder-open fs-3" style="color: #b8860b;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+</div>
+
+     <div class="col-xl-3 col-md-6 mb-6">
+            <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">
+<a href="{% url 'child_list_Investigation' %}" class="menu-link">
+          
+            
+            <span style="color: #0a0a0a; font-size: 20px;" >
+    صلاحيات تقدير جدية الإشعار </span>
+          
+        </a>                            </div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                        </div>
+                       <div class="col-auto">
+    <i class="fas fa-search fs-3" style="color: #b8860b;"></i>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<div class="row mb-4">
+
+          <div class="col-xl-3 col-md-6 mb-6">
+    <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-uppercase mb-1">
+                        <a href="{% url 'child_list_threat_assessment' %}" class="menu-link">
+                            <span style="color: #0a0a0a; font-size: 20px;">
+                                تقدير جدية الإشعار
+                            </span>
+                        </a>
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                </div>
+                <div class="col-auto">
+                    <i class="fas fa-exclamation-triangle fs-3" style="color: #b8860b;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>   
+ <div class="col-xl-3 col-md-6 mb-6">
+            <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">
+<a href="{% url 'unmarried_children_list' %}" class="menu-link">
+          
+            
+            <span style="color: #0a0a0a; font-size: 20px;" >قائمة الأطفال المولودين خارج إطار الزواج</span>
+          
+        </a>                            </div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-baby fs-3" style="color: #b8860b;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+             <div class="col-xl-3 col-md-6 mb-6">
+            <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">
+<a href="{% url 'foreign_irregular_children_list' %}" class="menu-link">
+          
+            
+            <span style="color: #0a0a0a; font-size: 20px;" >قائمة 
+              الأطفال الأجانب خارج إطار الزواج (إقامة غير قانونية)
+</span>
+          
+        </a>                            </div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-slash fs-3" style="color: #b8860b;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+              <div class="col-xl-3 col-md-6 mb-6">
+            <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">
+<a href="{% url 'children_abandoned_outside_marriage' %}" class="menu-link">
+          
+            
+            <span style="color: #0a0a0a; font-size: 20px;" >
+
+
+        قائمة الأطفال في وضعية :
+        التخلي عن طفل مولود خارج اطار الزواج
+   </span>
+          
+        </a>                            </div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                        </div>
+                        <div class="col-auto">
+                           <i class="fas fa-child fs-3" style="color: #b8860b;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+       
+
+
+
+
+
+
+        
+
+
+
+</div>
+
+<div class="row mb-4">
+
+
+       <div class="col-xl-3 col-md-6 mb-6">
+            <div class="card shadow h-100 py-2 border-0" style="border-right: 4px solid #b8860b !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">
+<a href="{% url 'foreign_child_list' %}" class="menu-link">
+          
+            
+            <span style="color: #0a0a0a; font-size: 20px;" >قائمة الأطفال الأجانب</span>
+          
+        </a>                            </div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #2c2c2c;"></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-globe fs-3" style="color: #b8860b;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+-->
+
+</div>
+      <div class="w-100"></div>
+
+    
+
+      
+          
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

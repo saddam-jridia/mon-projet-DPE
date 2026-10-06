@@ -1,0 +1,238 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .content {
+        padding: 20px;
+        min-height: 100vh;
+        margin-right: 280px;
+    }
+    
+    .form-container {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .form-section {
+        margin-bottom: 30px;
+        border-right: 3px solid #dc3545;
+        padding-right: 15px;
+    }
+    
+    .form-section h4 {
+        color: #dc3545;
+        margin-bottom: 20px;
+    }
+    
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .checkbox-item input {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .btn-save {
+        background: #28a745;
+        color: white;
+        padding: 10px 30px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+    
+    .info-alert {
+        background: #e8f5e9;
+        border-right: 4px solid #28a745;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+    
+    @media (max-width: 768px) {
+        .content {
+            margin-right: 70px;
+        }
+        .checkbox-group {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="content">
+    <div class="mb-3">
+        <a href="{% url 'trafficking_notification_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة إلى القائمة
+        </a>
+    </div>
+    
+    <div class="form-container">
+        <h3 class="text-center mb-4">
+            <i class="fas fa-handcuffs text-danger"></i>
+            إشعار الاتجار بالأطفال
+        </h3>
+        
+        <div class="info-alert">
+            <i class="fas fa-info-circle"></i>
+            <strong>تم إنشاء هذا الإشعار تلقائياً بناءً على قرار "إعلام الهيئة الوطنية للإتجار"</strong>
+            <br>
+            <small>الطفل: {{ child.first_name }} {{ child.last_name }} | UID: {{ child.uid }}</small>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Section: Méthode d'entrée -->
+            <div class="form-section">
+                <h4><i class="fas fa-passport"></i> طريقة الدخول للتراب التونسي</h4>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="entry_method_regular">
+                        <span>بطريقة نظامية</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="entry_method_irregular">
+                        <span>بطريقة غير نظامية</span>
+                    </label>
+                </div>
+                <div class="checkbox-group" style="margin-right: 30px;">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="entry_irregular_sea">
+                        <span>عن طريق البحر</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="entry_irregular_land">
+                        <span>عن طريق البر</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Section: Lieu d'exploitation -->
+            <div class="form-section">
+                <h4><i class="fas fa-map-marker-alt"></i> مكان الاستغلال المحتمل</h4>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="exploitation_location_abroad">
+                        <span>خارج البلاد التونسية</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="exploitation_location_tunisia">
+                        <span>داخل البلاد التونسية</span>
+                    </label>
+                </div>
+                <div class="mb-3" style="margin-top: 15px;">
+                    <label>الولاية:</label>
+                    <select name="exploitation_governorate" class="form-control">
+                        <option value="">-- اختر الولاية --</option>
+                        {% for gov in gouvernorats %}
+                        <option value="{{ gov.name_ar }}">{{ gov.name_ar }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Section: Lieux détaillés -->
+            <div class="form-section">
+                <h4><i class="fas fa-building"></i> مكان الإيداع بصفة مؤقتة</h4>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_home"> المنزل</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_relatives_home"> منزل أحد الأقارب</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_other_residence"> مقر إقامة آخر</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_employer_home"> منزل المشغل</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_legal_workshop"> ورشة تشغيل قانونية</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_illegal_workshop"> ورشة تشغيل غير قانونية</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_private_place"> مكان خاص يوفره المستغل</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_fields"> الحقول الفلاحية</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_factories"> المصانع</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_street"> الشارع</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_markets"> الأسواق</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_public_places"> الأماكن العامة</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_other"> أخرى</label>
+                </div>
+                <div class="mb-3" id="other_location_div" style="display: none;">
+                    <label>تحديد مكان آخر:</label>
+                    <input type="text" name="exploitation_other_text" class="form-control" placeholder="اكتب مكان آخر">
+                </div>
+            </div>
+            
+            <!-- Section: Auteurs de l'exploitation -->
+            <div class="form-section">
+                <h4><i class="fas fa-users"></i> أطراف الاستغلال</h4>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_parents"> الوالدين</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_father"> الأب</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_mother"> الأم</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_guardian"> الحاضن / الكافل</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_relative"> أحد الأقارب</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_outside_family"> خارج محيط العائلي</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_unknown"> شخص مجهول</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_employer"> المشغل</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploiter_other"> أخرى</label>
+                </div>
+                <div class="mb-3" id="other_exploiter_div" style="display: none;">
+                    <label>تحديد جهة أخرى:</label>
+                    <input type="text" name="exploiter_other_text" class="form-control" placeholder="اكتب جهة أخرى">
+                </div>
+            </div>
+            
+            <!-- Section: Formes d'exploitation -->
+            <div class="form-section">
+                <h4><i class="fas fa-chains"></i> أشكال الاستغلال</h4>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_sexual"> الاستغلال الجنسي</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_labor"> استغلال العمل</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_begging"> التسول</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_forced_marriage"> الزواج القسري</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_organ_trafficking"> الاتجار بالأعضاء</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_drug_trafficking"> الاتجار بالمخدرات</label>
+                    <label class="checkbox-item"><input type="checkbox" name="exploitation_armed_conflict"> النزاع المسلح</label>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i>تسجيل الإشعار
+                </button>
+                <a href="{% url 'trafficking_notification_list' %}" class="btn btn-secondary">
+                    إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Afficher/masquer le champ "autre" pour le lieu
+    const otherCheckbox = document.querySelector('input[name="exploitation_other"]');
+    const otherDiv = document.getElementById('other_location_div');
+    
+    if (otherCheckbox) {
+        otherCheckbox.addEventListener('change', function() {
+            otherDiv.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+    
+    // Afficher/masquer le champ "autre" pour l'exploiteur
+    const otherExploiterCheckbox = document.querySelector('input[name="exploiter_other"]');
+    const otherExploiterDiv = document.getElementById('other_exploiter_div');
+    
+    if (otherExploiterCheckbox) {
+        otherExploiterCheckbox.addEventListener('change', function() {
+            otherExploiterDiv.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+</script>
+{% endblock %}

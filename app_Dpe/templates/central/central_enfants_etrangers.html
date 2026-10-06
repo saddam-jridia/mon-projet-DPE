@@ -1,0 +1,770 @@
+{% extends "account/base-login.html" %}
+{% load static %}
+
+{% block title %}الأطفال الأجانب{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===============================
+   LISTE ENFANTS ÉTRANGERS
+   Style GRIS/DORÉ - Dimensions ajustées
+================================= */
+
+/* Wrapper principal - padding réduit */
+.list-wrapper {
+    min-height: calc(100vh - 150px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(100, 100, 100, .03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(150, 150, 150, .04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+/* En-tête de page - plus compact */
+.page-header {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid #e0e0e0;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Titre centré - plus compact */
+.header-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid #b8860b;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c2c2c;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.page-title i {
+    color: #b8860b;
+    font-size: 1.4rem;
+}
+
+/* Section contrôles */
+.header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* Barre de recherche - plus compacte */
+.search-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8f8f8;
+    padding: 0.4rem 0.8rem;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    flex-wrap: wrap;
+}
+
+.search-group label {
+    font-weight: 600;
+    color: #2c2c2c;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+    font-size: 0.85rem;
+}
+
+.search-group label i {
+    color: #b8860b;
+    font-size: 0.85rem;
+}
+
+.search-input {
+    min-width: 250px;
+    padding: 0.4rem 0.8rem;
+    border: 2px solid #d0d0d0;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    text-align: right;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+.search-input:focus {
+    border-color: #b8860b;
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.1);
+    outline: none;
+}
+
+/* Bouton بحث - taille réduite */
+.search-btn {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    color: white;
+    border: 2px solid #b8860b;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+    font-size: 0.85rem;
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    transform: translateY(-1px);
+    border-color: #d4a520;
+}
+
+.search-btn i {
+    color: #b8860b;
+    font-size: 0.85rem;
+}
+
+/* Bouton إلغاء - taille réduite */
+.clear-btn {
+    background: #6b7280;
+    color: white;
+    text-decoration: none;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+    font-size: 0.85rem;
+}
+
+.clear-btn:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
+}
+
+.clear-btn i {
+    color: #e0e0e0;
+    font-size: 0.85rem;
+}
+
+/* Stats badge - plus compact */
+.stats-badge {
+    background: #f0f0f0;
+    border: 2px solid #b8860b;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stats-badge i {
+    font-size: 1.2rem;
+    color: #b8860b;
+}
+
+.stats-number {
+    font-weight: 700;
+    color: #2c2c2c;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.stats-label {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Messages - plus compacts */
+.messages-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 1rem;
+}
+
+.alert-custom {
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideDown 0.3s ease-out;
+    border-right: 4px solid;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    font-size: 0.85rem;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-success { border-color: #28a745; color: #155724; background: #d4edda; }
+.alert-error, .alert-danger { border-color: #dc3545; color: #721c24; background: #f8d7da; }
+.alert-warning { border-color: #ffc107; color: #856404; background: #fff3cd; }
+.alert-info { border-color: #b8860b; color: #744210; background: #d1ecf1; }
+
+.close-btn {
+    margin-right: auto;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    padding: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+/* Table container - plus compact */
+.table-container {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    width: 100%;
+    max-width: 1200px;
+    padding: 1rem;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 0;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+}
+
+/* TABLE HEADER - NOIR/DORÉ */
+.table thead th {
+    background: #1a1a1a;
+    color: #b8860b;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.75rem;
+    text-align: center;
+    border: none;
+}
+
+.table tbody td {
+    padding: 0.75rem;
+    color: #2c2c2c;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Badges - plus compacts */
+.badge-uid {
+    background: #f0f0f0;
+    color: #2c2c2c;
+    border: 1px solid #b8860b;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-family: monospace;
+    display: inline-block;
+}
+
+.badge-sexe {
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.badge-masculin {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-feminin {
+    background: #fce7f3;
+    color: #be185d;
+}
+
+.badge-nationality {
+    background: #f0f0f0;
+    color: #2c2c2c;
+    border: 1px solid #b8860b;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.badge-legal-regular {
+    background: #f0f0f0;
+    color: #2c2c2c;
+    border: 1px solid #2d5a3d;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.badge-legal-irregular {
+    background: #f0f0f0;
+    color: #2c2c2c;
+    border: 1px solid #dc3545;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.badge-info {
+    background: #f0f0f0;
+    color: #2c2c2c;
+    border: 1px solid #6f42c1;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+/* Bouton suppression - taille réduite */
+.btn-danger {
+    background: #dc3545;
+    border: none;
+    color: white;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: scale(1.05);
+    color: white;
+    text-decoration: none;
+}
+
+/* Pagination - plus compacte */
+.pagination {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    justify-content: center;
+}
+
+.page-item.active .page-link {
+    background: #1a1a1a;
+    border-color: #b8860b;
+    color: #b8860b;
+}
+
+.page-link {
+    color: #2c2c2c;
+    border: 1px solid #e0e0e0;
+    padding: 0.4rem 0.7rem;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.page-link:hover {
+    background: #f0f0f0;
+    color: #b8860b;
+}
+
+.page-item.disabled .page-link {
+    color: #9ca3af;
+    background: #f9fafb;
+}
+
+/* État vide - plus compact */
+.empty-state {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    color: #666;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    color: #d0d0d0;
+}
+
+.empty-state.search-active {
+    color: #dc3545;
+}
+
+.empty-state.search-active i {
+    color: #fca5a5;
+}
+
+/* Texte muted */
+.text-muted {
+    color: #9ca3af !important;
+    font-size: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .list-wrapper {
+        padding: 1rem;
+        min-height: calc(100vh - 100px);
+    }
+    
+    .page-header {
+        padding: 1rem;
+    }
+    
+    .page-title {
+        font-size: 1.2rem;
+    }
+    
+    .header-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .search-input {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .search-btn, .clear-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .table-container {
+        padding: 0.75rem;
+    }
+    
+    .table thead th,
+    .table tbody td {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .badge-sexe, .badge-uid, .badge-nationality, 
+    .badge-legal-regular, .badge-legal-irregular,
+    .badge-info {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.5rem;
+    }
+    
+    .btn-danger {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.7rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="list-wrapper" dir="rtl">
+    
+    <!-- EN-TÊTE -->
+    <div class="page-header">
+        <div class="header-title">
+            <h1 class="page-title">
+                <i class="fas fa-globe"></i>
+                قائمة الأطفال الأجانب
+            </h1>
+        </div>
+
+        <div class="header-controls">
+            <!-- Recherche -->
+            <div class="header-filter">
+                <form method="GET" action="" class="search-form">
+                    <div class="search-group">
+                        <label for="search">
+                            <i class="fas fa-search"></i>
+                            بحث
+                        </label>
+                        <input 
+                            type="text" 
+                            id="search"
+                            name="q" 
+                            class="search-input" 
+                            placeholder="اسم، لقب، معرف، تاريخ، ولاية أو حالة قانونية..." 
+                            value="{{ query|default:'' }}"
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                            بحث
+                        </button>
+                        {% if query %}
+                        <a href="{% url 'central_enfants_etrangers' %}" class="clear-btn">
+                            <i class="fas fa-times"></i>
+                            إلغاء
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Stats -->
+            <div class="header-stats">
+                <div class="stats-badge">
+                    <i class="fas fa-globe-africa"></i>
+                    <div>
+                        <div class="stats-number">{{ page_obj.paginator.count }}</div>
+                        <div class="stats-label">طفل أجنبي</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="messages-wrapper" id="messagesContainer">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-custom alert-{{ message.tags|default:'info' }}">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle"></i>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                    <div>{{ message }}</div>
+                    <button type="button" class="close-btn" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>المعرف</th>
+                        <th>الاسم</th>
+                        <th>اللقب</th>
+                        <th>الجنس</th>
+                        <th>تاريخ الميلاد</th>
+                        <th>الولاية</th>
+                        <th>الجنسية</th>
+                        <th>الوضعية القانونية</th>
+                        <th>حذف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for child in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                        <td>
+                            <span class="badge-uid">{{ child.uid|default:"-" }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ child.first_name }}</strong>
+                        </td>
+                        <td>
+                            <strong>{{ child.last_name }}</strong>
+                        </td>
+                        <td>
+                            {% if child.gender == "M" %}
+                                <span class="badge-sexe badge-masculin">
+                                    <i class="fas fa-male"></i>
+                                    ذكر
+                                </span>
+                            {% elif child.gender == "F" %}
+                                <span class="badge-sexe badge-feminin">
+                                    <i class="fas fa-female"></i>
+                                    أنثى
+                                </span>
+                            {% else %}
+                                <span class="text-muted">غير محدد</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if child.birth_date %}
+                                {{ child.birth_date|date:"d/m/Y" }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if child.birth_governorate %}
+                                <span class="badge-info">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ child.get_birth_governorate_display }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge-nationality">
+                                <i class="fas fa-flag"></i>
+                                {{ child.get_nationality_display|default:"أجنبي" }}
+                            </span>
+                        </td>
+                       
+                        <td>
+                            <a href="{% url 'enfant_menace_delete' child.id %}" 
+                               class="btn-danger"
+                               title="حذف">
+                               
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="empty-state {% if query %}search-active{% endif %}">
+                            <i class="fas fa-{% if query %}search{% else %}globe{% endif %}"></i>
+                            <strong>
+                                {% if query %}
+                                    لا توجد نتائج مطابقة
+                                {% else %}
+                                    لا يوجد أطفال أجانب في النظام
+                                {% endif %}
+                            </strong>
+                            {% if query %}
+                                <br>
+                                <small>جرب البحث بكلمات مختلفة</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query|urlencode }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-supprimer les messages après 5 secondes
+    setTimeout(function() {
+        document.querySelectorAll('.alert-custom').forEach(alert => {
+            alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 5000);
+    
+    // Focus sur le champ de recherche si vide
+    const searchInput = document.getElementById('search');
+    if (searchInput && !searchInput.value.trim()) {
+        searchInput.focus();
+    }
+});
+</script>
+{% endblock %}

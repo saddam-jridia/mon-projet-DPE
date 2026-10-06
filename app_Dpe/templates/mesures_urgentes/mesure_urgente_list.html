@@ -1,0 +1,898 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    :root {
+        --primary-dark: #1a1a1a;
+        --primary-light: #2c2c2c;
+        --gold: #d4a520;
+        --gold-dark: #b8860b;
+        --success: #28a745;
+        --danger: #dc3545;
+        --info: #17a2b8;
+        --warning: #ffc107;
+    }
+
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+    
+    .content {
+        padding: 20px;
+        min-height: 100vh;
+        margin-right: 270px;
+    }
+    
+    .btn-gold {
+        background-color: #d4a520;
+        color: #000000;
+        border-color: #d4a520;
+    }
+    .btn-gold:hover {
+        background-color: #b8860b;
+        color: #ffffff;
+    }
+    .btn-dark-custom {
+        background-color: #000000;
+        color: #d4a520;
+        border: 2px solid #d4a520;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    .btn-dark-custom:hover {
+        background-color: #d4a520;
+        color: #000000;
+        transform: translateY(-2px);
+    }
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background-color: #5a6268;
+        color: white;
+    }
+    .btn-edit {
+        background: #ffc107;
+        color: #000;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        text-decoration: none;
+        margin: 0 2px;
+    }
+    .btn-edit:hover {
+        background: #e0a800;
+        color: #000;
+    }
+    .btn-delete {
+        background: #dc3545;
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        text-decoration: none;
+        margin: 0 2px;
+    }
+    .btn-delete:hover {
+        background: #c82333;
+        color: #fff;
+    }
+    
+    .search-container {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    .search-input-wrapper i {
+        position: absolute;
+        right: 15px;
+        color: var(--gold);
+        font-size: 1.1rem;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(212, 165, 32, 0.1);
+    }
+    
+    .search-input::placeholder {
+        color: #999;
+        font-size: 0.85rem;
+    }
+    
+    .search-stats {
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: #666;
+    }
+    
+    .search-stats strong {
+        color: var(--gold);
+        font-weight: bold;
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        margin: 20px;
+    }
+    
+    .no-results i {
+        font-size: 3rem;
+        color: var(--gold);
+        margin-bottom: 15px;
+    }
+    
+    .no-results p {
+        color: #666;
+        font-size: 1rem;
+    }
+    
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+        color: var(--gold);
+        padding: 16px 20px;
+        cursor: pointer;
+        border-bottom: 2px solid var(--gold);
+        transition: all 0.3s ease;
+    }
+    .card-header:hover {
+        background: linear-gradient(135deg, #2c2c2c 0%, #3c3c3c 100%);
+    }
+    
+    .badge-status {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: bold;
+        display: inline-block;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .badge-status:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+    .badge-success { background: var(--success); color: #fff; }
+    .badge-warning { background: var(--warning); color: #000; }
+    .badge-info { background: var(--info); color: #fff; }
+    .badge-danger { background: var(--danger); color: #fff; }
+    .badge-secondary { background: #6c757d; color: #fff; }
+    
+    .table thead th {
+        background: #090909 !important;
+        color: var(--gold) !important;
+        text-align: center;
+        padding: 10px 6px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    .table td {
+        text-align: center;
+        padding: 8px 6px;
+        font-size: 0.75rem;
+        vertical-align: middle;
+    }
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .child-stats {
+        background: #f6d784;
+        padding: 10px 20px;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 0.85rem;
+    }
+    .child-stats span { font-weight: bold; color: #333; }
+    
+    .empty-state { 
+        text-align: center; 
+        padding: 40px; 
+        color: #999;
+        background: white;
+        border-radius: 12px;
+        margin: 20px;
+    }
+    
+    .notif-card {
+        margin: 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: white;
+        transition: all 0.3s ease;
+    }
+    .notif-card:hover {
+        border-color: var(--gold);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .notif-card-header {
+        background: #f8f9fa;
+        padding: 12px 20px;
+        cursor: pointer;
+        border-right: 4px solid var(--gold);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        transition: background 0.3s ease;
+    }
+    .notif-card-header:hover {
+        background: #f0f0f0;
+    }
+    .notif-card-header .notif-title { 
+        font-weight: bold; 
+        color: var(--primary-dark); 
+        font-size: 0.9rem;
+    }
+    .notif-card-header .notif-date { 
+        font-size: 0.8rem; 
+        color: #666; 
+    }
+    .notif-card-header .toggle-icon-notif { 
+        transition: transform 0.3s ease; 
+    }
+    .notif-card-header .toggle-icon-notif.rotated { 
+        transform: rotate(180deg); 
+    }
+    .notif-card-body { 
+        display: none; 
+        padding: 15px; 
+        background: white;
+    }
+    .notif-card-body.show { 
+        display: block; 
+    }
+    
+    .child-card-body { 
+        display: none; 
+        background: #f8f9fa;
+    }
+    .child-card-body.show { 
+        display: block; 
+    }
+    
+    .toggle-icon { 
+        transition: transform 0.3s ease; 
+    }
+    .toggle-icon.rotated { 
+        transform: rotate(180deg); 
+    }
+    
+    .type-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+    
+    .badge-order {
+        background-color: #000000;
+        color: #d4a520;
+        padding: 3px 8px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    
+    .judge-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .judge-yes {
+        background-color: #28a745;
+        color: white;
+    }
+    .judge-no {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .section-neglect {
+        border-right: 4px solid #28a745;
+        margin-bottom: 20px;
+        background: #f8fff8;
+    }
+    .section-danger {
+        border-right: 4px solid #dc3545;
+        margin-bottom: 20px;
+        background: #fff8f8;
+    }
+    .section-title {
+        padding: 10px 15px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        background: rgba(0,0,0,0.03);
+    }
+    .section-title i {
+        margin-left: 8px;
+    }
+    
+    @media (max-width: 768px) {
+        .content { 
+            padding: 15px;
+            margin-right: 0;
+        }
+        .table thead th, .table td {
+            font-size: 0.65rem;
+            padding: 4px;
+        }
+        .notif-card-header {
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .search-container {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="content">
+    <div class="mb-3 text-start">
+        <a href="{% url 'child_list_institutions' %}" class="btn btn-back">
+            <i class="fas fa-arrow-right me-2"></i> العودة إلى قائمة الإشعارات
+        </a>
+    </div>
+
+    <div class="text-center mb-4">
+        <h2 style="font-family:'Amiri'; font-weight:900; color: var(--primary-dark);">
+            <i class="fas fa-bolt" style="color: var(--gold);"></i> التدابير العاجلة
+        </h2>
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <div class="search-container">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" 
+                   id="searchInput" 
+                   class="search-input" 
+                   placeholder="بحث بالاسم، المعرف الوحيد، رقم الإشعار، أو نوع التدبير..."
+                   autocomplete="off">
+        </div>
+        <div class="search-stats">
+            
+        </div>
+    </div>
+
+    <div id="childrenContainer">
+        {% for child_data in children_with_data %}
+        <div class="card searchable-card" id="child-{{ child_data.child.id }}" 
+             data-child-name="{{ child_data.child.first_name }} {{ child_data.child.last_name|lower }}"
+             data-child-uid="{{ child_data.child.uid|lower }}"
+             data-notif-numbers="{% for notif_item in child_data.notifications %}{{ notif_item.notif.notifier_number }} {% endfor %}"
+             data-mesure-types="{% for notif_item in child_data.notifications %}{% for m in notif_item.mesures_neglect %}{{ m.menace_type }} {% endfor %}{% for m in notif_item.mesures_danger %}{{ m.menace_type }} {% endfor %}{% endfor %}">
+            
+            <div class="card-header" onclick="toggleChild(this)">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <i class="fas fa-child me-2"></i>
+                        <strong>{{ child_data.child.first_name }} {{ child_data.child.last_name }}</strong>
+                        <span class="badge-status badge-secondary ms-2">
+                            <i class="fas fa-id-card"></i> المعرف الوحيد: {{ child_data.child.uid }}
+                        </span>
+                    </div>
+                    <div class="mt-2 mt-sm-0">
+                        <span class="badge-status badge-info me-2">
+                            <i class="fas fa-bell"></i> {{ child_data.notifications|length }} إشعار
+                        </span>
+                        <span class="badge-status badge-success me-2">
+                            <i class="fas fa-bolt"></i> {{ child_data.mesures_count }} تدبير عاجل
+                        </span>
+                        <i class="fas fa-chevron-down toggle-icon ms-2"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="child-card-body">
+                <div class="child-stats">
+                    <span><i class="fas fa-bell"></i> عدد الإشعارات: {{ child_data.notifications|length }}</span>
+                    <span><i class="fas fa-bolt"></i> عدد التدابير العاجلة: {{ child_data.mesures_count }}</span>
+                </div>
+
+                {% for notif_item in child_data.notifications %}
+                <div class="notif-card searchable-notif" id="notif-{{ notif_item.notif.id }}"
+                     data-notif-number="{{ notif_item.notif.notifier_number|lower }}">
+                    <div class="notif-card-header" onclick="toggleNotif(this)">
+                        <div>
+                            <span class="notif-title">
+                                <i class="fas fa-bell" style="color: var(--gold);"></i> 
+                                إشعار رقم: {{ notif_item.notif.notifier_number }}
+                            </span>
+                            <span class="notif-date me-3">
+                                <i class="fas fa-calendar-alt"></i> 
+                                تاريخ الإشعار: {{ notif_item.notif.notification_date|date:"d/m/Y"|default:"-" }}
+                            </span>
+                        </div>
+                        <div>
+                            {% with notif_item.mesures_neglect|length as neglect_count %}
+                            {% with notif_item.mesures_danger|length as danger_count %}
+                                {% if neglect_count > 0 or danger_count > 0 %}
+                                    <span class="badge-status badge-success">
+                                        <i class="fas fa-check-circle"></i> {{ neglect_count|add:danger_count }} تدبير عاجل
+                                    </span>
+                                {% else %}
+                                    <span class="badge-status badge-warning">
+                                        <i class="fas fa-exclamation-triangle"></i> بدون تدابير عاجلة
+                                    </span>
+                                {% endif %}
+                            {% endwith %}
+                            {% endwith %}
+                            <i class="fas fa-chevron-down toggle-icon-notif ms-2"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="notif-card-body">
+                        <!-- Section 1: تدابير الإهمال والتشرد -->
+                        {% if notif_item.has_neglect %}
+                        <div class="section-neglect">
+                            <div class="section-title" style="background: #e8f5e9;">
+                                <i class="fas fa-hand-holding-heart" style="color: #28a745;"></i>
+                                التدابير العاجلة في حالات الإهمال والتشرد
+                                <span class="badge bg-success ms-2">{{ notif_item.mesures_neglect|length }}</span>
+                            </div>
+                            <div class="table-responsive p-2">
+                                <table class="table table-bordered table-sm table-mesures">
+                                    <thead>
+                                        <tr>
+                                            <th>رقم التدبير</th>
+                                            <th>تاريخ التدبير</th>
+                                            <th>تاريخ الإذن القضائي</th>
+                                            <th>مكان الإيداع</th>
+                                            <th>إعلام قاضي الأسرة وإقراره<br>بالصبغة الاستعجالية والضرورية</th>
+                                            <th>الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for mesure in notif_item.mesures_neglect %}
+                                        <tr>
+                                            <td><span class="badge-order">تدبير {{ mesure.order }}</span></td>
+                                            <td>{{ mesure.urgent_measure_neglect_date|date:"d/m/Y"|default:"-" }}</td>
+                                            <td>{{ mesure.court_permission_date|date:"d/m/Y"|default:"-" }}</td>
+                                            <td>
+                                                {% if mesure.placement_location == 'other' %}
+                                                    {{ mesure.placement_location_other }}
+                                                {% else %}
+                                                    {{ mesure.get_placement_location_display }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if mesure.judge_informed and mesure.judge_approval %}
+                                                    <span class="judge-badge judge-yes">
+                                                        <i class="fas fa-check-circle"></i> ✓ نعم
+                                                    </span>
+                                                {% else %}
+                                                    <span class="judge-badge judge-no">
+                                                        <i class="fas fa-times-circle"></i> ❌ لا
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'mesure_urgente_edit' mesure.id %}" 
+   class="btn-edit"
+   onclick="saveState('child-{{ child_data.child.id }}', 'notif-{{ notif_item.notif.id }}')">
+    <i class="fas fa-edit"></i>
+</a>
+                                                <a href="{% url 'mesure_urgente_delete' mesure.id %}" 
+   class="btn-delete"
+   onclick="saveState('child-{{ child_data.child.id }}', 'notif-{{ notif_item.notif.id }}')">
+    <i class="fas fa-trash"></i>
+</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6" class="text-center py-2">
+                                                <i class="fas fa-info-circle"></i> لا توجد تدابير مسجلة
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="6" class="text-center">
+                                                <a href="{% url 'mesure_urgente_create' child_data.child.id notif_item.notif.id %}?type=neglect" 
+   class="btn btn-sm btn-success"
+   onclick="saveState('child-{{ child_data.child.id }}', 'notif-{{ notif_item.notif.id }}')">
+    <i class="fas fa-plus-circle"></i> 
+    إضافة تدبير عاجل (إهمال)
+</a>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Section 2: تدابير الخطر الملم -->
+                        {% if notif_item.has_danger %}
+                        <div class="section-danger">
+                            <div class="section-title" style="background: #ffebee;">
+                                <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+                                التدابير العاجلة في حالات الخطر الملم
+                                <span class="badge bg-danger ms-2">{{ notif_item.mesures_danger|length }}</span>
+                            </div>
+                            <div class="table-responsive p-2">
+                                <table class="table table-bordered table-sm table-mesures">
+                                    <thead>
+                                        <tr>
+                                            <th>رقم التدبير</th>
+                                            <th>تاريخ التدبير</th>
+                                            <th>تاريخ الموافقة</th>
+                                            <th>مكان الإيداع</th>
+                                            <th>إعلام قاضي الأسرة وإقراره<br>بالصبغة الاستعجالية والضرورية</th>
+                                            <th>الاستنجاد بالقوة العامة</th>
+                                            <th>الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for mesure in notif_item.mesures_danger %}
+                                        <tr>
+                                            <td><span class="badge-order">تدبير {{ mesure.order }}</span></td>
+                                            <td>{{ mesure.urgent_measure_danger_date|date:"d/m/Y"|default:"-" }}</td>
+                                            <td>{{ mesure.approval_date|date:"d/m/Y"|default:"-" }}</td>
+                                            <td>
+                                                {% if mesure.placement_location_danger == 'other' %}
+                                                    {{ mesure.placement_location_danger_other }}
+                                                {% else %}
+                                                    {{ mesure.get_placement_location_danger_display }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if mesure.judge_informed and mesure.judge_approval %}
+                                                    <span class="judge-badge judge-yes">
+                                                        <i class="fas fa-check-circle"></i> ✓ نعم
+                                                    </span>
+                                                {% else %}
+                                                    <span class="judge-badge judge-no">
+                                                        <i class="fas fa-times-circle"></i> ❌ لا
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if mesure.police_assistance %}
+                                                    <span class="badge bg-info">✓ نعم</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">✗ لا</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'mesure_urgente_edit' mesure.id %}" class="btn-edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'mesure_urgente_delete' mesure.id %}" 
+                                                   class="btn-delete" >
+                                                  
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="7" class="text-center py-2">
+                                                <i class="fas fa-info-circle"></i> لا توجد تدابير مسجلة
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="7" class="text-center">
+                                                <a href="{% url 'mesure_urgente_create' child_data.child.id notif_item.notif.id %}?type=danger" 
+   class="btn btn-sm btn-danger"
+   onclick="saveState('child-{{ child_data.child.id }}', 'notif-{{ notif_item.notif.id }}')">
+    <i class="fas fa-plus-circle"></i> 
+    إضافة تدبير عاجل (خطر ملم)
+</a>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                    <p>لا توجد إشعارات مسجلة لهذا الطفل</p>
+                    <a href="{% url 'notification_new' child_data.child.id %}" class="btn-gold mt-2">
+                        <i class="fas fa-plus-circle"></i> إضافة إشعار جديد
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fas fa-info-circle fa-4x mb-3 d-block" style="color: var(--gold);"></i>
+            <h5 style="color: var(--primary-dark);">لا يوجد أطفال لديهم إشعارات في النظام</h5>
+            <p class="text-muted">قم بإضافة إشعارات للأطفال من خلال قائمة الإشعارات</p>
+            <a href="{% url 'child_list_Investigation' %}" class="btn-gold mt-3">
+                <i class="fas fa-arrow-left"></i> الذهاب إلى قائمة الإشعارات
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = 'mesuresUrgentes_state';
+
+    function saveState(childId, notifId) {
+        let current = {};
+        try {
+            current = JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {}
+
+        const state = {
+            search: document.getElementById('searchInput') ? document.getElementById('searchInput').value : (current.search || ''),
+            openChild: childId !== undefined ? childId : (current.openChild || null),
+            openNotif: notifId !== undefined ? notifId : (current.openNotif || null),
+        };
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    // Fonction pour toggler les enfants
+    function toggleChild(element) {
+        const card = element.closest('.card');
+        const body = card.querySelector('.child-card-body');
+        const icon = element.querySelector('.toggle-icon');
+        let willOpen = false;
+        if (body && icon) {
+            if (body.style.display === 'none' || body.style.display === '') {
+                body.style.display = 'block';
+                icon.classList.add('rotated');
+                willOpen = true;
+            } else {
+                body.style.display = 'none';
+                icon.classList.remove('rotated');
+            }
+        }
+        saveState(willOpen ? card.id : null, willOpen ? undefined : null);
+    }
+
+    // Fonction pour toggler les notifications
+    function toggleNotif(element) {
+        const body = element.nextElementSibling;
+        const icon = element.querySelector('.toggle-icon-notif');
+        const notifCard = element.closest('.notif-card');
+        const childCard = element.closest('.card');
+        let willOpen = false;
+        if (body && icon) {
+            if (body.style.display === 'none' || body.style.display === '') {
+                body.style.display = 'block';
+                icon.classList.add('rotated');
+                willOpen = true;
+            } else {
+                body.style.display = 'none';
+                icon.classList.remove('rotated');
+            }
+        }
+        saveState(childCard ? childCard.id : null, willOpen ? (notifCard ? notifCard.id : null) : null);
+    }
+
+    // Fonction de recherche
+function searchChildren() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.searchable-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const childName = card.getAttribute('data-child-name') || '';
+        const childUid = card.getAttribute('data-child-uid') || '';
+        const notifNumbers = card.getAttribute('data-notif-numbers') || '';
+        const mesureTypes = card.getAttribute('data-mesure-types') || '';
+
+        const matchesSearch = searchTerm === '' ||
+            childName.includes(searchTerm) ||
+            childUid.includes(searchTerm) ||
+            notifNumbers.includes(searchTerm) ||
+            mesureTypes.includes(searchTerm);
+
+        const childBody = card.querySelector('.child-card-body');
+        const childIcon = card.querySelector('.toggle-icon');
+
+        if (matchesSearch) {
+            card.style.display = '';
+            visibleCount++;
+
+            const notifs = card.querySelectorAll('.searchable-notif');
+
+            if (searchTerm !== '') {
+                // Ouvrir automatiquement la carte enfant
+                if (childBody) childBody.style.display = 'block';
+                if (childIcon) childIcon.classList.add('rotated');
+
+                notifs.forEach(notif => {
+                    const notifNumber = notif.getAttribute('data-notif-number') || '';
+                    const notifBody = notif.querySelector('.notif-card-body');
+                    const notifIcon = notif.querySelector('.toggle-icon-notif');
+
+                    // Une notification correspond si son numéro matche,
+                    // OU si aucun numéro d'إشعار n'est recherché spécifiquement
+                    // (on ouvre toutes les notifs de l'enfant trouvé pour voir le contexte)
+                    notif.style.display = '';
+
+                    if (notifBody) notifBody.style.display = 'block';
+                    if (notifIcon) notifIcon.classList.add('rotated');
+                });
+            } else {
+                // Recherche vide -> tout refermer comme à l'état initial
+                if (childBody) childBody.style.display = 'none';
+                if (childIcon) childIcon.classList.remove('rotated');
+
+                notifs.forEach(notif => {
+                    notif.style.display = '';
+                    const notifBody = notif.querySelector('.notif-card-body');
+                    const notifIcon = notif.querySelector('.toggle-icon-notif');
+                    if (notifBody) notifBody.style.display = 'none';
+                    if (notifIcon) notifIcon.classList.remove('rotated');
+                });
+            }
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // Mettre à jour les statistiques
+        const totalCount = cards.length;
+        const visibleCountEl = document.getElementById('visibleCount');
+        const totalCountEl = document.getElementById('totalCount');
+        if (visibleCountEl) visibleCountEl.textContent = visibleCount;
+        if (totalCountEl) totalCountEl.textContent = totalCount;
+        
+        // Afficher un message si aucun résultat
+        let noResultsDiv = document.getElementById('noResultsMessage');
+        if (visibleCount === 0 && searchTerm !== '') {
+            if (!noResultsDiv) {
+                noResultsDiv = document.createElement('div');
+                noResultsDiv.id = 'noResultsMessage';
+                noResultsDiv.className = 'no-results';
+                noResultsDiv.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <h5>لا توجد نتائج مطابقة</h5>
+                    <p>لم يتم العثور على أطفال أو إشعارات تطابق "<strong>${searchTerm}</strong>"</p>
+                `;
+                const container = document.getElementById('childrenContainer');
+                container.appendChild(noResultsDiv);
+            } else {
+                noResultsDiv.style.display = 'block';
+                const strong = noResultsDiv.querySelector('strong');
+                if (strong) strong.textContent = searchTerm;
+            }
+        } else if (noResultsDiv) {
+            noResultsDiv.style.display = 'none';
+        }
+    }
+    
+    // Écouteur d'événement pour la recherche avec debounce
+    let searchTimeout;
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function () {
+                searchChildren();
+                saveState(); // on garde l'accordéon ouvert précédent, on met juste à jour le texte
+            }, 300);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialiser les cartes comme fermées
+        document.querySelectorAll('.child-card-body').forEach(body => {
+            body.style.display = 'none';
+        });
+        document.querySelectorAll('.notif-card-body').forEach(body => {
+            body.style.display = 'none';
+        });
+
+        // Restaurer l'état précédent (recherche + accordéon ouvert)
+        let savedState = null;
+        try {
+            savedState = JSON.parse(sessionStorage.getItem(STORAGE_KEY));
+        } catch (e) {}
+
+        if (savedState) {
+            if (savedState.search) {
+                document.getElementById('searchInput').value = savedState.search;
+            }
+        }
+
+        searchChildren();
+
+        if (savedState) {
+            if (savedState.openChild) {
+                const childEl = document.getElementById(savedState.openChild);
+                if (childEl) {
+                    const header = childEl.querySelector('.card-header');
+                    const body = childEl.querySelector('.child-card-body');
+                    const icon = header ? header.querySelector('.toggle-icon') : null;
+                    if (body) body.style.display = 'block';
+                    if (icon) icon.classList.add('rotated');
+                }
+            }
+            if (savedState.openNotif) {
+                const notifEl = document.getElementById(savedState.openNotif);
+                if (notifEl) {
+                    const header = notifEl.querySelector('.notif-card-header');
+                    const body = notifEl.querySelector('.notif-card-body');
+                    const icon = header ? header.querySelector('.toggle-icon-notif') : null;
+                    if (body) body.style.display = 'block';
+                    if (icon) icon.classList.add('rotated');
+                }
+            }
+
+            const target = document.getElementById(savedState.openNotif) || document.getElementById(savedState.openChild);
+            if (target) {
+                setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 250);
+            }
+        }
+    });
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

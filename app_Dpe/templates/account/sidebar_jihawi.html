@@ -1,0 +1,295 @@
+<div class="sidebar">
+    <!-- Logo / Brand -->
+    <div class="sidebar-brand">
+        <i class="fas fa-child"></i>
+        <span></span>
+    </div>
+
+    <!-- Navigation principale -->
+    <div class="sidebar-nav">
+        <!-- Dashboard -->
+        <div class="sidebar-section">
+            <a href="{% url 'tableauboard_mandoub_jihawi' %}">
+                <i class="fas fa-tachometer-alt"></i>
+                <span> الصفحة الرئيسية</span>
+            </a>
+        </div>
+
+        <!-- Gestion des enfants -->
+        <div class="sidebar-section">
+            <a href="{% url 'child_create' %}" >
+    <i class="fas fa-child"></i> <span> إضافة طفل جديد
+ </span>
+  </a>
+        
+        </div>
+              <div class="sidebar-section">
+          
+           <a href="{% url 'child_list_institutions' %}" >
+    <i class="fas fa-users" ></i>
+    <span>قائمة الأطفال المهددين</span>
+</a>
+
+
+
+        </div>
+
+           <div class="sidebar-section">
+            <div class="sidebar-title">اليات الحماية </div>
+             <a href="{% url 'child_list_Investigation' %}"
+>
+    <i class="fas fa-search "></i>صلاحيات تقدير جدية الإشعار
+  </a>
+  
+<a href="{% url 'child_list_threat_assessment' %}" 
+   >
+     <i class="fas fa-exclamation-triangle fs-5" style="color: #e9e4ea;"></i>
+              
+    <span>تقدير جدية الإشعار</span>
+</a>
+<a href="{% url 'child_list_social_file' %}" 
+   >
+     <i class="fas fa-folder-open fs-5" style="color: #ebeaec;"></i>
+           
+    <span>الملف الاجتماعي للطفل</span>
+</a>
+
+
+        </div>
+
+        <!-- الحماية الاجتماعية -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">الحماية الاجتماعية</div>
+            <a href="{% url 'mesure_convenue_list' %}">
+                <i class="fas fa-handshake"></i>
+                <span>التدابير الاتفاقية</span>
+            </a>
+            <a href="{% url 'mesure_urgente_list'  %}">
+                <i class="fas fa-bolt"></i>
+                <span>التدابير العاجلة</span>
+            </a>
+            <a href="{% url 'liste_enfants_suivi'  %}">
+                <i class="fas fa-chart-line"></i>
+                <span>تقييم وضعية الطفل</span>
+            </a>
+        </div>
+
+        <!-- الحماية القضائية -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">الحماية القضائية</div>
+           <a href="{% url 'production_list_notification_production' %}">
+                <i class="fas fa-gavel"></i>
+                <span>الحماية القضائية بمقتضى مجلة حماية الطفل </span>
+            </a>
+         <!--   <a href=#>
+                <i class="fas fa-file-signature"></i>
+                <span>الحماية القضائية بمقتضى قانون عدد 58 لسنة 2017</span>
+            </a>-->
+        </div>
+
+        <!-- مكافحة الاتجار بالأطفال -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">مكافحة الاتجار بالأطفال</div>
+            <a href="{% url 'trafficking_notification_list' %}">
+                <i class="fas fa-handcuffs"></i>
+                <span>إشعارات الاتجار بالأطفال</span>
+            </a>
+        </div>
+
+            <div class="sidebar-section">
+            <div class="sidebar-title">الاطفال حسب الوضعيات</div>
+      
+
+<a href="{% url 'unmarried_children_list' %}" 
+   >
+    <i class="fas fa-baby" ></i>
+    <span>قائمة الأطفال المولودين خارج إطار الزواج</span>
+</a>
+<!--
+<a href="{% url 'foreign_child_list' %}" 
+  >
+    <i class="fas fa-globe-africa" ></i>
+    <span>قائمة الأطفال الأجانب</span>
+</a>-->
+
+
+
+<!-- الأطفال الأجانب خارج إطار الزواج (إقامة غير قانونية) -->
+<a href="{% url 'foreign_irregular_children_list' %}"
+   >
+  <i class="fas fa-user-slash me-1"></i>
+  قائمة الأطفال الأجانب خارج إطار الزواج (إقامة غير قانونية)
+</a>
+
+<a href="{% url 'children_abandoned_outside_marriage' %}"
+   >
+  <i class="fas fa-child fs-5"></i>
+  قائمة الأطفال (التخلي عن طفل مولود خارج اطار الزواج)
+</a>
+        </div>
+       
+ <div class="sidebar-section">
+            <div class="sidebar-title">الإحصائيات</div>
+             <a href="{% url 'tableauboardstatistique' %}"
+>
+    <i class="fas fa-chart-pie"></i> الإحصائيات الجهوية
+  </a>
+ <!-- 
+<a href="{% url 'dashboard_powerbi' %}" >
+    <i class="fas fa-globe-africa" ></i>
+    <span>قائمة  الإحصائيات</span>
+</a> -->
+        </div>
+   
+
+      
+    </div>
+</div>
+
+<style>
+/* Gardez tous vos styles existants ici */
+.sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #090909 0%, #0f0f0f 100%);
+    color: #fff;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    border-left: 1px solid rgba(184, 134, 11, 0.2);
+}
+
+.sidebar-brand {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.3);
+    margin-bottom: 1rem;
+}
+
+.sidebar-brand i {
+    font-size: 2rem;
+    color: #f8f7f8;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-brand span {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #f6f3f7;
+}
+
+.sidebar-nav {
+    padding: 0 1rem;
+}
+
+.sidebar-section {
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #d4a520;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    border-right: 3px solid #f4f1f5;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-section a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #e0e0e0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.sidebar-section a i {
+    width: 24px;
+    font-size: 1.1rem;
+    color: #f2f0f3;
+}
+
+.sidebar-section a:hover {
+    background: rgba(184, 134, 11, 0.1);
+    color: #fff;
+    transform: translateX(-5px);
+}
+
+.sidebar-section a.active {
+    background: linear-gradient(90deg, rgba(184, 134, 11, 0.2), transparent);
+    color: #f3f0f4;
+    border-right: 3px solid #f0eef0;
+}
+
+.sidebar-section a.active i {
+    color: #faf6fb;
+}
+
+.logout-btn {
+    margin-top: 1rem;
+    border-top: 1px solid rgba(184, 134, 11, 0.2);
+    padding-top: 1rem !important;
+    color: #dc3545 !important;
+}
+
+.logout-btn i {
+    color: #dc3545 !important;
+}
+
+.logout-btn:hover {
+    background: rgba(220, 53, 69, 0.1) !important;
+    color: #dc3545 !important;
+}
+
+/* Scrollbar personnalisée */
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #2c2c2c;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #eeecee;
+    border-radius: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+    }
+    
+    .sidebar-brand span,
+    .sidebar-title,
+    .sidebar-section a span {
+        display: none;
+    }
+    
+    .sidebar-section a {
+        justify-content: center;
+        padding: 0.75rem;
+    }
+    
+    .sidebar-section a i {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+    
+    .sidebar-brand i {
+        font-size: 1.5rem;
+    }
+}
+</style>

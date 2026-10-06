@@ -1,0 +1,1503 @@
+{% extends 'account/base.html' %}
+{% load dict_extras %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block head_title %}
+ملخص متابعة الطفل
+{% endblock %}
+
+
+{% block extra_head %}
+
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet">
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+:root {
+    --primary: #b8860b;
+    --primary-dark: #8c6d0b;
+    --primary-light: #f8edcf;
+
+    --dark: #1a1a1a;
+    --dark-light: #2c2c2c;
+
+    --bg: #f4f5f7;
+    --white: #ffffff;
+
+    --text: #1f2937;
+    --text-light: #6b7280;
+
+    --border: #e5e7eb;
+
+    --success: #198754;
+
+    --shadow-sm: 0 3px 10px rgba(0,0,0,.05);
+    --shadow: 0 10px 30px rgba(0,0,0,.08);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,.12);
+
+    --radius: 20px;
+    --radius-sm: 12px;
+
+    --transition: all .3s ease;
+}
+
+
+/* =====================================================
+   BODY
+===================================================== */
+
+body {
+    font-family: 'Tajawal', sans-serif !important;
+
+    background:
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(184,134,11,.06),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 90% 90%,
+            rgba(184,134,11,.05),
+            transparent 35%
+        ),
+        var(--bg);
+
+    color: var(--text);
+
+    margin: 0;
+
+    min-height: 100vh;
+}
+
+
+/* =====================================================
+   WRAPPER
+===================================================== */
+
+.resume-wrapper {
+
+    max-width: 1200px;
+
+    margin: 35px auto;
+
+    padding: 0 25px 50px;
+
+    direction: rtl;
+
+    animation: fadeIn .5s ease;
+}
+
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.resume-card {
+
+    background: var(--white);
+
+    border-radius: var(--radius);
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-lg);
+
+    border: 1px solid rgba(184,134,11,.12);
+
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.resume-header {
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--dark),
+            var(--dark-light)
+        );
+
+    color: white;
+
+    padding: 30px;
+
+    text-align: center;
+
+    border-bottom: 5px solid var(--primary);
+
+    overflow: hidden;
+
+}
+
+
+.resume-header::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+    height: 250px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.04);
+
+    top: -120px;
+    right: -80px;
+
+}
+
+
+.resume-header::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    background: rgba(184,134,11,.15);
+
+    bottom: -100px;
+    left: -50px;
+
+}
+
+
+.resume-header h2 {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin: 0;
+
+    font-size: 1.7rem;
+
+    font-weight: 800;
+
+}
+
+
+.resume-header i {
+
+    color: var(--primary);
+
+    margin-left: 10px;
+
+}
+
+
+/* =====================================================
+   BODY
+===================================================== */
+
+.resume-body {
+
+    padding: 35px;
+
+}
+
+
+/* =====================================================
+   CHILD INFO
+===================================================== */
+
+.child-info {
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #fafafa
+        );
+
+    border: 1px solid var(--border);
+
+    border-right: 6px solid var(--primary);
+
+    border-radius: var(--radius-sm);
+
+    padding: 25px;
+
+    margin-bottom: 30px;
+
+    box-shadow: var(--shadow-sm);
+
+}
+
+
+.child-info h4 {
+
+    color: var(--primary-dark);
+
+    font-weight: 800;
+
+    font-size: 1.2rem;
+
+    margin-bottom: 22px;
+
+}
+
+
+.child-info h4 i {
+
+    margin-left: 8px;
+
+}
+
+
+/* =====================================================
+   SECTION
+===================================================== */
+
+.section {
+
+    margin-top: 35px;
+
+}
+
+
+.section-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-weight: 800;
+
+    font-size: 1.2rem;
+
+    color: var(--text);
+
+    border-right: 5px solid var(--primary);
+
+    padding: 12px 16px;
+
+    margin-bottom: 20px;
+
+    background:
+        linear-gradient(
+            to left,
+            rgba(184,134,11,.08),
+            transparent
+        );
+
+    border-radius: 10px;
+
+}
+
+
+.section-title i {
+
+    color: var(--primary);
+
+}
+
+
+/* =====================================================
+   GRID
+===================================================== */
+
+.summary-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+
+}
+
+
+/* =====================================================
+   SUMMARY ITEM
+===================================================== */
+
+.summary-item {
+
+    position: relative;
+
+    background: #ffffff;
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    padding: 18px;
+
+    transition: var(--transition);
+
+    overflow: hidden;
+
+}
+
+
+.summary-item::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 100%;
+
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            #d4a520
+        );
+
+    transform: scaleX(0);
+
+    transform-origin: right;
+
+    transition: var(--transition);
+
+}
+
+
+.summary-item:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow: var(--shadow);
+
+    border-color:
+        rgba(184,134,11,.4);
+
+}
+
+
+.summary-item:hover::before {
+
+    transform: scaleX(1);
+
+}
+
+
+.summary-label {
+
+    color: var(--text-light);
+
+    font-size: .9rem;
+
+    font-weight: 600;
+
+}
+
+
+.summary-value {
+
+    font-size: 1.5rem;
+
+    font-weight: 800;
+
+    color: var(--dark);
+
+    margin-top: 7px;
+
+}
+
+
+/* =====================================================
+   VISIT LOCATIONS
+===================================================== */
+
+.visit-locations {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+}
+
+
+.visit-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 12px 18px;
+
+    background: #fffaf0;
+
+    border: 1px solid rgba(184,134,11,.35);
+
+    border-radius: 50px;
+
+    color: var(--primary-dark);
+
+    font-weight: 700;
+
+}
+
+
+.visit-badge i {
+
+    color: var(--primary);
+
+}
+
+
+.no-visit {
+
+    padding: 18px;
+
+    border-radius: 12px;
+
+    background: #f8f9fa;
+
+    color: var(--text-light);
+
+    border: 1px dashed var(--border);
+
+    text-align: center;
+
+}
+
+
+/* =====================================================
+   EVALUATION
+===================================================== */
+
+.evaluation-box {
+
+    position: relative;
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffaf0,
+            #ffffff
+        );
+
+    border: 2px solid var(--primary);
+
+    border-radius: 18px;
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 30px rgba(184,134,11,.10);
+
+}
+
+
+.evaluation-icon {
+
+    width: 60px;
+
+    height: 60px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    font-size: 1.5rem;
+
+}
+
+
+.evaluation-value {
+
+    font-size: 1.5rem;
+
+    font-weight: 800;
+
+    color: var(--primary-dark);
+
+}
+
+
+/* =====================================================
+   OBSERVATIONS
+===================================================== */
+
+.observations {
+
+    margin-top: 22px;
+
+    padding: 22px;
+
+    background: #fafafa;
+
+    border: 1px solid var(--border);
+
+    border-right: 5px solid var(--primary);
+
+    border-radius: 14px;
+
+}
+
+
+.observations strong {
+
+    color: var(--primary-dark);
+
+    font-size: 1.05rem;
+
+}
+
+
+.observations p {
+
+    margin: 12px 0 0;
+
+    line-height: 1.9;
+
+    color: var(--text-light);
+
+}
+
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.actions {
+
+    margin-top: 40px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid var(--border);
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 15px;
+
+    justify-content: center;
+
+}
+
+
+.btn-action {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 190px;
+
+    padding: 13px 25px;
+
+    border-radius: 50px;
+
+    text-decoration: none;
+
+    font-family: 'Tajawal', sans-serif;
+
+    font-weight: 700;
+
+    font-size: .95rem;
+
+    border: 2px solid var(--primary);
+
+    color: var(--dark);
+
+    background: white;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+
+}
+
+
+.btn-action:hover {
+
+    background: var(--primary);
+
+    color: white;
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 10px 25px rgba(184,134,11,.25);
+
+}
+
+
+.btn-primary {
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--dark),
+            var(--dark-light)
+        );
+
+    color: white;
+
+    border-color: var(--dark);
+
+}
+
+
+.btn-primary:hover {
+
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 992px) {
+
+    .resume-wrapper {
+
+        padding: 0 18px 40px;
+
+    }
+
+
+    .summary-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .resume-wrapper {
+
+        margin: 20px auto;
+
+        padding: 0 12px 30px;
+
+    }
+
+
+    .resume-header {
+
+        padding: 25px 15px;
+
+    }
+
+
+    .resume-header h2 {
+
+        font-size: 1.3rem;
+
+    }
+
+
+    .resume-body {
+
+        padding: 20px 15px;
+
+    }
+
+
+    .summary-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .child-info {
+
+        padding: 18px;
+
+    }
+
+
+    .section-title {
+
+        font-size: 1.05rem;
+
+    }
+
+
+    .actions {
+
+        flex-direction: column;
+
+    }
+
+
+    .btn-action {
+
+        width: 100%;
+
+    }
+
+}
+
+
+/* =====================================================
+   PRINT
+===================================================== */
+
+@media print {
+
+    body {
+
+        background: white;
+
+    }
+
+
+    .resume-wrapper {
+
+        max-width: 100%;
+
+        margin: 0;
+
+        padding: 0;
+
+    }
+
+
+    .resume-card {
+
+        box-shadow: none;
+
+        border: none;
+
+    }
+
+
+    .actions {
+
+        display: none;
+
+    }
+
+
+    .summary-item:hover {
+
+        transform: none;
+
+        box-shadow: none;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="resume-wrapper">
+     <div class="actions">
+
+
+                <a href="{% url 'ajouter_suivi' child.id %}"
+                   class="btn-action btn-primary">
+
+                    <i class="fas fa-plus"></i>
+
+                    إضافة متابعة جديدة
+
+                </a>
+
+
+                <a href="{% url 'liste_enfants_suivi' %}"
+                   class="btn-action">
+
+                    <i class="fas fa-arrow-right"></i>
+
+                 العودة إلى تقييم وضعية الأطفال
+
+                </a>
+
+
+                <button type="button"
+                        onclick="window.print()"
+                        class="btn-action">
+
+                    <i class="fas fa-print"></i>
+
+                    طباعة الملخص
+
+                </button>
+
+
+            </div>
+
+
+    <div class="resume-card">
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <div class="resume-header">
+
+            <h2>
+
+                <i class="fas fa-file-alt"></i>
+
+                ملخص متابعة وضعية الطفل
+
+            </h2>
+
+        </div>
+
+
+        <div class="resume-body">
+
+
+            <!-- =====================================
+                 INFORMATIONS ENFANT
+            ====================================== -->
+
+            <div class="child-info">
+
+                <h4>
+
+                    <i class="fas fa-child"></i>
+
+                    معلومات الطفل
+
+                </h4>
+
+
+                <div class="summary-grid">
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            الاسم
+                        </div>
+
+                        <div class="summary-value">
+                            {{ child.first_name }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            اللقب
+                        </div>
+
+                        <div class="summary-value">
+                            {{ child.last_name }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            رقم الملف
+                        </div>
+
+                        <div class="summary-value">
+                            {{ child.numero_dossier }}
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 ENTRETIENS
+            ====================================== -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <i class="fas fa-comments"></i>
+
+                    المقابلات المكتبية
+
+                </div>
+
+
+                <div class="summary-grid">
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            عدد المقابلات
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.nb_entretiens }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع الطفل
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.avec_enfant }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع الأم
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.avec_mere }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع الأب
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.avec_pere }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع العائلة الموسعة
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.avec_famille_etendue }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع الولي القانوني
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.avec_tuteur_legal }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع أحد أفراد الأسرة
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.avec_membre_famille }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع إطار طبي
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.avec_cadre_medical }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع إطار تربوي
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.avec_cadre_educatif }}
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 APPELS TELEPHONIQUES
+            ====================================== -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <i class="fas fa-phone"></i>
+
+                    المكالمات الهاتفية
+
+                </div>
+
+
+                <div class="summary-grid">
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            عدد المكالمات
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.nb_appels }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع الطفل
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.appel_enfant }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع الأم
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.appel_mere }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع الأب
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.appel_pere }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع العائلة الموسعة
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.appel_famille_etendue }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع الولي القانوني
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.appel_tuteur_legal }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع أحد أفراد الأسرة
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.appel_membre_famille }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع إطار طبي
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.appel_cadre_medical }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            مع إطار تربوي
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.appel_cadre_educatif }}
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 VISITES
+            ====================================== -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <i class="fas fa-map-marker-alt"></i>
+
+                    الزيارات الميدانية
+
+                </div>
+
+
+                <div class="summary-grid">
+
+                    <div class="summary-item">
+
+                        <div class="summary-label">
+                            عدد الزيارات
+                        </div>
+
+                        <div class="summary-value">
+                            {{ suivi.nb_visites }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LIEUX DES VISITES -->
+
+                <div style="margin-top: 25px;">
+
+                    <div class="summary-label"
+                         style="font-size: 16px; font-weight: 800; margin-bottom: 15px;">
+
+                        <i class="fas fa-map-pin"></i>
+
+                        أماكن الزيارة
+
+                    </div>
+
+
+                    <div class="visit-locations">
+
+
+                        {% if suivi.visite_institution_educative %}
+
+                        <div class="visit-badge">
+
+                            <i class="fas fa-school"></i>
+
+                            مؤسسة تربوية
+
+                        </div>
+
+                        {% endif %}
+
+
+                        {% if suivi.visite_institution_hospitaliere %}
+
+                        <div class="visit-badge">
+
+                            <i class="fas fa-hospital"></i>
+
+                            مؤسسة استشفائية
+
+                        </div>
+
+                        {% endif %}
+
+
+                        {% if suivi.visite_institution_depot %}
+
+                        <div class="visit-badge">
+
+                            <i class="fas fa-building"></i>
+
+                            مؤسسة إيداع
+
+                        </div>
+
+                        {% endif %}
+
+
+                        {% if suivi.visite_centre_reforme %}
+
+                        <div class="visit-badge">
+
+                            <i class="fas fa-landmark"></i>
+
+                            مركز إصلاح الأطفال
+
+                        </div>
+
+                        {% endif %}
+
+
+                        {% if suivi.visite_maison %}
+
+                        <div class="visit-badge">
+
+                            <i class="fas fa-house"></i>
+
+                            المنزل
+
+                        </div>
+
+                        {% endif %}
+
+
+                        {% if suivi.visite_autre %}
+
+                        <div class="visit-badge">
+
+                            <i class="fas fa-location-dot"></i>
+
+                            {% if suivi.autre_lieu_visite %}
+
+                                {{ suivi.autre_lieu_visite }}
+
+                            {% else %}
+
+                                مكان آخر
+
+                            {% endif %}
+
+                        </div>
+
+                        {% endif %}
+
+
+                        {% if not suivi.visite_institution_educative and not suivi.visite_institution_hospitaliere and not suivi.visite_institution_depot and not suivi.visite_centre_reforme and not suivi.visite_maison and not suivi.visite_autre %}
+
+                        <div class="no-visit">
+
+                            <i class="fas fa-info-circle"></i>
+
+                            لم يتم تحديد مكان الزيارة
+
+                        </div>
+
+                        {% endif %}
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =====================================
+                 EVALUATION
+            ====================================== -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <i class="fas fa-chart-line"></i>
+
+                    تقييم وضعية الطفل
+
+                </div>
+
+
+                <div class="evaluation-box">
+
+                    <div class="evaluation-icon">
+
+                        <i class="fas fa-chart-line"></i>
+
+                    </div>
+
+
+                    <div class="evaluation-value">
+
+                        {% if suivi.evaluation %}
+
+                            {{ suivi.get_evaluation_display }}
+
+                        {% else %}
+
+                            لم يتم تحديد التقييم
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- OBSERVATIONS -->
+
+                {% if suivi.observations %}
+
+                <div class="observations">
+
+                    <strong>
+
+                        <i class="fas fa-note-sticky"></i>
+
+                        الملاحظات
+
+                    </strong>
+
+
+                    <p>
+
+                        {{ suivi.observations|linebreaks }}
+
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+
+            </div>
+
+
+            <!-- =====================================
+                 ACTIONS
+            ====================================== -->
+
+           
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

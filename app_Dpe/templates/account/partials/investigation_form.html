@@ -1,0 +1,201 @@
+<!-- Carte Investigation (Mode Édition) -->
+<div id="investigation-{{ inv.id }}" class="investigation-file">
+    
+    <form hx-post="{% url 'investigation_list' inv.child.id %}"
+          hx-target="#investigation-{{ inv.id }}"
+          hx-swap="outerHTML"
+          class="inline-form">
+        
+        {% csrf_token %}
+        <input type="hidden" name="investigation_id" value="{{ inv.id }}">
+        
+        <!-- En-tête -->
+        <div class="file-header">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-edit fa-lg me-3"></i>
+                <div>
+                    <h5>تعديل ملف الإجراء</h5>
+                    <small class="text-light">
+                        رقم الإشعار: {{ inv.notification.notifier_number }}
+                    </small>
+                </div>
+            </div>
+            <div>
+                <span class="file-number">
+                    <i class="fas fa-hashtag me-1"></i>
+                    {{ inv.notification.notifier_number }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Corps du formulaire -->
+        <div class="file-body">
+            <div class="row">
+                
+                <!-- القسم 1: الإجراءات القضائية -->
+                <div class="col-md-4">
+                    <div class="file-section">
+                        <div class="file-section-title">
+                            <i class="fas fa-gavel"></i>
+                            الإجراءات 
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label data-label">طلب الإذن القضائي</label>
+                            {{ form.court_request_date }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label data-label">الشروع في الأبحاث</label>
+                            {{ form.investigation_start }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- القسم 2: استدعاء الأطراف (lecture seule - gérés via modal principal) -->
+                <div class="col-md-4">
+                    <div class="file-section">
+                        <div class="file-section-title">
+                            <i class="fas fa-users"></i>
+                            استدعاء الأطراف
+                            <span class="badge bg-dark ms-2">{{ summons_list|length }}</span>
+                        </div>
+                        {% for summons in summons_list %}
+                        <div class="data-item">
+                            <span class="data-label">
+                                {{ forloop.counter }}. {{ summons.get_summons_method_display|default:"غير محدد" }}
+                            </span>
+                            <span class="data-value">
+                                {% if summons.summons_date %}{{ summons.summons_date|date:"Y-m-d" }}{% else %}-{% endif %}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="data-item">
+                            <span class="data-value empty">لا توجد استدعاءات</span>
+                        </div>
+                        {% endfor %}
+                        <small class="text-muted d-block mt-2">
+                            <i class="fas fa-info-circle"></i>
+                            لإضافة/تعديل الاستدعاءات، استخدم نموذج الإنشاء الرئيسي
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- القسم 3: زيارة الطفل (lecture seule - gérés via modal principal) -->
+                <div class="col-md-4">
+                    <div class="file-section">
+                        <div class="file-section-title">
+                            <i class="fas fa-home"></i>
+                            زيارة الطفل
+                            <span class="badge bg-dark ms-2">{{ visit_list|length }}</span>
+                        </div>
+                        {% for visit in visit_list %}
+                        <div class="data-item">
+                            <span class="data-label">
+                                {{ forloop.counter }}. {{ visit.get_visit_place_display|default:"غير محدد" }}
+                            </span>
+                            <span class="data-value">
+                                {% if visit.visit_date %}{{ visit.visit_date|date:"Y-m-d" }}{% else %}-{% endif %}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="data-item">
+                            <span class="data-value empty">لا توجد زيارات</span>
+                        </div>
+                        {% endfor %}
+                        <small class="text-muted d-block mt-2">
+                            <i class="fas fa-info-circle"></i>
+                            لإضافة/تعديل الزيارات، استخدم نموذج الإنشاء الرئيسي
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- القسم 4: التقييم النفسي -->
+                <div class="col-md-4">
+                    <div class="file-section">
+                        <div class="file-section-title">
+                            <i class="fas fa-brain"></i>
+                            التقييم النفسي
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label data-label">تاريخ الطلب</label>
+                            {{ form.psychological_request }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label data-label">تاريخ التقرير</label>
+                            {{ form.psychological_result }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- القسم 5: التقييم الطبي النفسي -->
+                <div class="col-md-4">
+                    <div class="file-section">
+                        <div class="file-section-title">
+                            <i class="fas fa-stethoscope"></i>
+                            التقييم الطبي النفسي
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label data-label">تاريخ الطلب</label>
+                            {{ form.medical_psych_request }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label data-label">تاريخ التقرير</label>
+                            {{ form.medical_psych_result }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- القسم 6: التقارير الاجتماعية + نهاية الأبحاث -->
+               <!-- القسم 6: التقارير الاجتماعية -->
+<div class="col-md-4">
+    <div class="file-section">
+        <div class="file-section-title">
+            <i class="fas fa-file-alt"></i>
+            التقارير الاجتماعية
+            <span class="badge bg-dark ms-2">{{ inv.social_report_list.count }}</span>
+        </div>
+        {% for report in inv.social_report_list.all %}
+        <div class="data-item">
+            <span class="data-label">
+                {{ forloop.counter }}. تقرير اجتماعي
+            </span>
+            <span class="data-value">
+                {% if report.report_request %}{{ report.report_request|date:"Y-m-d" }}{% else %}-{% endif %}
+            </span>
+        </div>
+        {% empty %}
+        <div class="data-item">
+            <span class="data-value empty">لا توجد تقارير اجتماعية</span>
+        </div>
+        {% endfor %}
+        <small class="text-muted d-block mt-2">
+            <i class="fas fa-info-circle"></i>
+            لإضافة/تعديل التقارير الاجتماعية، استخدم نموذج الإنشاء الرئيسي
+        </small>
+    </div>
+</div>
+                
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                <div>
+                    <button type="submit" class="btn btn-gold">
+                        <i class="fas fa-save me-2"></i>
+                       تسجيل التعديلات
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary me-2"
+                            hx-get="{% url 'investigation_list' child.id %}"
+                            hx-target="#investigation-{{ inv.id }}"
+                            hx-swap="outerHTML">
+                        <i class="fas fa-times me-1"></i>
+                        إلغاء
+                    </button>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    سيتم تسجيل التعديلات على نفس الملف
+                </small>
+            </div>
+        </div>
+    </form>
+</div>

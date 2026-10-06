@@ -1,0 +1,1189 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+
+<style>
+    /* ============================================
+       1. VARIABLES (identiques aux pages mesures urgentes / mesure convenue)
+    ============================================ */
+    :root {
+        --primary-dark: #1a1a1a;
+        --primary-light: #2c2c2c;
+        --gold: #d4a520;
+        --gold-dark: #b8860b;
+        --success: #28a745;
+        --danger: #dc3545;
+        --info: #17a2b8;
+        --warning: #ffc107;
+    }
+
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+
+    /* ============================================
+       2. STRUCTURE PRINCIPALE
+    ============================================ */
+    .content {
+        padding: 20px;
+        min-height: 100vh;
+        margin-right: 270px;
+    }
+
+    /* ============================================
+       3. EN-TÊTE
+    ============================================ */
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+        padding: 20px 25px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-bottom: 2px solid var(--gold);
+    }
+
+    .page-header h2 {
+        color: var(--gold);
+        margin: 0;
+        font-weight: bold;
+        font-size: 1.4rem;
+    }
+
+    .page-header h2 i {
+        margin-left: 10px;
+    }
+
+    /* ============================================
+       4. BADGES (style identique badge-status)
+    ============================================ */
+    .badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-pending {
+        background: var(--warning);
+        color: #000;
+    }
+
+    .badge-completed {
+        background: var(--success);
+        color: #fff;
+    }
+
+    .badge-authority {
+        background: var(--danger);
+        color: #fff;
+    }
+
+    /* ============================================
+       5. BARRE DE RECHERCHE (identique aux autres pages)
+    ============================================ */
+    .search-container {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .search-title {
+        font-size: 0.95rem;
+        font-weight: bold;
+        color: var(--primary-dark);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .search-title i {
+        color: var(--gold);
+    }
+
+    .search-row {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .search-input-wrapper {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        right: 15px;
+        color: var(--gold);
+        font-size: 1.1rem;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(212, 165, 32, 0.1);
+    }
+
+    .search-input::placeholder {
+        color: #999;
+        font-size: 0.85rem;
+    }
+
+    .search-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-search {
+        background-color: #000000;
+        color: var(--gold);
+        border: 2px solid var(--gold);
+        padding: 10px 22px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+    }
+
+    .btn-search:hover {
+        background-color: var(--gold);
+        color: #000000;
+        transform: translateY(-2px);
+    }
+
+    .btn-reset {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        font-family: inherit;
+        font-size: 0.9rem;
+    }
+
+    .btn-reset:hover {
+        background-color: #5a6268;
+        color: white;
+    }
+
+    .search-stats {
+        margin-top: 12px;
+        padding: 10px 15px;
+        background: #f6d784;
+        border-radius: 8px;
+        border-right: 4px solid var(--gold);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 0.85rem;
+        color: #333;
+    }
+
+    .search-stats .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .search-stats .stat-item i {
+        color: var(--primary-dark);
+    }
+
+    .search-stats strong {
+        color: var(--primary-dark);
+        font-weight: bold;
+    }
+
+    .search-stats .highlight-text {
+        color: var(--gold-dark);
+        font-weight: bold;
+    }
+
+    /* ============================================
+       6. SÉLECTEUR PAR PAGE
+    ============================================ */
+    .per-page-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        justify-content: flex-end;
+        background: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .per-page-selector label {
+        color: #495057;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .per-page-selector select {
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 2px solid var(--gold);
+        background: white;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .per-page-selector select:focus {
+        outline: none;
+        border-color: var(--gold-dark);
+        box-shadow: 0 0 0 3px rgba(212, 165, 32, 0.1);
+    }
+
+    /* ============================================
+       7. CARTES DE NOTIFICATION
+    ============================================ */
+    .notif-card {
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid #e0e0e0;
+    }
+
+    .notif-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .notif-card-header {
+        background: #f8f9fa;
+        padding: 14px 20px;
+        cursor: pointer;
+        border-right: 4px solid var(--gold);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        transition: background 0.3s ease;
+    }
+
+    .notif-card-header:hover {
+        background: #f0f0f0;
+    }
+
+    .child-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .child-name {
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--primary-dark);
+    }
+
+    .child-name i {
+        color: var(--gold);
+        margin-left: 6px;
+    }
+
+    .child-uid {
+        background: #6c757d;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .child-uid i {
+        margin-left: 4px;
+    }
+
+    .notif-date {
+        color: #666;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .notif-date i {
+        color: var(--gold);
+    }
+
+    .toggle-icon {
+        transition: transform 0.3s ease;
+        font-size: 1.1rem;
+        color: var(--gold);
+    }
+
+    .toggle-icon.rotated {
+        transform: rotate(180deg);
+    }
+
+    .notif-card-body {
+        display: none;
+        padding: 20px;
+        background: #fff;
+    }
+
+    .notif-card-body.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================
+       8. GRILLE D'INFORMATION
+    ============================================ */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .info-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 16px;
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+
+    .info-section:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border-color: var(--gold);
+    }
+
+    .info-section-title {
+        font-weight: bold;
+        color: var(--primary-dark);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--gold);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    .info-section-title i {
+        color: var(--gold);
+        font-size: 1rem;
+    }
+
+    .info-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .info-tag {
+        background: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: #495057;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .info-tag:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .info-tag.highlight {
+        background: var(--danger);
+        color: white;
+        border-color: var(--danger);
+    }
+
+    .info-tag.gold {
+        background: var(--gold);
+        color: #000;
+        border-color: var(--gold-dark);
+        font-weight: bold;
+    }
+
+    .info-empty {
+        text-align: center;
+        padding: 35px;
+        color: #6c757d;
+        font-style: italic;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .info-empty i {
+        font-size: 2.2rem;
+        color: var(--warning);
+        margin-bottom: 10px;
+    }
+
+    /* ============================================
+       9. BOUTONS D'ACTION (style plat identique aux autres pages)
+    ============================================ */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid #e0e0e0;
+        flex-wrap: wrap;
+    }
+
+    .btn-complete, .btn-view, .btn-edit {
+        padding: 8px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .btn-complete {
+        background-color: var(--success);
+        color: white;
+    }
+
+    .btn-complete:hover {
+        background-color: #218838;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-view {
+        background-color: var(--info);
+        color: white;
+    }
+
+    .btn-view:hover {
+        background-color: #138496;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-edit {
+        background: var(--warning);
+        color: #000;
+    }
+
+    .btn-edit:hover {
+        background: #e0a800;
+        color: #000;
+        transform: translateY(-2px);
+    }
+
+    .btn-gold {
+        background-color: var(--gold);
+        color: #000000;
+        border-color: var(--gold);
+        padding: 8px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-gold:hover {
+        background-color: var(--gold-dark);
+        color: #ffffff;
+    }
+
+    /* ============================================
+       10. PAGINATION
+    ============================================ */
+    .pagination-container {
+        margin-top: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pagination li {
+        display: inline-block;
+    }
+
+    .pagination a, .pagination span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 38px;
+        height: 38px;
+        padding: 0 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: white;
+        color: #495057;
+        border: 1px solid #dee2e6;
+    }
+
+    .pagination a:hover {
+        background-color: var(--gold);
+        color: #000;
+        border-color: var(--gold);
+        transform: translateY(-2px);
+    }
+
+    .pagination .active span {
+        background-color: #000000;
+        color: var(--gold);
+        border-color: var(--gold);
+        font-weight: bold;
+    }
+
+    .pagination .disabled span {
+        background: #e9ecef;
+        color: #adb5bd;
+        cursor: not-allowed;
+    }
+
+    .pagination-info {
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    /* ============================================
+       11. ALERTES ET MESSAGES
+    ============================================ */
+    .alert-empty {
+        text-align: center;
+        padding: 50px 30px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .alert-empty i {
+        font-size: 3.5rem;
+        color: var(--gold);
+        margin-bottom: 15px;
+        opacity: 0.6;
+    }
+
+    .alert-empty p {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .alert-empty p.small {
+        font-size: 0.85rem;
+        color: #adb5bd;
+    }
+
+    .alert-message {
+        padding: 12px 18px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideDown 0.4s ease-out;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border-right: 4px solid var(--success);
+    }
+
+    .alert-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border-right: 4px solid var(--info);
+    }
+
+    .alert-warning {
+        background: #fff3cd;
+        color: #856404;
+        border-right: 4px solid var(--warning);
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================
+       12. RESPONSIVE
+    ============================================ */
+    @media (max-width: 768px) {
+        .content {
+            margin-right: 0;
+            padding: 15px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .search-container {
+            padding: 15px;
+        }
+
+        .search-row {
+            flex-direction: column;
+        }
+
+        .search-input-wrapper {
+            min-width: auto;
+            width: 100%;
+        }
+
+        .search-actions {
+            width: 100%;
+        }
+
+        .btn-search, .btn-reset {
+            flex: 1;
+            justify-content: center;
+            padding: 10px 15px;
+            font-size: 0.85rem;
+        }
+
+        .search-stats {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 10px 12px;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-complete, .btn-view, .btn-edit {
+            width: 100%;
+            justify-content: center;
+            padding: 10px 15px;
+        }
+
+        .child-info {
+            gap: 8px;
+        }
+
+        .notif-card-header {
+            padding: 10px 12px;
+        }
+
+        .notif-card-body {
+            padding: 12px;
+        }
+
+        .per-page-selector {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pagination a, .pagination span {
+            min-width: 34px;
+            height: 34px;
+            padding: 0 8px;
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .info-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+<div class="content">
+    <!-- ============================================
+        SECTION: MESSAGES
+    ============================================ -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-message {% if message.tags == 'success' %}alert-success{% elif message.tags == 'info' %}alert-info{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- ============================================
+        SECTION: EN-TÊTE
+    ============================================ -->
+    <div class="page-header">
+        <h2>
+            <i class="fas fa-handcuffs"></i>
+            إشعارات الاتجار بالأطفال
+        </h2>
+        <span class="badge badge-authority">
+            <i class="fas fa-building"></i> الهيئة الوطنية لمكافحة الاتجار
+        </span>
+    </div>
+
+    <!-- ============================================
+        SECTION: RECHERCHE
+    ============================================ -->
+    <div class="search-container">
+        <div class="search-title">
+            
+        </div>
+        <div class="search-row">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" 
+                       id="searchInput" 
+                       class="search-input" 
+                       placeholder="بحث بالاسم، المعرف الوحيد، رقم الإشعار..."
+                       value="{{ search_query|default:'' }}"
+                       autocomplete="off"
+                       onkeypress="handleKeyPress(event)">
+            </div>
+            <div class="search-actions">
+                <button class="btn-search" onclick="performSearch()">
+                    <i class="fas fa-search"></i> بحث
+                </button>
+                <a href="?per_page={{ per_page }}" class="btn-reset">
+                    <i class="fas fa-sync-alt"></i> إعادة تعيين
+                </a>
+            </div>
+        </div>
+        {% if search_query %}
+        <div class="search-stats">
+            <div class="stat-item">
+                <i class="fas fa-filter"></i>
+                <span>نتائج البحث عن: <strong class="highlight-text">"{{ search_query }}"</strong></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>تم العثور على <strong>{{ page_obj|length }}</strong> نتيجة</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ============================================
+        SECTION: SÉLECTEUR PAR PAGE
+    ============================================ -->
+    {% if page_obj %}
+    <div class="per-page-selector">
+        <label>عرض:</label>
+        <select id="perPageSelect" onchange="changePerPage(this.value)">
+            <option value="10" {% if per_page == '10' %}selected{% endif %}>10</option>
+            <option value="25" {% if per_page == '25' %}selected{% endif %}>25</option>
+            <option value="50" {% if per_page == '50' %}selected{% endif %}>50</option>
+            <option value="100" {% if per_page == '100' %}selected{% endif %}>100</option>
+        </select>
+        <label>نتيجة لكل صفحة</label>
+    </div>
+    {% endif %}
+
+    <!-- ============================================
+        SECTION: LISTE DES NOTIFICATIONS
+    ============================================ -->
+    {% if page_obj %}
+        {% for notification in page_obj %}
+        <div class="notif-card" id="notif-{{ notification.id }}">
+            <div class="notif-card-header" onclick="toggleNotif(this)">
+                <div class="child-info">
+                    <span class="child-name">
+                        <i class="fas fa-user-circle"></i>
+                        {{ notification.child.first_name }} {{ notification.child.last_name }}
+                    </span>
+                    <span class="child-uid">
+                        <i class="fas fa-id-card"></i> المعرف الوحيد: {{ notification.child.uid }}
+                    </span>
+                    <span class="notif-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ notification.notification_date|date:"d/m/Y" }}
+                    </span>
+                    {% if not notification.is_completed %}
+                        <span class="badge badge-pending">
+                            <i class="fas fa-clock"></i> قيد الانتظار
+                        </span>
+                    {% else %}
+                        <span class="badge badge-completed">
+                            <i class="fas fa-check-circle"></i> مكتمل
+                        </span>
+                    {% endif %}
+                </div>
+                <div>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+            </div>
+
+            <div class="notif-card-body">
+                {% if notification.is_completed %}
+                    <div class="info-grid">
+                        <!-- Méthode d'entrée -->
+                        {% if notification.child.birth_place == 'ABROAD' %}
+                        <div class="info-section">
+                            <div class="info-section-title">
+                                <i class="fas fa-passport"></i>
+                                طريقة الدخول للتراب التونسي
+                            </div>
+                            <div class="info-tags">
+                                {% if notification.entry_method_regular %}
+                                    <span class="info-tag highlight"><i class="fas fa-check-circle"></i> بطريقة نظامية</span>
+                                {% endif %}
+                                {% if notification.entry_method_irregular %}
+                                    <span class="info-tag highlight"><i class="fas fa-exclamation-triangle"></i> بطريقة غير نظامية</span>
+                                    {% if notification.entry_irregular_sea %}
+                                        <span class="info-tag"><i class="fas fa-water"></i> بحرا</span>
+                                    {% endif %}
+                                    {% if notification.entry_irregular_land %}
+                                        <span class="info-tag"><i class="fas fa-mountain"></i> برا</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Lieu d'exploitation -->
+                        <div class="info-section">
+                            <div class="info-section-title">
+                                <i class="fas fa-map-marker-alt"></i>
+                                مكان استغلال الطفل
+                            </div>
+                            <div class="info-tags">
+                                {% if notification.exploitation_location_abroad %}
+                                    <span class="info-tag highlight"><i class="fas fa-globe"></i> خارج البلاد التونسية</span>
+                                {% endif %}
+                                {% if notification.exploitation_location_tunisia %}
+                                    <span class="info-tag gold"><i class="fas fa-map"></i> داخل البلاد التونسية</span>
+                                    {% if notification.exploitation_governorate %}
+                                        <span class="info-tag"><i class="fas fa-city"></i> {{ notification.exploitation_governorate }}</span>
+                                    {% endif %}
+                                {% endif %}
+                                {% if notification.exploitation_home %}
+                                    <span class="info-tag"><i class="fas fa-home"></i> المنزل</span>
+                                {% endif %}
+                                {% if notification.exploitation_relatives_home %}
+                                    <span class="info-tag"><i class="fas fa-users"></i> منزل الأقارب</span>
+                                {% endif %}
+                                {% if notification.exploitation_street %}
+                                    <span class="info-tag"><i class="fas fa-road"></i> الشارع</span>
+                                {% endif %}
+                                {% if notification.exploitation_markets %}
+                                    <span class="info-tag"><i class="fas fa-store"></i> الأسواق</span>
+                                {% endif %}
+                                {% if notification.exploitation_factories %}
+                                    <span class="info-tag"><i class="fas fa-industry"></i> المصانع</span>
+                                {% endif %}
+                                {% if notification.exploitation_fields %}
+                                    <span class="info-tag"><i class="fas fa-tractor"></i> الحقول الفلاحية</span>
+                                {% endif %}
+                                {% if notification.exploitation_public_places %}
+                                    <span class="info-tag"><i class="fas fa-park"></i> الأماكن العامة</span>
+                                {% endif %}
+                                {% if notification.exploitation_other %}
+                                    <span class="info-tag"><i class="fas fa-ellipsis-h"></i> {{ notification.exploitation_other_text|default:"أخرى" }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Auteurs de l'exploitation -->
+                        <div class="info-section">
+                            <div class="info-section-title">
+                                <i class="fas fa-users"></i>
+                                أطراف الاستغلال
+                            </div>
+                            <div class="info-tags">
+                                {% if notification.exploiter_parents %}
+                                    <span class="info-tag highlight">الوالدين</span>
+                                {% endif %}
+                                {% if notification.exploiter_father %}
+                                    <span class="info-tag">الأب</span>
+                                {% endif %}
+                                {% if notification.exploiter_mother %}
+                                    <span class="info-tag">الأم</span>
+                                {% endif %}
+                                {% if notification.exploiter_guardian %}
+                                    <span class="info-tag">الحاضن/الكافل</span>
+                                {% endif %}
+                                {% if notification.exploiter_relative %}
+                                    <span class="info-tag">أحد الأقارب</span>
+                                {% endif %}
+                                {% if notification.exploiter_outside_family %}
+                                    <span class="info-tag">خارج المحيط العائلي</span>
+                                {% endif %}
+                                {% if notification.exploiter_employer %}
+                                    <span class="info-tag">المشغل</span>
+                                {% endif %}
+                                {% if notification.exploiter_unknown %}
+                                    <span class="info-tag">شخص مجهول</span>
+                                {% endif %}
+                                {% if notification.exploiter_other %}
+                                    <span class="info-tag">{{ notification.exploiter_other_text|default:"أخرى" }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Éléments de la traite -->
+                        <div class="info-section">
+                            <div class="info-section-title">
+                                <i class="fas fa-gavel"></i>
+                                العناصر المكونة لجريمة الاتجار
+                            </div>
+                            <div class="info-tags">
+                                {% if notification.crime_recruitment %}
+                                    <span class="info-tag highlight">استقطاب</span>
+                                {% endif %}
+                                {% if notification.crime_enlistment %}
+                                    <span class="info-tag highlight">تجنيد</span>
+                                {% endif %}
+                                {% if notification.crime_transport %}
+                                    <span class="info-tag highlight">نقل</span>
+                                {% endif %}
+                                {% if notification.crime_relocation %}
+                                    <span class="info-tag highlight">تنقيل</span>
+                                {% endif %}
+                                {% if notification.crime_diversion %}
+                                    <span class="info-tag highlight">تحويل وجهة</span>
+                                {% endif %}
+                                {% if notification.crime_deportation %}
+                                    <span class="info-tag highlight">ترحيل</span>
+                                {% endif %}
+                                {% if notification.crime_reception %}
+                                    <span class="info-tag highlight">استقبال وإيواء</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                  <!--  <div class="info-empty">
+                        <i class="fas fa-info-circle"></i>
+                        <p>لم يتم إكمال المعلومات التفصيلية بعد</p>
+                        <p class="small">يرجى النقر على زر "إكمال المعلومات" لتعبئة جميع التفاصيل</p>
+                    </div>-->
+                {% endif %}
+
+                <div class="action-buttons">
+                    {% if not notification.is_completed %}
+                        <a href="{% url 'trafficking_notification_complete' notification.id %}" class="btn-complete">
+                            <i class="fas fa-edit"></i> إكمال المعلومات التفصيلية
+                        </a>
+                    {% else %}
+                        <a href="{% url 'trafficking_notification_detail' notification.id %}" class="btn-view">
+                            <i class="fas fa-eye"></i> عرض التفاصيل الكاملة
+                        </a>
+                        <a href="{% url 'trafficking_notification_edit' notification.id %}" class="btn-edit">
+                            <i class="fas fa-pen"></i> تعديل المعلومات
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- ============================================
+            SECTION: PAGINATION
+        ============================================ -->
+        <div class="pagination-container">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li><a href="?page=1&per_page={{ per_page }}{% if search_query %}&q={{ search_query }}{% endif %}"><i class="fas fa-angle-double-right"></i></a></li>
+                    <li><a href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}{% if search_query %}&q={{ search_query }}{% endif %}"><i class="fas fa-angle-right"></i></a></li>
+                {% else %}
+                    <li class="disabled"><span><i class="fas fa-angle-double-right"></i></span></li>
+                    <li class="disabled"><span><i class="fas fa-angle-right"></i></span></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="active"><span>{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li><a href="?page={{ num }}&per_page={{ per_page }}{% if search_query %}&q={{ search_query }}{% endif %}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}{% if search_query %}&q={{ search_query }}{% endif %}"><i class="fas fa-angle-left"></i></a></li>
+                    <li><a href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}{% if search_query %}&q={{ search_query }}{% endif %}"><i class="fas fa-angle-double-left"></i></a></li>
+                {% else %}
+                    <li class="disabled"><span><i class="fas fa-angle-left"></i></span></li>
+                    <li class="disabled"><span><i class="fas fa-angle-double-left"></i></span></li>
+                {% endif %}
+            </ul>
+            <div class="pagination-info">
+                عرض {{ page_obj.start_index }} - {{ page_obj.end_index }} من أصل {{ paginator.count }} إشعار
+            </div>
+        </div>
+
+    {% else %}
+        <!-- ============================================
+            SECTION: AUCUN RÉSULTAT
+        ============================================ -->
+        <div class="alert-empty">
+            <i class="fas fa-inbox"></i>
+            <p>لا توجد إشعارات اتجار بالأطفال بقرار "إعلام الهيئة الوطنية للإتجار"</p>
+            <p class="small">سيتم إنشاء الإشعار تلقائياً عند اختيار هذا القرار في تقييم التهديد</p>
+            <a href="{% url 'child_list_institutions' %}" class="btn-gold mt-3">
+                <i class="fas fa-arrow-left"></i> العودة إلى قائمة الأطفال
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // ============================================
+    // FONCTION: Toggle affichage des détails
+    // ============================================
+    function toggleNotif(element) {
+        const card = element.closest('.notif-card');
+        const body = card.querySelector('.notif-card-body');
+        const icon = element.querySelector('.toggle-icon');
+
+        if (body && icon) {
+            body.classList.toggle('show');
+            icon.classList.toggle('rotated');
+        }
+    }
+
+    // ============================================
+    // FONCTION: Fermer les messages après 5s
+    // ============================================
+    setTimeout(function() {
+        const messages = document.querySelectorAll('.alert-message');
+        messages.forEach(function(message) {
+            message.style.opacity = '0';
+            message.style.transition = 'opacity 0.5s ease-out';
+            setTimeout(function() {
+                message.remove();
+            }, 500);
+        });
+    }, 5000);
+
+    // ============================================
+    // FONCTION: Changer le nombre d'éléments par page
+    // ============================================
+    function changePerPage(value) {
+        let url = '?per_page=' + value;
+        const searchQuery = document.getElementById('searchInput').value;
+        if (searchQuery) {
+            url += '&q=' + encodeURIComponent(searchQuery);
+        }
+        window.location.href = url;
+    }
+
+    // ============================================
+    // FONCTION: Effectuer la recherche
+    // ============================================
+    function performSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+        let url = '?';
+        if (query) {
+            url += 'q=' + encodeURIComponent(query);
+        }
+        const perPage = document.getElementById('perPageSelect');
+        if (perPage && perPage.value) {
+            url += (query ? '&' : '') + 'per_page=' + perPage.value;
+        }
+        window.location.href = url || '?';
+    }
+
+    // ============================================
+    // FONCTION: Recherche avec la touche Entrée
+    // ============================================
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    }
+
+    // ============================================
+    // INITIALISATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Recherche avec la touche Entrée
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', handleKeyPress);
+        }
+
+        // Focus sur le champ de recherche si vide
+        if (searchInput && !searchInput.value.trim()) {
+            searchInput.focus();
+        }
+    });
+</script>
+{% endblock %}

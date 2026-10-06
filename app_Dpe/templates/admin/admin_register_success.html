@@ -1,0 +1,269 @@
+{% extends "admin/base_admin.html" %}
+{% load static %}
+
+{% block title %}تم التسجيل بنجاح - الإدارة المركزية{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        max-width: 600px;
+        margin: 40px auto;
+        animation: fadeInUp 0.5s ease;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .success-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .success-header {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+        padding: 30px;
+        color: white;
+        border-bottom: 3px solid #b8860b;
+    }
+    
+    .success-header i {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 15px;
+    }
+    
+    .success-header h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    
+    .success-body {
+        padding: 30px;
+    }
+    
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: right;
+    }
+    
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #dee2e6;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .info-value {
+        color: #1a1a1a;
+        font-weight: 500;
+    }
+    
+    .password-box {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+    }
+    
+    .password-box .password {
+        font-family: monospace;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #856404;
+        letter-spacing: 2px;
+    }
+    
+    .btn-group-action {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        padding: 12px 25px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+        color: white;
+        border: 2px solid #b8860b;
+    }
+    
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        color: white;
+    }
+    
+    .btn-add {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+    }
+    
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+        color: white;
+    }
+    
+    .btn-back {
+        background: #6c757d;
+        color: white;
+        border: none;
+    }
+    
+    .btn-back:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .warning-text {
+        color: #856404;
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+    
+    @media (max-width: 576px) {
+        .success-container {
+            margin: 20px 15px;
+        }
+        
+        .btn-group-action {
+            flex-direction: column;
+        }
+        
+        .btn-action {
+            justify-content: center;
+        }
+        
+        .info-item {
+            flex-direction: column;
+            gap: 5px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-header">
+            <i class="fas fa-check-circle"></i>
+            <h3>تم تسجيل المندوب بنجاح</h3>
+            <p class="mt-2 mb-0 opacity-75">تمت إضافة المندوب إلى النظام</p>
+        </div>
+        
+        <div class="success-body">
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="info-label">
+                        <i class="fas fa-user"></i> الاسم الكامل:
+                    </span>
+                    <span class="info-value">{{ delegate.first_name }} {{ delegate.last_name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        <i class="fas fa-id-card"></i> المعرف الوحيد:
+                    </span>
+                    <span class="info-value">{{ delegate.delegate_code }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        <i class="fas fa-barcode"></i> الرمز:
+                    </span>
+                    <span class="info-value">{{ delegate.unique_id }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        <i class="fas fa-map-marker-alt"></i> الولاية:
+                    </span>
+                    <span class="info-value">{{ delegate.get_wilaya_display }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">
+                        <i class="fas fa-user-tag"></i> الصفة:
+                    </span>
+                    <span class="info-value">{{ delegate.get_role_display }}</span>
+                </div>
+                {% if delegate.phone %}
+                <div class="info-item">
+                    <span class="info-label">
+                        <i class="fas fa-phone"></i> الهاتف:
+                    </span>
+                    <span class="info-value">{{ delegate.phone }}</span>
+                </div>
+                {% endif %}
+                {% if delegate.email %}
+                <div class="info-item">
+                    <span class="info-label">
+                        <i class="fas fa-envelope"></i> البريد الإلكتروني:
+                    </span>
+                    <span class="info-value">{{ delegate.email }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="password-box">
+                <i class="fas fa-key"></i>
+                <p class="mb-2">كلمة المرور المؤقتة:</p>
+                <div class="password">{{ generated_password }}</div>
+                <p class="warning-text mt-2">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    يُرجى تسليم هذه الكلمة للمندوب، وسيتمكن من تغييرها بعد تسجيل الدخول
+                </p>
+            </div>
+            
+            <div class="btn-group-action">
+                <a href="{% url 'register_delegate' %}" class="btn-action btn-add">
+                    <i class="fas fa-user-plus"></i>
+                    إضافة مندوب آخر
+                </a>
+                <a href="{% url 'admin_delegate_list' %}" class="btn-action btn-primary-custom">
+                    <i class="fas fa-list"></i>
+                    عرض قائمة المندوبين
+                </a>
+                <a href="{% url 'admin_dashboard' %}" class="btn-action btn-back">
+                    <i class="fas fa-home"></i>
+                    العودة إلى لوحة التحكم
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

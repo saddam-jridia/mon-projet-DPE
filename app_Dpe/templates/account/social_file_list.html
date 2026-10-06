@@ -1,0 +1,1639 @@
+<!-- app_Dpe/templates/app_Dpe/social_file_list.html -->
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+
+<style>
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+    .content {
+        direction: rtl;
+        text-align: right;
+        padding: 50px;
+    }
+    .page-header {
+        background-color: #003154;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+    .page-header h2 {
+        margin: 0;
+        font-family: 'Amiri', serif;
+    }
+    .child-info {
+        background-color: #f6d784;
+        border: 1px solid #d4a520;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .child-info .info-label {
+        font-weight: bold;
+        color: #003154;
+    }
+    .btn-back {
+        background-color: #d4a520;
+        color: #000000;
+        border-color: #d4a520;
+        font-weight: bold;
+    }
+    .btn-back:hover {
+        background-color: #b8931a;
+        color: #000000;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 50px;
+        color: #6c757d;
+    }
+    .empty-state i {
+        font-size: 64px;
+        color: #d4a520;
+        margin-bottom: 20px;
+    }
+
+    /* ====== Styles de la Fiche Sociale ====== */
+    .social-file-card {
+        background: #ffffff;
+        border: 2px solid #003154;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 49, 84, 0.15);
+        margin-bottom: 30px;
+    }
+    .social-file-header {
+        background: #003154;
+        color: #d4a520;
+        padding: 15px 25px;
+        font-family: 'Amiri', serif;
+        font-size: 1.3rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .social-file-body {
+        padding: 25px;
+    }
+    .info-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #dee2e6;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .info-group {
+        flex: 1 1 25%;
+        min-width: 200px;
+        padding: 10px 15px;
+    }
+    .info-group.half {
+        flex: 1 1 50%;
+    }
+    .info-group.full-width {
+        flex: 1 1 100%;
+    }
+    .info-group .label {
+        display: block;
+        color: #003154;
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        border-right: 3px solid #d4a520;
+        padding-right: 8px;
+    }
+    .info-group .value {
+        display: block;
+        color: #333;
+        font-size: 1.05rem;
+        padding-right: 11px;
+    }
+    .badge-large {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    .update-date {
+        background: #f8f9fa;
+        border-top: 2px solid #d4a520;
+        padding: 12px 25px;
+        text-align: left;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .update-date i {
+        color: #d4a520;
+        margin-left: 5px;
+    }
+    .notification-badge {
+        background: #1a1a1a;
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+
+    /* ====== Section Headers ====== */
+    .section-header {
+        background: #e8f0f8;
+        border-right: 5px solid #003154;
+        padding: 12px 20px;
+        margin: 25px 0 15px 0;
+        border-radius: 0 8px 8px 0;
+        font-family: 'Amiri', serif;
+        font-size: 1.15rem;
+        font-weight: bold;
+        color: #003154;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .section-header i {
+        color: #d4a520;
+        font-size: 1.5rem;
+    }
+    .section-header:first-of-type {
+        margin-top: 0;
+    }
+
+    @media print {
+    .no-print {
+        display: none;
+    }
+}
+
+
+</style>
+
+<div class="content">
+    <div class="mb-3" style="text-align: left;">
+        <a href="{% url 'child_list_social_file' %}" class="btn btn-back btn-sm">
+            <i class="fas fa-arrow-right me-2"></i>
+            العودة إلى قائمة الملفات الاجتماعية
+        </a>
+        <button class="btn btn-primary"
+        onclick="printChild('printArea{{ child.id }}')">
+    🖨️ طباعة
+</button>
+    </div>
+
+
+
+<div id="printArea{{ child.id }}">
+    <div class="page-header">
+        <h2><i class="fas fa-folder-open"></i> الملف الاجتماعي </h2>
+    </div>
+
+ 
+
+    {% if social_file %}
+    <div class="social-file-card">
+        <!-- En-tête de la fiche -->
+        <div class="social-file-header">
+            <i class="fas fa-id-card-alt"></i>
+            <span>بيانات الملف الاجتماعي</span>
+        </div>
+
+        <div class="social-file-body">
+            <!-- ═══════════════════════════════════════ -->
+            <!-- 1. بيانات الطفل (القسم الموجود سابقاً) -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="section-header">
+                <i class="fas fa-child"></i>
+                بيانات الطفل
+            </div>
+   <div class="child-info">
+        <div class="row">
+            <div class="col-md-3">
+                <span class="info-label">المعرف الوحيد:</span> {{ child.uid }}
+            </div>
+            <div class="col-md-3">
+                <span class="info-label">الاسم:</span> {{ child.first_name }}
+            </div>
+            <div class="col-md-3">
+                <span class="info-label">اللقب:</span> {{ child.last_name }}
+            </div>
+            <div class="col-md-3">
+                <span class="info-label">تاريخ الميلاد:</span> {{ child.birth_date|date:"d/m/Y"|default:"-" }}
+            </div>
+        </div>
+    </div>
+            <!-- Ligne 1: رقم الإشعار + الولاية + المعتمدية -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">رقم الإشعار:</span>
+                    <span class="value">
+                        <span class="notification-badge">
+                            <i class="fas fa-bell"></i> {{ social_file.notification.notifier_number }}
+                        </span>
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="label">الولاية:</span>
+                    <span class="value">
+                        {% if social_file.governorate == 'tunis' %}تونس
+                        {% elif social_file.governorate == 'ariana' %}أريانة
+                        {% elif social_file.governorate == 'ben_arous' %}بن عروس
+                        {% elif social_file.governorate == 'manouba' %}منوبة
+                        {% elif social_file.governorate == 'nabeul' %}نابل
+                        {% elif social_file.governorate == 'zaghouan' %}زغوان
+                        {% elif social_file.governorate == 'bizerte' %}بنزرت
+                        {% elif social_file.governorate == 'beja' %}باجة
+                        {% elif social_file.governorate == 'jendouba' %}جندوبة
+                        {% elif social_file.governorate == 'kef' %}الكاف
+                        {% elif social_file.governorate == 'siliana' %}سليانة
+                        {% elif social_file.governorate == 'sousse' %}سوسة
+                        {% elif social_file.governorate == 'monastir' %}المنستير
+                        {% elif social_file.governorate == 'mahdia' %}المهدية
+                        {% elif social_file.governorate == 'sfax' %}صفاقس
+                        {% elif social_file.governorate == 'kairouan' %}القيروان
+                        {% elif social_file.governorate == 'kasserine' %}القصرين
+                        {% elif social_file.governorate == 'sidi_bouzid' %}سيدي بوزيد
+                        {% elif social_file.governorate == 'gabes' %}قابس
+                        {% elif social_file.governorate == 'medenine' %}مدنين
+                        {% elif social_file.governorate == 'tataouine' %}تطاوين
+                        {% elif social_file.governorate == 'gafsa' %}قفصة
+                        {% elif social_file.governorate == 'tozeur' %}توزر
+                        {% elif social_file.governorate == 'kebili' %}قبلي
+                        {% else %}{{ social_file.governorate|default:"--" }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="label">المعتمدية:</span>
+                    <span class="value">{{ social_file.delegation }}</span>
+                </div>
+               <div class="info-group">
+    <span class="label">عنوان الإقامة:</span>
+    <span class="value">
+        {{ social_file.current_address|default:"--" }}
+    </span>
+</div>
+            </div>
+
+            <!-- Ligne 2: الوضعية التربوية + الوضعية الصحية -->
+            <div class="info-row">
+               
+                <div class="info-group">
+    <span class="label">الوضعية الصحية:</span>
+    <span class="value">
+        {% if social_file.health_status == 'good' %}
+            <span class="badge badge-large bg-success">في وضعية صحية طيبة</span>
+        {% elif social_file.health_status == 'chronic' %}
+            <span class="badge badge-large bg-warning text-dark">يعاني من مرض مزمن</span>
+        {% elif social_file.health_status == 'mental' %}
+            <span class="badge badge-large bg-danger">يعاني من مرض نفسي</span>
+        {% elif social_file.health_status == 'notheal' %}
+            <span class="badge badge-large bg-secondary">غير محدد</span>
+        {% else %}
+            <span class="text-muted">--</span>
+        {% endif %}
+        
+        <!-- ✅ Affichage des détails de l'invalidité -->
+        {% if social_file.is_disabled == 'yes' %}
+            <div class="disability-details-display mt-2" style="
+                background: #f8f9fa;
+                border-right: 3px solid #d4a520;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 0.9em;
+            ">
+                <div style="color: #003154; font-weight: bold; margin-bottom: 4px;">
+                    <i class="fas fa-wheelchair"></i> حامل إعاقة
+                </div>
+                <div style="color: #555;">
+                    <strong>نوع الإعاقة:</strong>
+                    {% if social_file.disability_type == 'physical' %}إعاقة عضوية
+                    {% elif social_file.disability_type == 'visual' %}إعاقة بصرية
+                    {% elif social_file.disability_type == 'hearing' %}إعاقة سمعية
+                    {% elif social_file.disability_type == 'mental' %}إعاقة ذهنية
+                    {% elif social_file.disability_type == 'multiple' %}إعاقة متعددة
+                    {% else %}غير محدد{% endif %}
+                </div>
+                {% if social_file.disability_type == 'physical' and social_file.disability_degree %}
+                <div style="color: #555; margin-top: 2px;">
+                    <strong>درجة الإعاقة:</strong>
+                    {% if social_file.disability_degree == 'light' %}خفيفة
+                    {% elif social_file.disability_degree == 'medium' %}متوسطة
+                    {% elif social_file.disability_degree == 'severe' %}عميقة
+                    {% else %}غير محدد{% endif %}
+                </div>
+                {% endif %}
+            </div>
+        {% elif social_file.is_disabled == 'no' %}
+            <div class="mt-1" style="font-size: 0.85em; color: #28a745;">
+                <i class="fas fa-check-circle"></i> غير حامل إعاقة
+            </div>
+        {% endif %}
+    </span>
+</div>
+ <div class="info-group">
+                    <span class="label">الوضعية التربوية:</span>
+                    <span class="value">
+                        {% if social_file.educational_status == 'under_school_age' %}
+                            <span>دون سن التمدرس</span>
+                        {% elif social_file.educational_status == 'enrolled' %}
+                            <span >متمدرس</span>
+                        {% elif social_file.educational_status == 'vocational_training' %}
+                            <span >مرسم بإحدى مسارات مراكز التكوين المهني/تدريب مهني</span>
+                        {% elif social_file.educational_status == 'dropped_out' %}
+                            <span >منقطع عن الدراسة</span>
+                        {% elif social_file.educational_status == 'not_enrolled' %}
+                            <span >لم يلتحق بأي مؤسسة تربوية  بتاتا</span>
+                        {% elif social_file.educational_status == 'notauther' %}
+                            <span > غير محدد</span>
+                
+                        
+                            {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="label">المنحة الاجتماعية:</span>
+                    <span class="value">
+                        {% if social_file.social_allowance == 'yes' %}
+                            <span class="badge badge-large bg-success"><i class="fas fa-check"></i> نعم</span>
+                        {% elif social_file.social_allowance == 'no' %}
+                            <span class="badge badge-large bg-danger"><i class="fas fa-times"></i> لا</span>
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="label">النتائج المدرسية:</span>
+                    <span class="value">
+                        {% if social_file.academic_results == 'good' %}
+                            <span class="badge badge-large bg-success">حسنة</span>
+                        {% elif social_file.academic_results == 'average' %}
+                            <span class="badge badge-large bg-warning text-dark">متوسطة</span>
+                        {% elif social_file.academic_results == 'poor' %}
+                            <span class="badge badge-large bg-danger">ضعيفة</span>
+                        {% elif social_file.academic_results == 'notau' %}
+                            <span class="badge badge-large bg-danger"> غير محدد</span>    
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- 2. بيانات الأم -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="section-header">
+                <i class="fas fa-female"></i>
+                بيانات الأم
+            </div>
+
+            <!-- Ligne: الاسم + اللقب + الجنسية -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">الاسم:</span>
+                    <span class="value">{{ social_file.mother_first_name|default:"--" }}</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">اللقب:</span>
+                    <span class="value">{{ social_file.mother_last_name|default:"--" }}</span>
+                </div>
+                 <div class="info-group">
+                    <span class="label">الجنسية 1:</span>
+                    <span class="value">
+                        {% if social_file.mother_nationality_1 == 'tunisian' %}تونسية
+                        {% elif social_file.mother_nationality_1 == 'algerian' %}جزائرية
+                        {% elif social_file.mother_nationality_1 == 'moroccan' %}مغربية
+                        {% elif social_file.mother_nationality_1 == 'libyan' %}ليبية
+                        {% elif social_file.mother_nationality_1 == 'egyptian' %}مصرية
+                        {% elif social_file.mother_nationality_1 == 'palestinian' %}فلسطينية
+                        {% elif social_file.mother_nationality_1 == 'syrian' %}سورية
+                        {% elif social_file.mother_nationality_1 == 'lebanese' %}لبنانية
+                        {% elif social_file.mother_nationality_1 == 'jordanian' %}أردنية
+                        {% elif social_file.mother_nationality_1 == 'iraqi' %}عراقية
+                        {% elif social_file.mother_nationality_1 == 'saudi' %}سعودية
+                        {% elif social_file.mother_nationality_1 == 'emirati' %}إماراتية
+                        {% elif social_file.mother_nationality_1 == 'qatari' %}قطرية
+                        {% elif social_file.mother_nationality_1 == 'kuwaiti' %}كويتية
+                        {% elif social_file.mother_nationality_1 == 'bahraini' %}بحرينية
+                        {% elif social_file.mother_nationality_1 == 'omani' %}عمانية
+                        {% elif social_file.mother_nationality_1 == 'yemeni' %}يمنية
+                        {% elif social_file.mother_nationality_1 == 'sudanese' %}سودانية
+                        {% elif social_file.mother_nationality_1 == 'mauritanian' %}موريتانية
+                        {% elif social_file.mother_nationality_1 == 'somali' %}صومالية
+                        {% elif social_file.mother_nationality_1 == 'comorian' %}جزر القمر
+                        {% elif social_file.mother_nationality_1 == 'djiboutian' %}جيبوتية
+                        {% elif social_file.mother_nationality_1 == 'turkish' %}تركية
+                        {% elif social_file.mother_nationality_1 == 'iranian' %}إيرانية
+                        {% elif social_file.mother_nationality_1 == 'afghan' %}أفغانية
+                        {% elif social_file.mother_nationality_1 == 'pakistani' %}باكستانية
+                        {% elif social_file.mother_nationality_1 == 'indian' %}هندية
+                        {% elif social_file.mother_nationality_1 == 'bangladeshi' %}بنغلاديشية
+                        {% elif social_file.mother_nationality_1 == 'indonesian' %}إندونيسية
+                        {% elif social_file.mother_nationality_1 == 'malaysian' %}ماليزية
+                        {% elif social_file.mother_nationality_1 == 'chinese' %}صينية
+                        {% elif social_file.mother_nationality_1 == 'japanese' %}يابانية
+                        {% elif social_file.mother_nationality_1 == 'korean' %}كورية
+                        {% elif social_file.mother_nationality_1 == 'thai' %}تايلاندية
+                        {% elif social_file.mother_nationality_1 == 'vietnamese' %}فيتنامية
+                        {% elif social_file.mother_nationality_1 == 'filipino' %}فلبينية
+                        {% elif social_file.mother_nationality_1 == 'russian' %}روسية
+                        {% elif social_file.mother_nationality_1 == 'ukrainian' %}أوكرانية
+                        {% elif social_file.mother_nationality_1 == 'french' %}فرنسية
+                        {% elif social_file.mother_nationality_1 == 'german' %}ألمانية
+                        {% elif social_file.mother_nationality_1 == 'british' %}بريطانية
+                        {% elif social_file.mother_nationality_1 == 'italian' %}إيطالية
+                        {% elif social_file.mother_nationality_1 == 'spanish' %}إسبانية
+                        {% elif social_file.mother_nationality_1 == 'portuguese' %}برتغالية
+                        {% elif social_file.mother_nationality_1 == 'dutch' %}هولندية
+                        {% elif social_file.mother_nationality_1 == 'belgian' %}بلجيكية
+                        {% elif social_file.mother_nationality_1 == 'swiss' %}سويسرية
+                        {% elif social_file.mother_nationality_1 == 'austrian' %}نمساوية
+                        {% elif social_file.mother_nationality_1 == 'swedish' %}سويدية
+                        {% elif social_file.mother_nationality_1 == 'norwegian' %}نرويجية
+                        {% elif social_file.mother_nationality_1 == 'danish' %}دنماركية
+                        {% elif social_file.mother_nationality_1 == 'finnish' %}فنلندية
+                        {% elif social_file.mother_nationality_1 == 'polish' %}بولندية
+                        {% elif social_file.mother_nationality_1 == 'czech' %}تشيكية
+                        {% elif social_file.mother_nationality_1 == 'hungarian' %}مجرية
+                        {% elif social_file.mother_nationality_1 == 'romanian' %}رومانية
+                        {% elif social_file.mother_nationality_1 == 'bulgarian' %}بلغارية
+                        {% elif social_file.mother_nationality_1 == 'greek' %}يونانية
+                        {% elif social_file.mother_nationality_1 == 'serbian' %}صربية
+                        {% elif social_file.mother_nationality_1 == 'croatian' %}كرواتية
+                        {% elif social_file.mother_nationality_1 == 'bosnian' %}بوسنية
+                        {% elif social_file.mother_nationality_1 == 'albanian' %}ألبانية
+                        {% elif social_file.mother_nationality_1 == 'macedonian' %}مقدونية
+                        {% elif social_file.mother_nationality_1 == 'slovenian' %}سلوفينية
+                        {% elif social_file.mother_nationality_1 == 'slovak' %}سلوفاكية
+                        {% elif social_file.mother_nationality_1 == 'lithuanian' %}ليتوانية
+                        {% elif social_file.mother_nationality_1 == 'latvian' %}لاتفية
+                        {% elif social_file.mother_nationality_1 == 'estonian' %}إستونية
+                        {% elif social_file.mother_nationality_1 == 'american' %}أمريكية
+                        {% elif social_file.mother_nationality_1 == 'canadian' %}كندية
+                        {% elif social_file.mother_nationality_1 == 'mexican' %}مكسيكية
+                        {% elif social_file.mother_nationality_1 == 'brazilian' %}برازيلية
+                        {% elif social_file.mother_nationality_1 == 'argentine' %}أرجنتينية
+                        {% elif social_file.mother_nationality_1 == 'chilean' %}تشيلية
+                        {% elif social_file.mother_nationality_1 == 'colombian' %}كولومبية
+                        {% elif social_file.mother_nationality_1 == 'peruvian' %}بيروفية
+                        {% elif social_file.mother_nationality_1 == 'venezuelan' %}فنزويلية
+                        {% elif social_file.mother_nationality_1 == 'ecuadorian' %}إكوادورية
+                        {% elif social_file.mother_nationality_1 == 'uruguayan' %}أوروغوايانية
+                        {% elif social_file.mother_nationality_1 == 'paraguayan' %}باراغوايانية
+                        {% elif social_file.mother_nationality_1 == 'bolivian' %}بوليفية
+                        {% elif social_file.mother_nationality_1 == 'cuban' %}كوبية
+                        {% elif social_file.mother_nationality_1 == 'dominican' %}دومينيكية
+                        {% elif social_file.mother_nationality_1 == 'australian' %}أسترالية
+                        {% elif social_file.mother_nationality_1 == 'new_zealander' %}نيوزيلندية
+                        {% elif social_file.mother_nationality_1 == 'south_african' %}جنوب أفريقية
+                        {% elif social_file.mother_nationality_1 == 'nigerian' %}نيجيرية
+                        {% elif social_file.mother_nationality_1 == 'ghanaian' %}غانية
+                        {% elif social_file.mother_nationality_1 == 'kenyan' %}كينية
+                        {% elif social_file.mother_nationality_1 == 'ethiopian' %}إثيوبية
+                        {% elif social_file.mother_nationality_1 == 'ugandan' %}أوغندية
+                        {% elif social_file.mother_nationality_1 == 'tanzanian' %}تنزانية
+                        {% elif social_file.mother_nationality_1 == 'zimbabwean' %}زيمبابوية
+                        {% elif social_file.mother_nationality_1 == 'zambian' %}زامبية
+                        {% elif social_file.mother_nationality_1 == 'malawian' %}مالاوية
+                        {% elif social_file.mother_nationality_1 == 'mozambican' %}موزمبيقية
+                        {% elif social_file.mother_nationality_1 == 'botswanan' %}بوتسوانية
+                        {% elif social_file.mother_nationality_1 == 'namibian' %}ناميبية
+                        {% elif social_file.mother_nationality_1 == 'angolan' %}أنغولية
+                        {% elif social_file.mother_nationality_1 == 'congolese' %}كونغولية
+                        {% elif social_file.mother_nationality_1 == 'gabonese' %}غابونية
+                        {% elif social_file.mother_nationality_1 == 'cameroonian' %}كاميرونية
+                        {% elif social_file.mother_nationality_1 == 'ivorian' %}إيفوارية
+                        {% elif social_file.mother_nationality_1 == 'senegalese' %}سنغالية
+                        {% elif social_file.mother_nationality_1 == 'malian' %}مالية
+                        {% elif social_file.mother_nationality_1 == 'burkinabe' %}بوركينابية
+                        {% elif social_file.mother_nationality_1 == 'nigerien' %}نيجرية
+                        {% elif social_file.mother_nationality_1 == 'chadian' %}تشادية
+                        {% elif social_file.mother_nationality_1 == 'central_african' %}أفريقية وسطى
+                        {% elif social_file.mother_nationality_1 == 'equatorial_guinean' %}غينية استوائية
+                        {% elif social_file.mother_nationality_1 == 'sao_tomean' %}ساو تومية
+                        {% elif social_file.mother_nationality_1 == 'gambian' %}غامبية
+                        {% elif social_file.mother_nationality_1 == 'guinean' %}غينية
+                        {% elif social_file.mother_nationality_1 == 'guinea_bissauan' %}غينية بيساوية
+                        {% elif social_file.mother_nationality_1 == 'sierra_leonean' %}سيراليونية
+                        {% elif social_file.mother_nationality_1 == 'liberian' %}ليبيرية
+                        {% elif social_file.mother_nationality_1 == 'togolese' %}توغولية
+                        {% elif social_file.mother_nationality_1 == 'beninese' %}بنينية
+                        {% else %}{{ social_file.mother_nationality_1|default:"--" }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="label">الجنسية 2:</span>
+                    <span class="value">
+                        {% if social_file.mother_nationality_2 == 'tunisian' %}تونسية
+                        {% elif social_file.mother_nationality_2 == 'algerian' %}جزائرية
+                        {% elif social_file.mother_nationality_2 == 'moroccan' %}مغربية
+                        {% elif social_file.mother_nationality_2 == 'libyan' %}ليبية
+                        {% elif social_file.mother_nationality_2 == 'egyptian' %}مصرية
+                        {% elif social_file.mother_nationality_2 == 'palestinian' %}فلسطينية
+                        {% elif social_file.mother_nationality_2 == 'syrian' %}سورية
+                        {% elif social_file.mother_nationality_2 == 'lebanese' %}لبنانية
+                        {% elif social_file.mother_nationality_2 == 'jordanian' %}أردنية
+                        {% elif social_file.mother_nationality_2 == 'iraqi' %}عراقية
+                        {% elif social_file.mother_nationality_2 == 'saudi' %}سعودية
+                        {% elif social_file.mother_nationality_2 == 'emirati' %}إماراتية
+                        {% elif social_file.mother_nationality_2 == 'qatari' %}قطرية
+                        {% elif social_file.mother_nationality_2 == 'kuwaiti' %}كويتية
+                        {% elif social_file.mother_nationality_2 == 'bahraini' %}بحرينية
+                        {% elif social_file.mother_nationality_2 == 'omani' %}عمانية
+                        {% elif social_file.mother_nationality_2 == 'yemeni' %}يمنية
+                        {% elif social_file.mother_nationality_2 == 'sudanese' %}سودانية
+                        {% elif social_file.mother_nationality_2 == 'mauritanian' %}موريتانية
+                        {% elif social_file.mother_nationality_2 == 'somali' %}صومالية
+                        {% elif social_file.mother_nationality_2 == 'comorian' %}جزر القمر
+                        {% elif social_file.mother_nationality_2 == 'djiboutian' %}جيبوتية
+                        {% elif social_file.mother_nationality_2 == 'turkish' %}تركية
+                        {% elif social_file.mother_nationality_2 == 'iranian' %}إيرانية
+                        {% elif social_file.mother_nationality_2 == 'afghan' %}أفغانية
+                        {% elif social_file.mother_nationality_2 == 'pakistani' %}باكستانية
+                        {% elif social_file.mother_nationality_2 == 'indian' %}هندية
+                        {% elif social_file.mother_nationality_2 == 'bangladeshi' %}بنغلاديشية
+                        {% elif social_file.mother_nationality_2 == 'indonesian' %}إندونيسية
+                        {% elif social_file.mother_nationality_2 == 'malaysian' %}ماليزية
+                        {% elif social_file.mother_nationality_2 == 'chinese' %}صينية
+                        {% elif social_file.mother_nationality_2 == 'japanese' %}يابانية
+                        {% elif social_file.mother_nationality_2 == 'korean' %}كورية
+                        {% elif social_file.mother_nationality_2 == 'thai' %}تايلاندية
+                        {% elif social_file.mother_nationality_2 == 'vietnamese' %}فيتنامية
+                        {% elif social_file.mother_nationality_2 == 'filipino' %}فلبينية
+                        {% elif social_file.mother_nationality_2 == 'russian' %}روسية
+                        {% elif social_file.mother_nationality_2 == 'ukrainian' %}أوكرانية
+                        {% elif social_file.mother_nationality_2 == 'french' %}فرنسية
+                        {% elif social_file.mother_nationality_2 == 'german' %}ألمانية
+                        {% elif social_file.mother_nationality_2 == 'british' %}بريطانية
+                        {% elif social_file.mother_nationality_2 == 'italian' %}إيطالية
+                        {% elif social_file.mother_nationality_2 == 'spanish' %}إسبانية
+                        {% elif social_file.mother_nationality_2 == 'portuguese' %}برتغالية
+                        {% elif social_file.mother_nationality_2 == 'dutch' %}هولندية
+                        {% elif social_file.mother_nationality_2 == 'belgian' %}بلجيكية
+                        {% elif social_file.mother_nationality_2 == 'swiss' %}سويسرية
+                        {% elif social_file.mother_nationality_2 == 'austrian' %}نمساوية
+                        {% elif social_file.mother_nationality_2 == 'swedish' %}سويدية
+                        {% elif social_file.mother_nationality_2 == 'norwegian' %}نرويجية
+                        {% elif social_file.mother_nationality_2 == 'danish' %}دنماركية
+                        {% elif social_file.mother_nationality_2 == 'finnish' %}فنلندية
+                        {% elif social_file.mother_nationality_2 == 'polish' %}بولندية
+                        {% elif social_file.mother_nationality_2 == 'czech' %}تشيكية
+                        {% elif social_file.mother_nationality_2 == 'hungarian' %}مجرية
+                        {% elif social_file.mother_nationality_2 == 'romanian' %}رومانية
+                        {% elif social_file.mother_nationality_2 == 'bulgarian' %}بلغارية
+                        {% elif social_file.mother_nationality_2 == 'greek' %}يونانية
+                        {% elif social_file.mother_nationality_2 == 'serbian' %}صربية
+                        {% elif social_file.mother_nationality_2 == 'croatian' %}كرواتية
+                        {% elif social_file.mother_nationality_2 == 'bosnian' %}بوسنية
+                        {% elif social_file.mother_nationality_2 == 'albanian' %}ألبانية
+                        {% elif social_file.mother_nationality_2 == 'macedonian' %}مقدونية
+                        {% elif social_file.mother_nationality_2 == 'slovenian' %}سلوفينية
+                        {% elif social_file.mother_nationality_2 == 'slovak' %}سلوفاكية
+                        {% elif social_file.mother_nationality_2 == 'lithuanian' %}ليتوانية
+                        {% elif social_file.mother_nationality_2 == 'latvian' %}لاتفية
+                        {% elif social_file.mother_nationality_2 == 'estonian' %}إستونية
+                        {% elif social_file.mother_nationality_2 == 'american' %}أمريكية
+                        {% elif social_file.mother_nationality_2 == 'canadian' %}كندية
+                        {% elif social_file.mother_nationality_2 == 'mexican' %}مكسيكية
+                        {% elif social_file.mother_nationality_2 == 'brazilian' %}برازيلية
+                        {% elif social_file.mother_nationality_2 == 'argentine' %}أرجنتينية
+                        {% elif social_file.mother_nationality_2 == 'chilean' %}تشيلية
+                        {% elif social_file.mother_nationality_2 == 'colombian' %}كولومبية
+                        {% elif social_file.mother_nationality_2 == 'peruvian' %}بيروفية
+                        {% elif social_file.mother_nationality_2 == 'venezuelan' %}فنزويلية
+                        {% elif social_file.mother_nationality_2 == 'ecuadorian' %}إكوادورية
+                        {% elif social_file.mother_nationality_2 == 'uruguayan' %}أوروغوايانية
+                        {% elif social_file.mother_nationality_2 == 'paraguayan' %}باراغوايانية
+                        {% elif social_file.mother_nationality_2 == 'bolivian' %}بوليفية
+                        {% elif social_file.mother_nationality_2 == 'cuban' %}كوبية
+                        {% elif social_file.mother_nationality_2 == 'dominican' %}دومينيكية
+                        {% elif social_file.mother_nationality_2 == 'australian' %}أسترالية
+                        {% elif social_file.mother_nationality_2 == 'new_zealander' %}نيوزيلندية
+                        {% elif social_file.mother_nationality_2 == 'south_african' %}جنوب أفريقية
+                        {% elif social_file.mother_nationality_2 == 'nigerian' %}نيجيرية
+                        {% elif social_file.mother_nationality_2 == 'ghanaian' %}غانية
+                        {% elif social_file.mother_nationality_2 == 'kenyan' %}كينية
+                        {% elif social_file.mother_nationality_2 == 'ethiopian' %}إثيوبية
+                        {% elif social_file.mother_nationality_2 == 'ugandan' %}أوغندية
+                        {% elif social_file.mother_nationality_2 == 'tanzanian' %}تنزانية
+                        {% elif social_file.mother_nationality_2 == 'zimbabwean' %}زيمبابوية
+                        {% elif social_file.mother_nationality_2 == 'zambian' %}زامبية
+                        {% elif social_file.mother_nationality_2 == 'malawian' %}مالاوية
+                        {% elif social_file.mother_nationality_2 == 'mozambican' %}موزمبيقية
+                        {% elif social_file.mother_nationality_2 == 'botswanan' %}بوتسوانية
+                        {% elif social_file.mother_nationality_2 == 'namibian' %}ناميبية
+                        {% elif social_file.mother_nationality_2 == 'angolan' %}أنغولية
+                        {% elif social_file.mother_nationality_2 == 'congolese' %}كونغولية
+                        {% elif social_file.mother_nationality_2 == 'gabonese' %}غابونية
+                        {% elif social_file.mother_nationality_2 == 'cameroonian' %}كاميرونية
+                        {% elif social_file.mother_nationality_2 == 'ivorian' %}إيفوارية
+                        {% elif social_file.mother_nationality_2 == 'senegalese' %}سنغالية
+                        {% elif social_file.mother_nationality_2 == 'malian' %}مالية
+                        {% elif social_file.mother_nationality_2 == 'burkinabe' %}بوركينابية
+                        {% elif social_file.mother_nationality_2 == 'nigerien' %}نيجرية
+                        {% elif social_file.mother_nationality_2 == 'chadian' %}تشادية
+                        {% elif social_file.mother_nationality_2 == 'central_african' %}أفريقية وسطى
+                        {% elif social_file.mother_nationality_2 == 'equatorial_guinean' %}غينية استوائية
+                        {% elif social_file.mother_nationality_2 == 'sao_tomean' %}ساو تومية
+                        {% elif social_file.mother_nationality_2 == 'gambian' %}غامبية
+                        {% elif social_file.mother_nationality_2 == 'guinean' %}غينية
+                        {% elif social_file.mother_nationality_2 == 'guinea_bissauan' %}غينية بيساوية
+                        {% elif social_file.mother_nationality_2 == 'sierra_leonean' %}سيراليونية
+                        {% elif social_file.mother_nationality_2 == 'liberian' %}ليبيرية
+                        {% elif social_file.mother_nationality_2 == 'togolese' %}توغولية
+                        {% elif social_file.mother_nationality_2 == 'beninese' %}بنينية
+                        {% else %}{{ social_file.mother_nationality_2|default:"--" }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            </div>
+
+            <!-- Ligne: مكان الإقامة + الولاية + المعتمدية + الدولة -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">مكان الإقامة :</span>
+                    <span class="value">
+                        {% if social_file.mother_residence_location == 'inside' %}
+                            <span >داخل تراب الجمهورية :</span>
+                        {% elif social_file.mother_residence_location == 'outside' %}
+                            <span >خارج البلاد :</span>
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+               <div class="info-group">
+                    <span class="label">ولاية الإقامة :</span>
+                    <span class="value">
+                        {% if social_file.mother_governorate == 'tunis' %}تونس
+                        {% elif social_file.mother_governorate == 'ariana' %}أريانة
+                        {% elif social_file.mother_governorate == 'ben_arous' %}بن عروس
+                        {% elif social_file.mother_governorate == 'manouba' %}منوبة
+                        {% elif social_file.mother_governorate == 'nabeul' %}نابل
+                        {% elif social_file.mother_governorate == 'zaghouan' %}زغوان
+                        {% elif social_file.mother_governorate == 'bizerte' %}بنزرت
+                        {% elif social_file.mother_governorate == 'beja' %}باجة
+                        {% elif social_file.mother_governorate == 'jendouba' %}جندوبة
+                        {% elif social_file.mother_governorate == 'kef' %}الكاف
+                        {% elif social_file.mother_governorate == 'siliana' %}سليانة
+                        {% elif social_file.mother_governorate == 'sousse' %}سوسة
+                        {% elif social_file.mother_governorate == 'monastir' %}المنستير
+                        {% elif social_file.mother_governorate == 'mahdia' %}المهدية
+                        {% elif social_file.mother_governorate == 'sfax' %}صفاقس
+                        {% elif social_file.mother_governorate == 'kairouan' %}القيروان
+                        {% elif social_file.mother_governorate == 'kasserine' %}القصرين
+                        {% elif social_file.mother_governorate == 'sidi_bouzid' %}سيدي بوزيد
+                        {% elif social_file.mother_governorate == 'gabes' %}قابس
+                        {% elif social_file.mother_governorate == 'medenine' %}مدنين
+                        {% elif social_file.mother_governorate == 'tataouine' %}تطاوين
+                        {% elif social_file.mother_governorate == 'gafsa' %}قفصة
+                        {% elif social_file.mother_governorate == 'tozeur' %}توزر
+                        {% elif social_file.mother_governorate == 'kebili' %}قبلي
+                        {% else %}{{ social_file.mother_governorate|default:"--" }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="label">معتمدية الإقامة :</span>
+                    <span class="value">{{ social_file.mother_delegation|default:"--" }}</span>
+                </div>
+                 <div class="info-group">
+                    <span class="label">الدولة (خارج البلاد) :</span>
+                    <span class="value">
+                        {% if social_file.mother_country_abroad == 'tunisia' %}تونس
+                        {% elif social_file.mother_country_abroad == 'algeria' %}الجزائر
+                        {% elif social_file.mother_country_abroad == 'morocco' %}المغرب
+                        {% elif social_file.mother_country_abroad == 'libya' %}ليبيا
+                        {% elif social_file.mother_country_abroad == 'egypt' %}مصر
+                        {% elif social_file.mother_country_abroad == 'palestine' %}فلسطين
+                        {% elif social_file.mother_country_abroad == 'syria' %}سوريا
+                        {% elif social_file.mother_country_abroad == 'lebanon' %}لبنان
+                        {% elif social_file.mother_country_abroad == 'jordan' %}الأردن
+                        {% elif social_file.mother_country_abroad == 'iraq' %}العراق
+                        {% elif social_file.mother_country_abroad == 'saudi_arabia' %}المملكة العربية السعودية
+                        {% elif social_file.mother_country_abroad == 'uae' %}الإمارات العربية المتحدة
+                        {% elif social_file.mother_country_abroad == 'qatar' %}قطر
+                        {% elif social_file.mother_country_abroad == 'kuwait' %}الكويت
+                        {% elif social_file.mother_country_abroad == 'bahrain' %}البحرين
+                        {% elif social_file.mother_country_abroad == 'oman' %}عمان
+                        {% elif social_file.mother_country_abroad == 'yemen' %}اليمن
+                        {% elif social_file.mother_country_abroad == 'sudan' %}السودان
+                        {% elif social_file.mother_country_abroad == 'mauritania' %}موريتانيا
+                        {% elif social_file.mother_country_abroad == 'somalia' %}الصومال
+                        {% elif social_file.mother_country_abroad == 'comoros' %}جزر القمر
+                        {% elif social_file.mother_country_abroad == 'djibouti' %}جيبوتي
+                        {% elif social_file.mother_country_abroad == 'turkey' %}تركيا
+                        {% elif social_file.mother_country_abroad == 'iran' %}إيران
+                        {% elif social_file.mother_country_abroad == 'afghanistan' %}أفغانستان
+                        {% elif social_file.mother_country_abroad == 'pakistan' %}باكستان
+                        {% elif social_file.mother_country_abroad == 'india' %}الهند
+                        {% elif social_file.mother_country_abroad == 'bangladesh' %}بنغلاديش
+                        {% elif social_file.mother_country_abroad == 'indonesia' %}إندونيسيا
+                        {% elif social_file.mother_country_abroad == 'malaysia' %}ماليزيا
+                        {% elif social_file.mother_country_abroad == 'china' %}الصين
+                        {% elif social_file.mother_country_abroad == 'japan' %}اليابان
+                        {% elif social_file.mother_country_abroad == 'south_korea' %}كوريا الجنوبية
+                        {% elif social_file.mother_country_abroad == 'thailand' %}تايلاند
+                        {% elif social_file.mother_country_abroad == 'vietnam' %}فيتنام
+                        {% elif social_file.mother_country_abroad == 'philippines' %}الفلبين
+                        {% elif social_file.mother_country_abroad == 'russia' %}روسيا
+                        {% elif social_file.mother_country_abroad == 'ukraine' %}أوكرانيا
+                        {% elif social_file.mother_country_abroad == 'france' %}فرنسا
+                        {% elif social_file.mother_country_abroad == 'germany' %}ألمانيا
+                        {% elif social_file.mother_country_abroad == 'uk' %}المملكة المتحدة
+                        {% elif social_file.mother_country_abroad == 'italy' %}إيطاليا
+                        {% elif social_file.mother_country_abroad == 'spain' %}إسبانيا
+                        {% elif social_file.mother_country_abroad == 'portugal' %}البرتغال
+                        {% elif social_file.mother_country_abroad == 'netherlands' %}هولندا
+                        {% elif social_file.mother_country_abroad == 'belgium' %}بلجيكا
+                        {% elif social_file.mother_country_abroad == 'switzerland' %}سويسرا
+                        {% elif social_file.mother_country_abroad == 'austria' %}النمسا
+                        {% elif social_file.mother_country_abroad == 'sweden' %}السويد
+                        {% elif social_file.mother_country_abroad == 'norway' %}النرويج
+                        {% elif social_file.mother_country_abroad == 'denmark' %}الدنمارك
+                        {% elif social_file.mother_country_abroad == 'finland' %}فنلندا
+                        {% elif social_file.mother_country_abroad == 'poland' %}بولندا
+                        {% elif social_file.mother_country_abroad == 'czech_republic' %}التشيك
+                        {% elif social_file.mother_country_abroad == 'hungary' %}المجر
+                        {% elif social_file.mother_country_abroad == 'romania' %}رومانيا
+                        {% elif social_file.mother_country_abroad == 'bulgaria' %}بلغاريا
+                        {% elif social_file.mother_country_abroad == 'greece' %}اليونان
+                        {% elif social_file.mother_country_abroad == 'serbia' %}صربيا
+                        {% elif social_file.mother_country_abroad == 'croatia' %}كرواتيا
+                        {% elif social_file.mother_country_abroad == 'bosnia' %}البوسنة والهرسك
+                        {% elif social_file.mother_country_abroad == 'albania' %}ألبانيا
+                        {% elif social_file.mother_country_abroad == 'macedonia' %}مقدونيا الشمالية
+                        {% elif social_file.mother_country_abroad == 'slovenia' %}سلوفينيا
+                        {% elif social_file.mother_country_abroad == 'slovakia' %}سلوفاكيا
+                        {% elif social_file.mother_country_abroad == 'lithuania' %}ليتوانيا
+                        {% elif social_file.mother_country_abroad == 'latvia' %}لاتفيا
+                        {% elif social_file.mother_country_abroad == 'estonia' %}إستونيا
+                        {% elif social_file.mother_country_abroad == 'usa' %}الولايات المتحدة الأمريكية
+                        {% elif social_file.mother_country_abroad == 'canada' %}كندا
+                        {% elif social_file.mother_country_abroad == 'mexico' %}المكسيك
+                        {% elif social_file.mother_country_abroad == 'brazil' %}البرازيل
+                        {% elif social_file.mother_country_abroad == 'argentina' %}الأرجنتين
+                        {% elif social_file.mother_country_abroad == 'chile' %}تشيلي
+                        {% elif social_file.mother_country_abroad == 'colombia' %}كولومبيا
+                        {% elif social_file.mother_country_abroad == 'peru' %}بيرو
+                        {% elif social_file.mother_country_abroad == 'venezuela' %}فنزويلا
+                        {% elif social_file.mother_country_abroad == 'ecuador' %}الإكوادور
+                        {% elif social_file.mother_country_abroad == 'uruguay' %}أوروغواي
+                        {% elif social_file.mother_country_abroad == 'paraguay' %}باراغواي
+                        {% elif social_file.mother_country_abroad == 'bolivia' %}بوليفيا
+                        {% elif social_file.mother_country_abroad == 'cuba' %}كوبا
+                        {% elif social_file.mother_country_abroad == 'dominican_republic' %}جمهورية الدومينيكان
+                        {% elif social_file.mother_country_abroad == 'australia' %}أستراليا
+                        {% elif social_file.mother_country_abroad == 'new_zealand' %}نيوزيلندا
+                        {% elif social_file.mother_country_abroad == 'south_africa' %}جنوب أفريقيا
+                        {% elif social_file.mother_country_abroad == 'nigeria' %}نيجيريا
+                        {% elif social_file.mother_country_abroad == 'ghana' %}غانا
+                        {% elif social_file.mother_country_abroad == 'kenya' %}كينيا
+                        {% elif social_file.mother_country_abroad == 'ethiopia' %}إثيوبيا
+                        {% elif social_file.mother_country_abroad == 'uganda' %}أوغندا
+                        {% elif social_file.mother_country_abroad == 'tanzania' %}تنزانيا
+                        {% elif social_file.mother_country_abroad == 'zimbabwe' %}زيمبابوي
+                        {% elif social_file.mother_country_abroad == 'zambia' %}زامبيا
+                        {% elif social_file.mother_country_abroad == 'malawi' %}مالاوي
+                        {% elif social_file.mother_country_abroad == 'mozambique' %}موزمبيق
+                        {% elif social_file.mother_country_abroad == 'botswana' %}بوتسوانا
+                        {% elif social_file.mother_country_abroad == 'namibia' %}ناميبيا
+                        {% elif social_file.mother_country_abroad == 'angola' %}أنغولا
+                        {% elif social_file.mother_country_abroad == 'congo' %}الكونغو
+                        {% elif social_file.mother_country_abroad == 'gabon' %}الغابون
+                        {% elif social_file.mother_country_abroad == 'cameroon' %}الكاميرون
+                        {% elif social_file.mother_country_abroad == 'ivory_coast' %}ساحل العاج
+                        {% elif social_file.mother_country_abroad == 'senegal' %}السنغال
+                        {% elif social_file.mother_country_abroad == 'mali' %}مالي
+                        {% elif social_file.mother_country_abroad == 'burkina_faso' %}بوركينا فاسو
+                        {% elif social_file.mother_country_abroad == 'niger' %}النيجر
+                        {% elif social_file.mother_country_abroad == 'chad' %}تشاد
+                        {% elif social_file.mother_country_abroad == 'central_african_republic' %}جمهورية أفريقيا الوسطى
+                        {% elif social_file.mother_country_abroad == 'equatorial_guinea' %}غينيا الاستوائية
+                        {% elif social_file.mother_country_abroad == 'sao_tome_principe' %}ساو تومي وبرينسيب
+                        {% elif social_file.mother_country_abroad == 'gambia' %}غامبيا
+                        {% elif social_file.mother_country_abroad == 'guinea' %}غينيا
+                        {% elif social_file.mother_country_abroad == 'guinea_bissau' %}غينيا بيساو
+                        {% elif social_file.mother_country_abroad == 'sierra_leone' %}سيراليون
+                        {% elif social_file.mother_country_abroad == 'liberia' %}ليبيريا
+                        {% elif social_file.mother_country_abroad == 'togo' %}توغو
+                        {% elif social_file.mother_country_abroad == 'benin' %}بنين
+                        {% else %}{{ social_file.mother_country_abroad|default:"--" }}
+                        {% endif %}
+                    </span>
+                </div>
+        
+            </div>
+
+            <!-- Ligne: المستوى التعليمي + الوضعية المهنية + الوضعية الصحية -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">المستوى التعليمي :</span>
+                    <span class="value">
+                        {% if social_file.mother_education_level == 'illiterate' %}
+                            <span class="badge badge-large bg-secondary">أمي</span>
+                        {% elif social_file.mother_education_level == 'primary' %}
+                            <span class="badge badge-large bg-info">تعليم أساسي</span>
+                        {% elif social_file.mother_education_level == 'secondary' %}
+                            <span class="badge badge-large bg-primary">تعليم ثانوي</span>
+                        {% elif social_file.mother_education_level == 'higher' %}
+                            <span class="badge badge-large bg-success">تعليم عالي</span>
+                        {% elif social_file.mother_education_level == 'noted' %}
+                            <span class="badge badge-large bg-success">غير محدد</span>
+                      
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+                  <div class="info-group">
+        <span class="label">الوضعية المهنية  :</span>
+        <span class="value">
+           {% if social_file.mother_job_status == 'employed' %}
+    <span class="badge badge-large bg-success">موظفة</span>
+{% elif social_file.mother_job_status == 'employee' %}        {# ← AJOUTER #}
+    <span class="badge badge-large bg-success">موظفة</span>  {# ← AJOUTER #}
+{% elif social_file.mother_job_status == 'worker' %}
+    <span class="badge badge-large bg-primary">عاملة</span>
+{% elif social_file.mother_job_status == 'unemployed' %}
+    <span class="badge badge-large bg-warning text-dark">عاطلة عن العمل</span>
+    {% elif social_file.mother_job_status == 'notmo' %}
+    <span class="badge badge-large bg-warning text-dark">غير محددة</span>
+
+{% else %}
+    <span class="text-muted">--</span>  {# ← SUPPRIMER le debug (valeur: ...) #}
+{% endif %}
+        </span>
+    </div>
+                <div class="info-group">
+                    <span class="label">الوضعية الصحية:</span>
+                    <span class="value">
+                        {% if social_file.mother_health_status == 'good' %}
+                            <span class="badge badge-large bg-success">في حالة صحية طيبة</span>
+                        {% elif social_file.mother_health_status == 'chronic' %}
+                            <span class="badge badge-large bg-warning text-dark">في حالة مرض مزمن</span>
+                        {% elif social_file.mother_health_status == 'mental' %}
+                            <span class="badge badge-large bg-danger">في حالة مرض نفسي</span>
+                        {% elif social_file.mother_health_status == 'disability' %}
+                            <span class="badge badge-large bg-secondary">تعاني من وضعية إعاقة</span>
+                            {% elif social_file.mother_health_status == 'disab' %}
+                            <span class="badge badge-large bg-secondary">حالة وفاة</span>
+                           {% elif social_file.mother_health_status == 'notheal' %}
+                            <span class="badge badge-large bg-secondary">غير محدد</span>
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+
+
+                           
+
+
+                    </span>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- 3. بيانات الأب -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="section-header">
+                <i class="fas fa-male"></i>
+                بيانات الأب
+            </div>
+
+            <!-- Ligne: الاسم + اللقب + الجنسية -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">الاسم:</span>
+                    <span class="value">{{ social_file.father_first_name|default:"--" }}</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">اللقب:</span>
+                    <span class="value">{{ social_file.father_last_name|default:"--" }}</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">الجنسية 1:</span>
+                    <span class="value">
+                        {% if social_file.father_nationality_1 == 'tunisian' %}تونسية
+                        {% elif social_file.father_nationality_1 == 'algerian' %}جزائرية
+                        {% elif social_file.father_nationality_1 == 'moroccan' %}مغربية
+                        {% elif social_file.father_nationality_1 == 'libyan' %}ليبية
+                        {% elif social_file.father_nationality_1 == 'egyptian' %}مصرية
+                        {% elif social_file.father_nationality_1 == 'palestinian' %}فلسطينية
+                        {% elif social_file.father_nationality_1 == 'syrian' %}سورية
+                        {% elif social_file.father_nationality_1 == 'lebanese' %}لبنانية
+                        {% elif social_file.father_nationality_1 == 'jordanian' %}أردنية
+                        {% elif social_file.father_nationality_1 == 'iraqi' %}عراقية
+                        {% elif social_file.father_nationality_1 == 'saudi' %}سعودية
+                        {% elif social_file.father_nationality_1 == 'emirati' %}إماراتية
+                        {% elif social_file.father_nationality_1 == 'qatari' %}قطرية
+                        {% elif social_file.father_nationality_1 == 'kuwaiti' %}كويتية
+                        {% elif social_file.father_nationality_1 == 'bahraini' %}بحرينية
+                        {% elif social_file.father_nationality_1 == 'omani' %}عمانية
+                        {% elif social_file.father_nationality_1 == 'yemeni' %}يمنية
+                        {% elif social_file.father_nationality_1 == 'sudanese' %}سودانية
+                        {% elif social_file.father_nationality_1 == 'mauritanian' %}موريتانية
+                        {% elif social_file.father_nationality_1 == 'somali' %}صومالية
+                        {% elif social_file.father_nationality_1 == 'comorian' %}جزر القمر
+                        {% elif social_file.father_nationality_1 == 'djiboutian' %}جيبوتية
+                        {% elif social_file.father_nationality_1 == 'turkish' %}تركية
+                        {% elif social_file.father_nationality_1 == 'iranian' %}إيرانية
+                        {% elif social_file.father_nationality_1 == 'afghan' %}أفغانية
+                        {% elif social_file.father_nationality_1 == 'pakistani' %}باكستانية
+                        {% elif social_file.father_nationality_1 == 'indian' %}هندية
+                        {% elif social_file.father_nationality_1 == 'bangladeshi' %}بنغلاديشية
+                        {% elif social_file.father_nationality_1 == 'indonesian' %}إندونيسية
+                        {% elif social_file.father_nationality_1 == 'malaysian' %}ماليزية
+                        {% elif social_file.father_nationality_1 == 'chinese' %}صينية
+                        {% elif social_file.father_nationality_1 == 'japanese' %}يابانية
+                        {% elif social_file.father_nationality_1 == 'korean' %}كورية
+                        {% elif social_file.father_nationality_1 == 'thai' %}تايلاندية
+                        {% elif social_file.father_nationality_1 == 'vietnamese' %}فيتنامية
+                        {% elif social_file.father_nationality_1 == 'filipino' %}فلبينية
+                        {% elif social_file.father_nationality_1 == 'russian' %}روسية
+                        {% elif social_file.father_nationality_1 == 'ukrainian' %}أوكرانية
+                        {% elif social_file.father_nationality_1 == 'french' %}فرنسية
+                        {% elif social_file.father_nationality_1 == 'german' %}ألمانية
+                        {% elif social_file.father_nationality_1 == 'british' %}بريطانية
+                        {% elif social_file.father_nationality_1 == 'italian' %}إيطالية
+                        {% elif social_file.father_nationality_1 == 'spanish' %}إسبانية
+                        {% elif social_file.father_nationality_1 == 'portuguese' %}برتغالية
+                        {% elif social_file.father_nationality_1 == 'dutch' %}هولندية
+                        {% elif social_file.father_nationality_1 == 'belgian' %}بلجيكية
+                        {% elif social_file.father_nationality_1 == 'swiss' %}سويسرية
+                        {% elif social_file.father_nationality_1 == 'austrian' %}نمساوية
+                        {% elif social_file.father_nationality_1 == 'swedish' %}سويدية
+                        {% elif social_file.father_nationality_1 == 'norwegian' %}نرويجية
+                        {% elif social_file.father_nationality_1 == 'danish' %}دنماركية
+                        {% elif social_file.father_nationality_1 == 'finnish' %}فنلندية
+                        {% elif social_file.father_nationality_1 == 'polish' %}بولندية
+                        {% elif social_file.father_nationality_1 == 'czech' %}تشيكية
+                        {% elif social_file.father_nationality_1 == 'hungarian' %}مجرية
+                        {% elif social_file.father_nationality_1 == 'romanian' %}رومانية
+                        {% elif social_file.father_nationality_1 == 'bulgarian' %}بلغارية
+                        {% elif social_file.father_nationality_1 == 'greek' %}يونانية
+                        {% elif social_file.father_nationality_1 == 'serbian' %}صربية
+                        {% elif social_file.father_nationality_1 == 'croatian' %}كرواتية
+                        {% elif social_file.father_nationality_1 == 'bosnian' %}بوسنية
+                        {% elif social_file.father_nationality_1 == 'albanian' %}ألبانية
+                        {% elif social_file.father_nationality_1 == 'macedonian' %}مقدونية
+                        {% elif social_file.father_nationality_1 == 'slovenian' %}سلوفينية
+                        {% elif social_file.father_nationality_1 == 'slovak' %}سلوفاكية
+                        {% elif social_file.father_nationality_1 == 'lithuanian' %}ليتوانية
+                        {% elif social_file.father_nationality_1 == 'latvian' %}لاتفية
+                        {% elif social_file.father_nationality_1 == 'estonian' %}إستونية
+                        {% elif social_file.father_nationality_1 == 'american' %}أمريكية
+                        {% elif social_file.father_nationality_1 == 'canadian' %}كندية
+                        {% elif social_file.father_nationality_1 == 'mexican' %}مكسيكية
+                        {% elif social_file.father_nationality_1 == 'brazilian' %}برازيلية
+                        {% elif social_file.father_nationality_1 == 'argentine' %}أرجنتينية
+                        {% elif social_file.father_nationality_1 == 'chilean' %}تشيلية
+                        {% elif social_file.father_nationality_1 == 'colombian' %}كولومبية
+                        {% elif social_file.father_nationality_1 == 'peruvian' %}بيروفية
+                        {% elif social_file.father_nationality_1 == 'venezuelan' %}فنزويلية
+                        {% elif social_file.father_nationality_1 == 'ecuadorian' %}إكوادورية
+                        {% elif social_file.father_nationality_1 == 'uruguayan' %}أوروغوايانية
+                        {% elif social_file.father_nationality_1 == 'paraguayan' %}باراغوايانية
+                        {% elif social_file.father_nationality_1 == 'bolivian' %}بوليفية
+                        {% elif social_file.father_nationality_1 == 'cuban' %}كوبية
+                        {% elif social_file.father_nationality_1 == 'dominican' %}دومينيكية
+                        {% elif social_file.father_nationality_1 == 'australian' %}أسترالية
+                        {% elif social_file.father_nationality_1 == 'new_zealander' %}نيوزيلندية
+                        {% elif social_file.father_nationality_1 == 'south_african' %}جنوب أفريقية
+                        {% elif social_file.father_nationality_1 == 'nigerian' %}نيجيرية
+                        {% elif social_file.father_nationality_1 == 'ghanaian' %}غانية
+                        {% elif social_file.father_nationality_1 == 'kenyan' %}كينية
+                        {% elif social_file.father_nationality_1 == 'ethiopian' %}إثيوبية
+                        {% elif social_file.father_nationality_1 == 'ugandan' %}أوغندية
+                        {% elif social_file.father_nationality_1 == 'tanzanian' %}تنزانية
+                        {% elif social_file.father_nationality_1 == 'zimbabwean' %}زيمبابوية
+                        {% elif social_file.father_nationality_1 == 'zambian' %}زامبية
+                        {% elif social_file.father_nationality_1 == 'malawian' %}مالاوية
+                        {% elif social_file.father_nationality_1 == 'mozambican' %}موزمبيقية
+                        {% elif social_file.father_nationality_1 == 'botswanan' %}بوتسوانية
+                        {% elif social_file.father_nationality_1 == 'namibian' %}ناميبية
+                        {% elif social_file.father_nationality_1 == 'angolan' %}أنغولية
+                        {% elif social_file.father_nationality_1 == 'congolese' %}كونغولية
+                        {% elif social_file.father_nationality_1 == 'gabonese' %}غابونية
+                        {% elif social_file.father_nationality_1 == 'cameroonian' %}كاميرونية
+                        {% elif social_file.father_nationality_1 == 'ivorian' %}إيفوارية
+                        {% elif social_file.father_nationality_1 == 'senegalese' %}سنغالية
+                        {% elif social_file.father_nationality_1 == 'malian' %}مالية
+                        {% elif social_file.father_nationality_1 == 'burkinabe' %}بوركينابية
+                        {% elif social_file.father_nationality_1 == 'nigerien' %}نيجرية
+                        {% elif social_file.father_nationality_1 == 'chadian' %}تشادية
+                        {% elif social_file.father_nationality_1 == 'central_african' %}أفريقية وسطى
+                        {% elif social_file.father_nationality_1 == 'equatorial_guinean' %}غينية استوائية
+                        {% elif social_file.father_nationality_1 == 'sao_tomean' %}ساو تومية
+                        {% elif social_file.father_nationality_1 == 'gambian' %}غامبية
+                        {% elif social_file.father_nationality_1 == 'guinean' %}غينية
+                        {% elif social_file.father_nationality_1 == 'guinea_bissauan' %}غينية بيساوية
+                        {% elif social_file.father_nationality_1 == 'sierra_leonean' %}سيراليونية
+                        {% elif social_file.father_nationality_1 == 'liberian' %}ليبيرية
+                        {% elif social_file.father_nationality_1 == 'togolese' %}توغولية
+                        {% elif social_file.father_nationality_1 == 'beninese' %}بنينية
+                        {% else %}{{ social_file.father_nationality_1|default:"--" }}
+                        {% endif %}
+                    </span>
+                </div>
+                  <div class="info-group">
+                    <span class="label">الجنسية 2:</span>
+                    <span class="value">
+                        {% if social_file.father_nationality_2 == 'tunisian' %}تونسية
+                        {% elif social_file.father_nationality_2 == 'algerian' %}جزائرية
+                        {% elif social_file.father_nationality_2 == 'moroccan' %}مغربية
+                        {% elif social_file.father_nationality_2 == 'libyan' %}ليبية
+                        {% elif social_file.father_nationality_2 == 'egyptian' %}مصرية
+                        {% elif social_file.father_nationality_2 == 'palestinian' %}فلسطينية
+                        {% elif social_file.father_nationality_2 == 'syrian' %}سورية
+                        {% elif social_file.father_nationality_2 == 'lebanese' %}لبنانية
+                        {% elif social_file.father_nationality_2 == 'jordanian' %}أردنية
+                               {% elif social_file.father_nationality_2 == 'iraqi' %}عراقية
+                        {% elif social_file.father_nationality_2 == 'saudi' %}سعودية
+                        {% elif social_file.father_nationality_2 == 'emirati' %}إماراتية
+                        {% elif social_file.father_nationality_2 == 'qatari' %}قطرية
+                        {% elif social_file.father_nationality_2 == 'kuwaiti' %}كويتية
+                        {% elif social_file.father_nationality_2 == 'bahraini' %}بحرينية
+                        {% elif social_file.father_nationality_2 == 'omani' %}عمانية
+                        {% elif social_file.father_nationality_2 == 'yemeni' %}يمنية
+                        {% elif social_file.father_nationality_2 == 'sudanese' %}سودانية
+                        {% elif social_file.father_nationality_2 == 'mauritanian' %}موريتانية
+                        {% elif social_file.father_nationality_2 == 'somali' %}صومالية
+                        {% elif social_file.father_nationality_2 == 'comorian' %}جزر القمر
+                        {% elif social_file.father_nationality_2 == 'djiboutian' %}جيبوتية
+                        {% elif social_file.father_nationality_2 == 'turkish' %}تركية
+                        {% elif social_file.father_nationality_2 == 'iranian' %}إيرانية
+                        {% elif social_file.father_nationality_2 == 'afghan' %}أفغانية
+                        {% elif social_file.father_nationality_2 == 'pakistani' %}باكستانية
+                        {% elif social_file.father_nationality_2 == 'indian' %}هندية
+                        {% elif social_file.father_nationality_2 == 'bangladeshi' %}بنغلاديشية
+                        {% elif social_file.father_nationality_2 == 'indonesian' %}إندونيسية
+                        {% elif social_file.father_nationality_2 == 'malaysian' %}ماليزية
+                        {% elif social_file.father_nationality_2 == 'chinese' %}صينية
+                        {% elif social_file.father_nationality_2 == 'japanese' %}يابانية
+                        {% elif social_file.father_nationality_2 == 'korean' %}كورية
+                        {% elif social_file.father_nationality_2 == 'thai' %}تايلاندية
+                        {% elif social_file.father_nationality_2 == 'vietnamese' %}فيتنامية
+                        {% elif social_file.father_nationality_2 == 'filipino' %}فلبينية
+                        {% elif social_file.father_nationality_2 == 'russian' %}روسية
+                        {% elif social_file.father_nationality_2 == 'ukrainian' %}أوكرانية
+                        {% elif social_file.father_nationality_2 == 'french' %}فرنسية
+                        {% elif social_file.father_nationality_2 == 'german' %}ألمانية
+                        {% elif social_file.father_nationality_2 == 'british' %}بريطانية
+                        {% elif social_file.father_nationality_2 == 'italian' %}إيطالية
+                        {% elif social_file.father_nationality_2 == 'spanish' %}إسبانية
+                        {% elif social_file.father_nationality_2 == 'portuguese' %}برتغالية
+                        {% elif social_file.father_nationality_2 == 'dutch' %}هولندية
+                        {% elif social_file.father_nationality_2 == 'belgian' %}بلجيكية
+                        {% elif social_file.father_nationality_2 == 'swiss' %}سويسرية
+                        {% elif social_file.father_nationality_2 == 'austrian' %}نمساوية
+                        {% elif social_file.father_nationality_2 == 'swedish' %}سويدية
+                        {% elif social_file.father_nationality_2 == 'norwegian' %}نرويجية
+                        {% elif social_file.father_nationality_2 == 'danish' %}دنماركية
+                        {% elif social_file.father_nationality_2 == 'finnish' %}فنلندية
+                        {% elif social_file.father_nationality_2 == 'polish' %}بولندية
+                        {% elif social_file.father_nationality_2 == 'czech' %}تشيكية
+                        {% elif social_file.father_nationality_2 == 'hungarian' %}مجرية
+                        {% elif social_file.father_nationality_2 == 'romanian' %}رومانية
+                        {% elif social_file.father_nationality_2 == 'bulgarian' %}بلغارية
+                        {% elif social_file.father_nationality_2 == 'greek' %}يونانية
+                        {% elif social_file.father_nationality_2 == 'serbian' %}صربية
+                        {% elif social_file.father_nationality_2 == 'croatian' %}كرواتية
+                        {% elif social_file.father_nationality_2 == 'bosnian' %}بوسنية
+                        {% elif social_file.father_nationality_2 == 'albanian' %}ألبانية
+                        {% elif social_file.father_nationality_2 == 'macedonian' %}مقدونية
+                        {% elif social_file.father_nationality_2 == 'slovenian' %}سلوفينية
+                        {% elif social_file.father_nationality_2 == 'slovak' %}سلوفاكية
+                        {% elif social_file.father_nationality_2 == 'lithuanian' %}ليتوانية
+                        {% elif social_file.father_nationality_2 == 'latvian' %}لاتفية
+                        {% elif social_file.father_nationality_2 == 'estonian' %}إستونية
+                        {% elif social_file.father_nationality_2 == 'american' %}أمريكية
+                        {% elif social_file.father_nationality_2 == 'canadian' %}كندية
+                        {% elif social_file.father_nationality_2 == 'mexican' %}مكسيكية
+                        {% elif social_file.father_nationality_2 == 'brazilian' %}برازيلية
+                        {% elif social_file.father_nationality_2 == 'argentine' %}أرجنتينية
+                        {% elif social_file.father_nationality_2 == 'chilean' %}تشيلية
+                        {% elif social_file.father_nationality_2 == 'colombian' %}كولومبية
+                        {% elif social_file.father_nationality_2 == 'peruvian' %}بيروفية
+                        {% elif social_file.father_nationality_2 == 'venezuelan' %}فنزويلية
+                        {% elif social_file.father_nationality_2 == 'ecuadorian' %}إكوادورية
+                        {% elif social_file.father_nationality_2 == 'uruguayan' %}أوروغوايانية
+                        {% elif social_file.father_nationality_2 == 'paraguayan' %}باراغوايانية
+                        {% elif social_file.father_nationality_2 == 'bolivian' %}بوليفية
+                        {% elif social_file.father_nationality_2 == 'cuban' %}كوبية
+                        {% elif social_file.father_nationality_2 == 'dominican' %}دومينيكية
+                        {% elif social_file.father_nationality_2 == 'australian' %}أسترالية
+                        {% elif social_file.father_nationality_2 == 'new_zealander' %}نيوزيلندية
+                        {% elif social_file.father_nationality_2 == 'south_african' %}جنوب أفريقية
+                        {% elif social_file.father_nationality_2 == 'nigerian' %}نيجيرية
+                        {% elif social_file.father_nationality_2 == 'ghanaian' %}غانية
+                        {% elif social_file.father_nationality_2 == 'kenyan' %}كينية
+                        {% elif social_file.father_nationality_2 == 'ethiopian' %}إثيوبية
+                        {% elif social_file.father_nationality_2 == 'ugandan' %}أوغندية
+                        {% elif social_file.father_nationality_2 == 'tanzanian' %}تنزانية
+                        {% elif social_file.father_nationality_2 == 'zimbabwean' %}زيمبابوية
+                        {% elif social_file.father_nationality_2 == 'zambian' %}زامبية
+                        {% elif social_file.father_nationality_2 == 'malawian' %}مالاوية
+                        {% elif social_file.father_nationality_2 == 'mozambican' %}موزمبيقية
+                        {% elif social_file.father_nationality_2 == 'botswanan' %}بوتسوانية
+                        {% elif social_file.father_nationality_2 == 'namibian' %}ناميبية
+                        {% elif social_file.father_nationality_2 == 'angolan' %}أنغولية
+                        {% elif social_file.father_nationality_2 == 'congolese' %}كونغولية
+                        {% elif social_file.father_nationality_2 == 'gabonese' %}غابونية
+                        {% elif social_file.father_nationality_2 == 'cameroonian' %}كاميرونية
+                        {% elif social_file.father_nationality_2 == 'ivorian' %}إيفوارية
+                        {% elif social_file.father_nationality_2 == 'senegalese' %}سنغالية
+                        {% elif social_file.father_nationality_2 == 'malian' %}مالية
+                        {% elif social_file.father_nationality_2 == 'burkinabe' %}بوركينابية
+                        {% elif social_file.father_nationality_2 == 'nigerien' %}نيجرية
+                        {% elif social_file.father_nationality_2 == 'chadian' %}تشادية
+                        {% elif social_file.father_nationality_2 == 'central_african' %}أفريقية وسطى
+                        {% elif social_file.father_nationality_2 == 'equatorial_guinean' %}غينية استوائية
+                        {% elif social_file.father_nationality_2 == 'sao_tomean' %}ساو تومية
+                        {% elif social_file.father_nationality_2 == 'gambian' %}غامبية
+                        {% elif social_file.father_nationality_2 == 'guinean' %}غينية
+                        {% elif social_file.father_nationality_2 == 'guinea_bissauan' %}غينية بيساوية
+                        {% elif social_file.father_nationality_2 == 'sierra_leonean' %}سيراليونية
+                        {% elif social_file.father_nationality_2 == 'liberian' %}ليبيرية
+                        {% elif social_file.father_nationality_2 == 'togolese' %}توغولية
+                        {% elif social_file.father_nationality_2 == 'beninese' %}بنينية
+                        {% else %}{{ social_file.father_nationality_2|default:"--" }}
+                        {% endif %}
+                    </span>
+              
+                </div>
+            </div>
+
+            <!-- Ligne: مكان الإقامة + الولاية + المعتمدية + الدولة -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">مكان الإقامة :</span>
+                    <span class="value">
+                        {% if social_file.father_residence_location == 'inside' %}
+                            <span >داخل تراب الجمهورية :</span>
+                        {% elif social_file.father_residence_location == 'outside' %}
+                            <span >خارج البلاد :</span>
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="label">ولاية الإقامة :</span>
+                    <span class="value">
+                        {% if social_file.father_governorate == 'tunis' %}تونس
+                        {% elif social_file.father_governorate == 'ariana' %}أريانة
+                        {% elif social_file.father_governorate == 'ben_arous' %}بن عروس
+                        {% elif social_file.father_governorate == 'manouba' %}منوبة
+                        {% elif social_file.father_governorate == 'nabeul' %}نابل
+                        {% elif social_file.father_governorate == 'zaghouan' %}زغوان
+                        {% elif social_file.father_governorate == 'bizerte' %}بنزرت
+                        {% elif social_file.father_governorate == 'beja' %}باجة
+                        {% elif social_file.father_governorate == 'jendouba' %}جندوبة
+                        {% elif social_file.father_governorate == 'kef' %}الكاف
+                        {% elif social_file.father_governorate == 'siliana' %}سليانة
+                        {% elif social_file.father_governorate == 'sousse' %}سوسة
+                        {% elif social_file.father_governorate == 'monastir' %}المنستير
+                        {% elif social_file.father_governorate == 'mahdia' %}المهدية
+                        {% elif social_file.father_governorate == 'sfax' %}صفاقس
+                        {% elif social_file.father_governorate == 'kairouan' %}القيروان
+                        {% elif social_file.father_governorate == 'kasserine' %}القصرين
+                        {% elif social_file.father_governorate == 'sidi_bouzid' %}سيدي بوزيد
+                        {% elif social_file.father_governorate == 'gabes' %}قابس
+                        {% elif social_file.father_governorate == 'medenine' %}مدنين
+                        {% elif social_file.father_governorate == 'tataouine' %}تطاوين
+                        {% elif social_file.father_governorate == 'gafsa' %}قفصة
+                        {% elif social_file.father_governorate == 'tozeur' %}توزر
+                        {% elif social_file.father_governorate == 'kebili' %}قبلي
+                        {% else %}{{ social_file.father_governorate|default:"--" }}
+                        {% endif %}
+                    </span>
+                </div>
+                  <div class="info-group">
+                    <span class="label">معتمدية الإقامة :</span>
+                    <span class="value">{{ social_file.father_delegation|default:"--" }}</span>
+                </div>
+                
+                 <div class="info-group">
+                    <span class="label">الدولة (خارج البلاد) :</span>
+                    <span class="value">
+                        {% if social_file.father_country_abroad == 'tunisia' %}تونس
+                        {% elif social_file.father_country_abroad == 'algeria' %}الجزائر
+                        {% elif social_file.father_country_abroad == 'morocco' %}المغرب
+                        {% elif social_file.father_country_abroad == 'libya' %}ليبيا
+                        {% elif social_file.father_country_abroad == 'egypt' %}مصر
+                        {% elif social_file.father_country_abroad == 'palestine' %}فلسطين
+                        {% elif social_file.father_country_abroad == 'syria' %}سوريا
+                        {% elif social_file.father_country_abroad == 'lebanon' %}لبنان
+                        {% elif social_file.father_country_abroad == 'jordan' %}الأردن
+                        {% elif social_file.father_country_abroad == 'iraq' %}العراق
+                        {% elif social_file.father_country_abroad == 'saudi_arabia' %}المملكة العربية السعودية
+                        {% elif social_file.father_country_abroad == 'uae' %}الإمارات العربية المتحدة
+                        {% elif social_file.father_country_abroad == 'qatar' %}قطر
+                        {% elif social_file.father_country_abroad == 'kuwait' %}الكويت
+                        {% elif social_file.father_country_abroad == 'bahrain' %}البحرين
+                        {% elif social_file.father_country_abroad == 'oman' %}عمان
+                        {% elif social_file.father_country_abroad == 'yemen' %}اليمن
+                        {% elif social_file.father_country_abroad == 'sudan' %}السودان
+                        {% elif social_file.father_country_abroad == 'mauritania' %}موريتانيا
+                        {% elif social_file.father_country_abroad == 'somalia' %}الصومال
+                        {% elif social_file.father_country_abroad == 'comoros' %}جزر القمر
+                        {% elif social_file.father_country_abroad == 'djibouti' %}جيبوتي
+                        {% elif social_file.father_country_abroad == 'turkey' %}تركيا
+                        {% elif social_file.father_country_abroad == 'iran' %}إيران
+                        {% elif social_file.father_country_abroad == 'afghanistan' %}أفغانستان
+                        {% elif social_file.father_country_abroad == 'pakistan' %}باكستان
+                        {% elif social_file.father_country_abroad == 'india' %}الهند
+                        {% elif social_file.father_country_abroad == 'bangladesh' %}بنغلاديش
+                        {% elif social_file.father_country_abroad == 'indonesia' %}إندونيسيا
+                        {% elif social_file.father_country_abroad == 'malaysia' %}ماليزيا
+                        {% elif social_file.father_country_abroad == 'china' %}الصين
+                        {% elif social_file.father_country_abroad == 'japan' %}اليابان
+                        {% elif social_file.father_country_abroad == 'south_korea' %}كوريا الجنوبية
+                        {% elif social_file.father_country_abroad == 'thailand' %}تايلاند
+                        {% elif social_file.father_country_abroad == 'vietnam' %}فيتنام
+                        {% elif social_file.father_country_abroad == 'philippines' %}الفلبين
+                        {% elif social_file.father_country_abroad == 'russia' %}روسيا
+                        {% elif social_file.father_country_abroad == 'ukraine' %}أوكرانيا
+                        {% elif social_file.father_country_abroad == 'france' %}فرنسا
+                        {% elif social_file.father_country_abroad == 'germany' %}ألمانيا
+                        {% elif social_file.father_country_abroad == 'uk' %}المملكة المتحدة
+                        {% elif social_file.father_country_abroad == 'italy' %}إيطاليا
+                        {% elif social_file.father_country_abroad == 'spain' %}إسبانيا
+                        {% elif social_file.father_country_abroad == 'portugal' %}البرتغال
+                        {% elif social_file.father_country_abroad == 'netherlands' %}هولندا
+                        {% elif social_file.father_country_abroad == 'belgium' %}بلجيكا
+                        {% elif social_file.father_country_abroad == 'switzerland' %}سويسرا
+                        {% elif social_file.father_country_abroad == 'austria' %}النمسا
+                        {% elif social_file.father_country_abroad == 'sweden' %}السويد
+                        {% elif social_file.father_country_abroad == 'norway' %}النرويج
+                        {% elif social_file.father_country_abroad == 'denmark' %}الدنمارك
+                        {% elif social_file.father_country_abroad == 'finland' %}فنلندا
+                        {% elif social_file.father_country_abroad == 'poland' %}بولندا
+                        {% elif social_file.father_country_abroad == 'czech_republic' %}التشيك
+                        {% elif social_file.father_country_abroad == 'hungary' %}المجر
+                        {% elif social_file.father_country_abroad == 'romania' %}رومانيا
+                        {% elif social_file.father_country_abroad == 'bulgaria' %}بلغاريا
+                        {% elif social_file.father_country_abroad == 'greece' %}اليونان
+                        {% elif social_file.father_country_abroad == 'serbia' %}صربيا
+                        {% elif social_file.father_country_abroad == 'croatia' %}كرواتيا
+                        {% elif social_file.father_country_abroad == 'bosnia' %}البوسنة والهرسك
+                        {% elif social_file.father_country_abroad == 'albania' %}ألبانيا
+                        {% elif social_file.father_country_abroad == 'macedonia' %}مقدونيا الشمالية
+                        {% elif social_file.father_country_abroad == 'slovenia' %}سلوفينيا
+                        {% elif social_file.father_country_abroad == 'slovakia' %}سلوفاكيا
+                        {% elif social_file.father_country_abroad == 'lithuania' %}ليتوانيا
+                        {% elif social_file.father_country_abroad == 'latvia' %}لاتفيا
+                        {% elif social_file.father_country_abroad == 'estonia' %}إستونيا
+                        {% elif social_file.father_country_abroad == 'usa' %}الولايات المتحدة الأمريكية
+                        {% elif social_file.father_country_abroad == 'canada' %}كندا
+                        {% elif social_file.father_country_abroad == 'mexico' %}المكسيك
+                        {% elif social_file.father_country_abroad == 'brazil' %}البرازيل
+                        {% elif social_file.father_country_abroad == 'argentina' %}الأرجنتين
+                        {% elif social_file.father_country_abroad == 'chile' %}تشيلي
+                        {% elif social_file.father_country_abroad == 'colombia' %}كولومبيا
+                        {% elif social_file.father_country_abroad == 'peru' %}بيرو
+                        {% elif social_file.father_country_abroad == 'venezuela' %}فنزويلا
+                        {% elif social_file.father_country_abroad == 'ecuador' %}الإكوادور
+                        {% elif social_file.father_country_abroad == 'uruguay' %}أوروغواي
+                        {% elif social_file.father_country_abroad == 'paraguay' %}باراغواي
+                        {% elif social_file.father_country_abroad == 'bolivia' %}بوليفيا
+                        {% elif social_file.father_country_abroad == 'cuba' %}كوبا
+                        {% elif social_file.father_country_abroad == 'dominican_republic' %}جمهورية الدومينيكان
+                        {% elif social_file.father_country_abroad == 'australia' %}أستراليا
+                        {% elif social_file.father_country_abroad == 'new_zealand' %}نيوزيلندا
+                        {% elif social_file.father_country_abroad == 'south_africa' %}جنوب أفريقيا
+                        {% elif social_file.father_country_abroad == 'nigeria' %}نيجيريا
+                        {% elif social_file.father_country_abroad == 'ghana' %}غانا
+                        {% elif social_file.father_country_abroad == 'kenya' %}كينيا
+                        {% elif social_file.father_country_abroad == 'ethiopia' %}إثيوبيا
+                        {% elif social_file.father_country_abroad == 'uganda' %}أوغندا
+                        {% elif social_file.father_country_abroad == 'tanzania' %}تنزانيا
+                        {% elif social_file.father_country_abroad == 'zimbabwe' %}زيمبابوي
+                        {% elif social_file.father_country_abroad == 'zambia' %}زامبيا
+                        {% elif social_file.father_country_abroad == 'malawi' %}مالاوي
+                        {% elif social_file.father_country_abroad == 'mozambique' %}موزمبيق
+                        {% elif social_file.father_country_abroad == 'botswana' %}بوتسوانا
+                        {% elif social_file.father_country_abroad == 'namibia' %}ناميبيا
+                        {% elif social_file.father_country_abroad == 'angola' %}أنغولا
+                        {% elif social_file.father_country_abroad == 'congo' %}الكونغو
+                        {% elif social_file.father_country_abroad == 'gabon' %}الغابون
+                        {% elif social_file.father_country_abroad == 'cameroon' %}الكاميرون
+                        {% elif social_file.father_country_abroad == 'ivory_coast' %}ساحل العاج
+                        {% elif social_file.father_country_abroad == 'senegal' %}السنغال
+                        {% elif social_file.father_country_abroad == 'mali' %}مالي
+                        {% elif social_file.father_country_abroad == 'burkina_faso' %}بوركينا فاسو
+                        {% elif social_file.father_country_abroad == 'niger' %}النيجر
+                        {% elif social_file.father_country_abroad == 'chad' %}تشاد
+                        {% elif social_file.father_country_abroad == 'central_african_republic' %}جمهورية أفريقيا الوسطى
+                        {% elif social_file.father_country_abroad == 'equatorial_guinea' %}غينيا الاستوائية
+                        {% elif social_file.father_country_abroad == 'sao_tome_principe' %}ساو تومي وبرينسيب
+                        {% elif social_file.father_country_abroad == 'gambia' %}غامبيا
+                        {% elif social_file.father_country_abroad == 'guinea' %}غينيا
+                        {% elif social_file.father_country_abroad == 'guinea_bissau' %}غينيا بيساو
+                        {% elif social_file.father_country_abroad == 'sierra_leone' %}سيراليون
+                        {% elif social_file.father_country_abroad == 'liberia' %}ليبيريا
+                        {% elif social_file.father_country_abroad == 'togo' %}توغو
+                        {% elif social_file.father_country_abroad == 'benin' %}بنين
+                        {% else %}{{ social_file.father_country_abroad|default:"--" }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Ligne: المستوى التعليمي + الوضعية المهنية + الوضعية الصحية -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">المستوى التعليمي :</span>
+                    <span class="value">
+                        {% if social_file.father_education_level == 'illiterate' %}
+                            <span class="badge badge-large bg-secondary">أمي</span>
+                        {% elif social_file.father_education_level == 'primary' %}
+                            <span class="badge badge-large bg-info">تعليم أساسي</span>
+                        {% elif social_file.father_education_level == 'secondary' %}
+                            <span class="badge badge-large bg-primary">تعليم ثانوي</span>
+                        {% elif social_file.father_education_level == 'higher' %}
+                            <span class="badge badge-large bg-success">تعليم عالي</span>
+                             {% elif social_file.father_education_level == 'noted' %}
+                            <span class="badge badge-large bg-success">غير محدد</span>
+                      
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+    <span class="label">الوضعية المهنية:</span>
+    <span class="value">
+       {% if social_file.father_job_status == 'employed' %}
+    <span class="badge badge-large bg-success">موظف</span>
+{% elif social_file.father_job_status == 'employee' %}        {# ← AJOUTER #}
+    <span class="badge badge-large bg-success">موظف</span>   {# ← AJOUTER #}
+{% elif social_file.father_job_status == 'worker' %}
+    <span class="badge badge-large bg-primary">عامل</span>
+{% elif social_file.father_job_status == 'unemployed' %}
+    <span class="badge badge-large bg-warning text-dark">عاطل عن العمل</span>
+    {% elif social_file.father_job_status == 'notfa' %}
+    <span class="badge badge-large bg-warning text-dark">غير محدد</span>
+
+{% else %}
+    <span class="text-muted">--</span>  {# ← SUPPRIMER le debug (valeur: ...) #}
+{% endif %}
+    </span>
+</div>
+                <div class="info-group">
+                    <span class="label">الوضعية الصحية:</span>
+                    <span class="value">
+                        {% if social_file.father_health_status == 'good' %}
+                            <span class="badge badge-large bg-success">في حالة صحية طيبة</span>
+                        {% elif social_file.father_health_status == 'chronic' %}
+                            <span class="badge badge-large bg-warning text-dark">في حالة مرض مزمن</span>
+                        {% elif social_file.father_health_status == 'mental' %}
+                            <span class="badge badge-large bg-danger">في حالة مرض نفسي</span>
+                        {% elif social_file.father_health_status == 'disability' %}
+                            <span class="badge badge-large bg-secondary">تعاني من وضعية إعاقة</span>
+                            {% elif social_file.father_health_status == 'disab' %}
+                            <span class="badge badge-large bg-secondary">حالة وفاة</span>
+                           {% elif social_file.father_health_status == 'notheal' %}
+                            <span class="badge badge-large bg-secondary">غير محدد</span>
+
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- 4. بيانات العائلة -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="section-header">
+                <i class="fas fa-users"></i>
+                بيانات العائلة
+            </div>
+
+            <!-- Ligne: صنف العائلة + الوضعية العلائقية + مصدر الدخل -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">صنف العائلة :</span>
+                    <span class="value">
+                        {% if social_file.family_type == 'biological' %}
+                            <span class="badge badge-large bg-info">عائلة بيولوجية</span>
+                        {% elif social_file.family_type == 'single_parent' %}
+                            <span class="badge badge-large bg-warning text-dark">عائلة ذات ولي واحد</span>
+                        {% elif social_file.family_type == 'extended' %}
+                            <span class="badge badge-large bg-primary">عائلة موسعة</span>
+                        {% elif social_file.family_type == 'foster' %}
+                            <span class="badge badge-large bg-secondary">عائلة استقبال</span>
+                        {% elif social_file.family_type == 'adoption' %}
+                            <span class="badge badge-large bg-success">عائلة تبني</span>
+                        {% elif social_file.family_type == 'sponsorship' %}
+                            <span class="badge badge-large bg-dark">عائلة كفالة</span>
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+    <span class="label">الوضعية العلائقية للوالدين :</span>
+    <span class="value">
+       {% if social_file.parents_relationship == 'married' %}
+    <span class="badge badge-large bg-success">زواج</span>
+{% elif social_file.parents_relationship == 'marriage' %}     {# ← AJOUTER #}
+    <span class="badge badge-large bg-success">زواج</span>     {# ← AJOUTER #}
+{% elif social_file.parents_relationship == 'divorced' %}
+    <span class="badge badge-large bg-warning text-dark">طلاق</span>
+{% elif social_file.parents_relationship == 'separated' %}
+    <span class="badge badge-large bg-info">فراق</span>
+{% elif social_file.parents_relationship == 'mother_deceased' %}
+    <span class="badge badge-large bg-secondary">وفاة الأم</span>
+{% elif social_file.parents_relationship == 'father_deceased' %}
+    <span class="badge badge-large bg-secondary">وفاة الأب</span>
+{% elif social_file.parents_relationship == 'both_deceased' %}
+    <span class="badge badge-large bg-dark">الوالدين متوفيان</span>
+{% elif social_file.parents_relationship == 'irregular' %}
+    <span class="badge badge-large bg-danger">علاقة على خلاف الصيغ القانونية</span>
+{% else %}
+    <span class="text-muted">--</span>  {# ← SUPPRIMER le debug (valeur: ...) #}
+{% endif %}
+    </span>
+</div>
+                <div class="info-group">
+                    <span class="label">مصدر دخل العائلة :</span>
+                    <span class="value">
+                        {% if social_file.family_income_source == 'social_aid' %}
+                            <span class="badge badge-large bg-info">إعانة اجتماعية</span>
+                        {% elif social_file.family_income_source == 'alimony' %}
+                            <span class="badge badge-large bg-primary">نفقة</span>
+                        {% elif social_file.family_income_source == 'salary' %}
+                            <span class="badge badge-large bg-success">راتب</span>
+                        {% elif social_file.family_income_source == 'pension' %}
+                            <span class="badge badge-large bg-warning text-dark">مدخول اعمال حرة</span>
+                        {% elif social_file.family_income_source == 'other' %}
+                            <span class="badge badge-large bg-secondary">أخرى</span>
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Ligne: الوضعية الاجتماعية + الولوج للخدمات الصحية -->
+            <div class="info-row">
+                <div class="info-group">
+                    <span class="label">الوضعية الاجتماعية للعائلة :</span>
+                    <span class="value">
+                        {% if social_file.family_social_status == 'poor' %}
+                            <span class="badge badge-large bg-danger">عائلة معوزة، فقيرة</span>
+                        {% elif social_file.family_social_status == 'low_income' %}
+                            <span class="badge badge-large bg-warning text-dark">عائلة محدودة الدخل</span>
+                        {% elif social_file.family_social_status == 'average' %}
+                            <span class="badge badge-large bg-info">متوسطة</span>
+                        {% elif social_file.family_social_status == 'well_off' %}
+                            <span class="badge badge-large bg-success">ميسورة الحال</span>
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="label">الولوج للخدمات الصحية :</span>
+                    <span class="value">
+                        {% if social_file.health_access == 'health_fund' %}
+                            <span class="badge badge-large bg-success">تغطية صحية من الصناديق</span>
+                        {% elif social_file.health_access == 'free_card' %}
+                            <span class="badge badge-large bg-info">بطاقة العلاج المجاني</span>
+                        {% elif social_file.health_access == 'reduced_rate' %}
+                            <span class="badge badge-large bg-primary">بطاقة العلاج بالتعريفة المنخفضة</span>
+                        {% elif social_file.health_access == 'no_coverage_poor' %}
+                            <span class="badge badge-large bg-danger">معوزة بدون تغطية صحية</span>
+                        {% elif social_file.health_access == 'no_coverage_rich' %}
+                            <span class="badge badge-large bg-warning text-dark">ميسورة بدون تغطية صحية</span>
+                        {% else %}
+                            <span class="text-muted">--</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pied de la fiche -->
+        <div class="update-date">
+            <i class="far fa-clock"></i>
+            تاريخ آخر تحديث: {{ social_file.created_at|date:"Y-m-d H:i" }}
+        </div>
+        
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-folder-open"></i>
+        <h4>لا يوجد ملف اجتماعي مسجل</h4>
+        <p>لم يتم إنشاء أي ملف اجتماعي لهذا الطفل بعد</p>
+    </div>
+    {% endif %}
+</div>
+ </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function printChild(divId) {
+
+    const content = document.getElementById(divId).cloneNode(true);
+
+    // supprimer le contenu inutile
+    content.querySelectorAll("button").forEach(e => e.remove());
+
+    const printWindow = window.open("", "", "width=900,height=700");
+
+    printWindow.document.write(`
+    <html dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+
+        <style>
+
+        body{
+            direction:rtl;
+            font-family:Times New Roman (Titres CS);
+            padding:20px;
+        }
+
+        .btn,
+        .no-print{
+            display:none !important;
+        }
+
+        .social-file-card{
+            border:1px solid #000;
+        }
+
+        .section-header{
+            background:#003154;
+            color:white;
+            padding:8px;
+            margin-top:20px;
+            font-weight:bold;
+        }
+
+        .info-row{
+            display:flex;
+            flex-wrap:wrap;
+            margin-bottom:10px;
+        }
+
+        .info-group{
+            width:48%;
+            margin:5px;
+        }
+
+        .label{
+            font-weight:bold;
+        }
+
+        </style>
+
+    </head>
+
+    <body>
+
+    ${content.innerHTML}
+
+    </body>
+
+    </html>
+    `);
+
+    printWindow.document.close();
+
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+    },500);
+
+}
+
+
+
+
+
+</script>
+
+{% endblock %}

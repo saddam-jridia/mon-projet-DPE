@@ -1,0 +1,254 @@
+<!-- Carte Investigation (Mode Lecture) -->
+<div id="investigation-{{ inv.id }}" class="investigation-file">
+    
+    <!-- En-tête -->
+  <div class="file-header">
+    <div class="d-flex align-items-center">
+        <i class="fas fa-file-alt fa-lg me-3"></i>
+        <div>
+           <h5>ملف صلاحيات تقدير جدية الإشعار على الاشعار رقم ({{ inv.notification.notifier_number }})</h5> <small class="text-light">
+                <i class="fas fa-clock me-1"></i>
+                تاريخ الإنشاء: {{ inv.created_at|date:"Y-m-d H:i" }}
+            </small>
+        </div>
+    </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <span class="file-number">
+                <i class="fas fa-hashtag me-1"></i>
+                {{ inv.notification.notifier_number }}
+            </span>
+            
+        </div>
+    </div>
+    
+    <!-- Corps -->
+    <div class="file-body">
+        <div class="row">
+            
+            <!-- القسم 1: الإجراءات القضائية -->
+            <div class="col-md-4">
+                <div class="file-section">
+                    <div class="file-section-title">
+                        <i class="fas fa-gavel"></i>
+                        الإجراءات 
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">طلب الإذن القضائي</span>
+                        <span class="data-value {% if not inv.court_request_date %}empty{% endif %}">
+                            {{ inv.court_request_date|date:"Y-m-d"|default:"غير محدد" }}
+                        </span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">تاريخ الشروع في الأبحاث</span>
+                        <span class="data-value {% if not inv.investigation_start %}empty{% endif %}">
+                            {{ inv.investigation_start|date:"Y-m-d"|default:"غير محدد" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+             
+            <!-- القسم 4: التقييم النفسي -->
+            <div class="col-md-4">
+                <div class="file-section">
+                    <div class="file-section-title">
+                        <i class="fas fa-brain"></i>
+                        التقييم النفسي
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">تاريخ طلب عرض الطفل</span>
+                        <span class="data-value {% if not inv.psychological_request %}empty{% endif %}">
+                            {{ inv.psychological_request|date:"Y-m-d"|default:"غير محدد" }}
+                        </span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">تاريخ الحصول على التقارير</span>
+                        <span class="data-value {% if not inv.psychological_result %}empty{% endif %}">
+                            {{ inv.psychological_result|date:"Y-m-d"|default:"غير محدد" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- القسم 5: التقييم الطبي النفسي -->
+            <div class="col-md-4">
+                <div class="file-section">
+                    <div class="file-section-title">
+                        <i class="fas fa-stethoscope"></i>
+                        التقييم الطبي النفسي
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">تاريخ طلب عرض الطفل</span>
+                        <span class="data-value {% if not inv.medical_psych_request %}empty{% endif %}">
+                            {{ inv.medical_psych_request|date:"Y-m-d"|default:"غير محدد" }}
+                        </span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">تاريخ الحصول على التقارير</span>
+                        <span class="data-value {% if not inv.medical_psych_result %}empty{% endif %}">
+                            {{ inv.medical_psych_result|date:"Y-m-d"|default:"غير محدد" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- القسم 2: استدعاء الأطراف (depuis related_name='summons_list') -->
+          <div class="col-md-4">
+    <div class="file-section">
+        <div class="file-section-title">
+            <i class="fas fa-users"></i>
+            استدعاء الطفل وأبويه والأطراف المعنية
+            <span class="badge bg-dark ms-2">{{ inv.summons_list.count }}</span>
+        </div>
+        
+        {% for summons in inv.summons_list.all %}
+        <div class="data-item">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+                <span class="data-label">
+                    {{ forloop.counter }}. {{ summons.get_summons_method_display|default:"طريقة غير محددة" }}
+                </span>
+            </div>
+            
+            <div class="d-flex flex-column gap-1 ps-3">
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">تاريخ الاستدعاء:</span>
+                    <span class="data-value">
+                        {% if summons.summons_date %}
+                            {{ summons.summons_date|date:"Y-m-d" }}
+                        {% else %}
+                            <span class="empty">-</span>
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">تاريخ الحضور:</span>
+                    <span class="data-value">
+                        {% if summons.attendance_date %}
+                            <span class="text-success">{{ summons.attendance_date|date:"Y-m-d" }}</span>
+                        {% else %}
+                            <span class="empty">-</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        {% if not forloop.last %}
+        <hr class="my-2 opacity-25">
+        {% endif %}
+        
+        {% empty %}
+        <div class="data-item">
+            <span class="data-value empty">لا توجد استدعاءات مسجلة</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+            
+            <!-- القسم 3: زيارة الطفل (depuis related_name='visit_list') -->
+            <div class="col-md-4">
+                <div class="file-section">
+                    <div class="file-section-title">
+                        <i class="fas fa-home"></i>
+                    الدخول إلى المكان الذي يوجد به الطفل
+                        <span class="badge bg-dark ms-2">{{ inv.visit_list.count }}</span>
+                    </div>
+                    {% for visit in inv.visit_list.all %}
+                    <div class="data-item">
+                             
+                        <span class="data-label">
+                            {{ forloop.counter }}. {{ visit.get_visit_place_display|default:"مكان غير محدد" }}
+                        </span>
+                           
+                         <span class="data-label">مكان الزيارة</span>
+                       
+                        <span class="data-value">
+                            {% if visit.visit_date %}{{ visit.visit_date|date:"Y-m-d" }}{% else %}-{% endif %}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <div class="data-item">
+                        <span class="data-value empty">لا توجد زيارات مسجلة</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+           
+            
+            <!-- القسم 6: التقارير الاجتماعية -->
+          <!-- القسم 6: التقارير الاجتماعية -->
+<div class="col-md-4">
+    <div class="file-section">
+        <div class="file-section-title">
+            <i class="fas fa-file-alt"></i>
+            التقارير الاجتماعية
+            <span class="badge bg-dark ms-2">{{ inv.social_report_list.count }}</span>
+        </div>
+        {% for report in inv.social_report_list.all %}
+        <div class="data-item">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+                <span class="data-label">
+                    {{ forloop.counter }}. تقرير اجتماعي
+                </span>
+            </div>
+            <div class="d-flex flex-column gap-1 ps-3">
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">تاريخ طلب البحث / التقرير</span>
+                    <span class="data-value">
+                        {% if report.report_request %}
+                            {{ report.report_request|date:"Y-m-d" }}
+                        {% else %}
+                            <span class="empty">-</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">تاريخ الحصول البحث / التقرير</span>
+                    <span class="data-value">
+                        {% if report.report_receive %}
+                            <span class="text-success">{{ report.report_receive|date:"Y-m-d" }}</span>
+                        {% else %}
+                            <span class="empty">-</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% if not forloop.last %}
+        <hr class="my-2 opacity-25">
+        {% endif %}
+        {% empty %}
+        <div class="data-item">
+            <span class="data-value empty">لا توجد تقارير اجتماعية مسجلة</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+        </div>
+        
+        <!-- Pied de page - Statut -->
+        <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+            <div>
+                <span class="data-label me-2">تاريخ انتهاء الأبحاث:</span>
+                {% if inv.investigation_end %}
+                    <span class="status-badge status-completed">
+                        <i class="fas fa-check-circle me-1"></i>
+                        منتهي بتاريخ {{ inv.investigation_end|date:"Y-m-d" }}
+                    </span>
+                {% else %}
+                    <span class="status-badge status-pending">
+                        <i class="fas fa-spinner me-1"></i>
+                        قيد الإجراء
+                    </span>
+                {% endif %}
+            </div>
+            <small class="text-muted">
+                <i class="fas fa-user me-1"></i>
+                آخر تحديث: {{ inv.updated_at|date:"Y-m-d H:i"|default:inv.created_at|date:"Y-m-d H:i" }}
+            </small>
+        </div>
+    </div>
+</div>

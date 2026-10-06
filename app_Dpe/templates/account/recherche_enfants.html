@@ -1,0 +1,2002 @@
+{% extends "account/base.html" %}
+{% load static %}
+
+{% block head_title %}البحث عن الأطفال{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    /* Couleurs principales - harmonisées avec navbar/footer */
+    --primary: #b8860b;           /* Or foncé (gold) */
+    --primary-dark: #8c6d0b;      /* Or plus foncé */
+    --primary-light: #f4e4bc;     /* Or très clair */
+    --accent: #d4a520;            /* Or accent */
+    --danger: #c41230;            /* Rouge officiel */
+    
+    /* Couleurs de fond */
+    --bg: #f5f5f5;                /* Gris très clair */
+    --card-bg: #ffffff;           /* Blanc */
+    --text: #1a1a1a;              /* Noir navbar */
+    --text-light: #5a5b5d;        /* Gris foncé */
+    
+    /* Ombres et effets */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+    
+    /* Bordures */
+    --radius: 20px;
+    --radius-sm: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(184, 134, 11, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(184, 134, 11, 0.04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* ---------- Main Content ---------- */
+.main-content {
+    min-height: calc(100vh - 200px);
+}
+
+/* ---------- Header ---------- */
+.modern-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: white;
+    padding: 2.5rem 0 5rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid #b8860b;
+}
+
+.modern-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: rgba(184, 134, 11, 0.05);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.modern-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, var(--bg), transparent);
+    pointer-events: none;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+}
+
+.brand-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.system-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    color: #ffffff;
+}
+
+.system-title i {
+    font-size: 2rem;
+    opacity: 0.9;
+    color: #b8860b;
+}
+
+.subtitle {
+    font-size: 1rem;
+    opacity: 0.85;
+    font-weight: 400;
+    color: #e0e0e0;
+}
+
+.user-badge {
+    background: rgba(184, 134, 11, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(184, 134, 11, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(184, 134, 11, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    border: 2px solid rgba(184, 134, 11, 0.4);
+    color: #b8860b;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+}
+
+.user-role {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    font-weight: 500;
+    color: #f4e4bc;
+}
+
+/* ---------- Zone de Recherche ---------- */
+.search-wrapper {
+    max-width: 1000px;
+    margin: -4rem auto 3rem;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.search-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.6s ease-out;
+    border: 1px solid rgba(184, 134, 11, 0.1);
+}
+
+/* ✅ NOUVEAU : Bouton تحيين الوضعية en haut de la carte */
+.card-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-change-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background: linear-gradient(135deg, rgba(196, 18, 48, 0.1) 0%, rgba(196, 18, 48, 0.05) 100%);
+    color: #c41230;
+    border: 1.5px solid rgba(196, 18, 48, 0.3);
+    border-radius: 50px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.status-change-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.status-change-btn:hover::before {
+    left: 100%;
+}
+
+.status-change-btn:hover {
+    background: linear-gradient(135deg, #c41230 0%, #a00e27 100%);
+    color: white;
+    border-color: #c41230;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(196, 18, 48, 0.35);
+}
+
+.status-change-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(196, 18, 48, 0.3);
+}
+
+.status-change-btn i {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.status-change-btn:hover i {
+    transform: rotate(180deg);
+}
+
+/* ✅ Badge de type amélioré */
+.card-type {
+    padding: 0.35rem 0.85rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.card-type::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.type-menaced::before {
+    background: #b8860b;
+    box-shadow: 0 0 8px rgba(184, 134, 11, 0.6);
+    animation: pulseDot 2s infinite;
+}
+
+.type-delinquant::before {
+    background: #1a1a1a;
+    box-shadow: 0 0 8px rgba(26, 26, 26, 0.4);
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* Amélioration du card-top */
+.card-top {
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #faf8f3 0%, #fff 100%);
+    border-bottom: 1px solid rgba(184, 134, 11, 0.1);
+    position: relative;
+}
+
+.card-top::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.2), transparent);
+}
+
+/* Responsive pour le bouton */
+@media (max-width: 480px) {
+    .status-change-btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.7rem;
+    }
+    
+    .status-change-btn span {
+        display: none;
+    }
+    
+    .status-change-btn i {
+        font-size: 0.9rem;
+    }
+    
+    .card-type {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.7rem;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #b8860b 0%, #f4e4bc 100%);
+}
+
+.search-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.search-header h2 {
+    color: var(--text);
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.search-header h2 i {
+    color: var(--primary);
+    font-size: 1.5rem;
+}
+
+.search-header p {
+    color: var(--text-light);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* Formulaire optimisé */
+.search-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+}
+
+.input-group {
+    position: relative;
+}
+
+.input-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper i {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+    width: 100%;
+    padding: 0.9rem 2.8rem 0.9rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    color: var(--text);
+}
+
+.input-wrapper input[type="date"] {
+    text-align: right;
+}
+
+.input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    left: 1rem;
+    right: auto;
+    opacity: 0.6;
+    cursor: pointer;
+    filter: invert(0.4) sepia(1) saturate(5) hue-rotate(10deg);
+}
+
+.input-wrapper input[type="date"]:focus::-webkit-calendar-picker-indicator {
+    opacity: 1;
+}
+
+.input-wrapper input:hover,
+.input-wrapper select:hover {
+    border-color: #b8860b;
+    background: #fff;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.1);
+}
+
+.input-wrapper input:focus + i,
+.input-wrapper select:focus + i {
+    opacity: 1;
+    color: var(--primary-dark);
+}
+
+.search-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.search-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: white;
+    border: 2px solid #b8860b;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-sm);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    border-color: #d4a520;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(184, 134, 11, 0.3);
+}
+
+.search-btn:active {
+    transform: translateY(0);
+}
+
+.search-btn.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.search-btn.loading::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.reset-btn {
+    padding: 1rem 2rem;
+    background: transparent;
+    color: var(--text-light);
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+    background: #f1f5f9;
+    color: var(--text);
+    border-color: #b8860b;
+    transform: translateY(-1px);
+}
+
+.reset-btn:active {
+    transform: translateY(0);
+}
+
+.back-btn {
+    background: linear-gradient(135deg, #fefefe 0%, #f1f5f9 100%);
+    color: #1a1a1a;
+    border: 2px solid #b8860b;
+    transition: all 0.3s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.back-btn i {
+    transition: transform 0.3s ease;
+}
+
+.back-btn:hover {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    color: white;
+    border-color: #d4a520;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.back-btn:hover i {
+    transform: translateX(-4px) rotate(-15deg);
+}
+
+.back-btn:active {
+    transform: translateY(0);
+}
+
+/* Bouton Ajouter enfant */
+.add-child-btn-header {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    color: white;
+    border: 2px solid #d4a520;
+    transition: all 0.3s ease;
+}
+
+.add-child-btn-header:hover {
+    background: linear-gradient(135deg, #8c6d0b 0%, #6b4f08 100%);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ---------- États des Résultats ---------- */
+.results-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    min-height: 300px;
+}
+
+/* État initial */
+.initial-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255,255,255,0.9);
+    border-radius: var(--radius);
+    border: 2px dashed var(--primary-light);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.initial-state i {
+    font-size: 4rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    opacity: 0.3;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.05); opacity: 0.5; }
+}
+
+.initial-state h3 {
+    color: var(--text);
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.initial-state p {
+    color: var(--text-light);
+    font-size: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* État vide */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: rgba(255,255,255,0.9);
+    border-radius: var(--radius);
+    border: 2px solid #fee2e2;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    animation: shakeIn 0.5s ease-out;
+}
+
+@keyframes shakeIn {
+    0% { transform: translateX(-10px); opacity: 0; }
+    50% { transform: translateX(5px); }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+.empty-state::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--danger);
+    opacity: 0.5;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--danger);
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.empty-state h4 {
+    color: var(--danger);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.empty-state p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+/* Styles pour les boutons d'ajout d'enfant */
+.empty-state-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.add-child-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.add-child-btn i {
+    font-size: 1.1rem;
+}
+
+.add-child-btn.primary {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    color: white;
+    border-color: #d4a520;
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+}
+
+.add-child-btn.primary:hover {
+    background: linear-gradient(135deg, #8c6d0b 0%, #6b4f08 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+}
+
+.add-child-btn.secondary {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: #b8860b;
+    border: 2px solid #b8860b;
+}
+
+.add-child-btn.secondary:hover {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.add-child-btn:active {
+    transform: translateY(0);
+}
+
+/* Style pour le cas où aucune catégorie n'a de résultats */
+.full-empty {
+    background: rgba(255,255,255,0.95);
+    border: 2px dashed rgba(184, 134, 11, 0.3);
+    margin-top: 1rem;
+}
+
+.full-empty .empty-state-actions {
+    margin-top: 1rem;
+}
+
+/* Section Headers */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+    position: relative;
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.section-header.menaced::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 120px;
+    height: 2px;
+    background: #b8860b;
+    border-radius: 2px;
+}
+
+.section-header.delinquant::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 120px;
+    height: 2px;
+    background: #1a1a1a;
+    border-radius: 2px;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-header.menaced .section-title::before {
+    content: '\f06a';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: #b8860b;
+    font-size: 1.1rem;
+    background: rgba(184, 134, 11, 0.1);
+    padding: 0.5rem;
+    border-radius: 10px;
+}
+
+.section-header.delinquant .section-title::before {
+    content: '\f0e3';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: #1a1a1a;
+    font-size: 1.1rem;
+    background: rgba(26, 26, 26, 0.08);
+    padding: 0.5rem;
+    border-radius: 10px;
+}
+
+.badge-count {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: #b8860b;
+    border: 1px solid #b8860b;
+    padding: 0.35rem 1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    min-width: 40px;
+    text-align: center;
+    animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.section-header.delinquant .badge-count {
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    color: #ffffff;
+    border: 1px solid #d4a520;
+    box-shadow: 0 2px 8px rgba(184, 134, 11, 0.2);
+}
+
+/* Grille de résultats */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 3rem;
+}
+
+.result-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 0;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(184, 134, 11, 0.15);
+    overflow: hidden;
+    position: relative;
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.result-card:nth-child(1) { animation-delay: 0.1s; }
+.result-card:nth-child(2) { animation-delay: 0.2s; }
+.result-card:nth-child(3) { animation-delay: 0.3s; }
+.result-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(184, 134, 11, 0.15);
+    border-color: #b8860b;
+}
+
+.card-top {
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #faf8f3 0%, #fff 100%);
+    border-bottom: 1px solid rgba(184, 134, 11, 0.1);
+}
+
+.result-card.delinquant .card-top {
+    background: linear-gradient(135deg, #f5f5f5 0%, #fff 100%);
+    border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: #b8860b;
+    font-weight: 700;
+    border: 2px solid #b8860b;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.result-card:hover .avatar {
+    transform: scale(1.05) rotate(5deg);
+    box-shadow: 0 4px 8px rgba(184, 134, 11, 0.3);
+}
+
+.result-card.delinquant .avatar {
+    color: #1a1a1a;
+    border-color: #1a1a1a;
+    background: linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 100%);
+}
+
+.result-card.delinquant:hover .avatar {
+    border-color: #b8860b;
+    color: #b8860b;
+}
+
+.card-type {
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.type-menaced {
+    background: rgba(184, 134, 11, 0.1);
+    color: #8c6d0b;
+    border: 1px solid rgba(184, 134, 11, 0.3);
+}
+
+.type-delinquant {
+    background: rgba(26, 26, 26, 0.08);
+    color: #1a1a1a;
+    border: 1px solid rgba(26, 26, 26, 0.2);
+}
+
+.card-body {
+    padding: 1rem 1.25rem;
+}
+
+.card-body h3 {
+    font-size: 1.60rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.meta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 1.60rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-light);
+    font-size: 1.15rem;
+    font-weight: 500;
+}
+
+.meta-item i {
+    color: #b8860b;
+    font-size: 1.15rem;
+    width: 18px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.result-card.delinquant .meta-item i {
+    color: #5a5b5d;
+}
+
+/* Style pour le mandataire avec liens */
+.mandataire-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-top: 2px solid rgba(184, 134, 11, 0.2);
+    background: rgba(184, 134, 11, 0.03);
+    border-radius: 8px;
+    margin: 0.75rem -0.5rem -0.5rem -0.5rem;
+}
+
+.mandataire-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #8c6d0b;
+    font-weight: 700;
+}
+
+.mandataire-row i {
+    color: #b8860b;
+    font-size: 1rem;
+}
+
+.result-card.delinquant .mandataire-info {
+    background: rgba(26, 26, 26, 0.03);
+    border-top-color: rgba(26, 26, 26, 0.15);
+}
+
+.result-card.delinquant .mandataire-row {
+    color: #1a1a1a;
+}
+
+.result-card.delinquant .mandataire-row i {
+    color: #5a5b5d;
+}
+
+.mandataire-label {
+    font-weight: 800;
+    margin-left: 0.25rem;
+     font-size: 1.15rem;
+}
+
+.mandataire-name {
+    font-weight: 600;
+    font-size: 1.15rem;
+}
+
+/* Liens d'action */
+.mandataire-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed rgba(184, 134, 11, 0.2);
+    
+}
+
+.action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.action-link i {
+    font-size: 0.75rem;
+}
+
+.action-link.details {
+    background: rgba(184, 134, 11, 0.1);
+    color: #8c6d0b;
+    border: 1px solid rgba(184, 134, 11, 0.3);
+}
+
+.action-link.details:hover {
+    background: #b8860b;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.action-link.notification {
+    background: rgba(26, 26, 26, 0.08);
+    color: #1a1a1a;
+    border: 1px solid rgba(26, 26, 26, 0.2);
+}
+
+.action-link.notification:hover {
+    background: #1a1a1a;
+    color: #b8860b;
+    transform: translateY(-2px);
+}
+
+/* ✅ NOUVEAU : Bouton تحيين الوضعية */
+.action-link.change-status-btn {
+    background: rgba(196, 18, 48, 0.08);
+    color: #c41230;
+    border: 1px solid rgba(196, 18, 48, 0.3);
+    font-family: 'Tajawal', sans-serif;
+}
+
+.action-link.change-status-btn:hover {
+    background: #c41230;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(196, 18, 48, 0.3);
+}
+
+.action-link.change-status-btn i {
+    font-size: 0.8rem;
+}
+
+.result-card.delinquant .action-link.details {
+    background: rgba(184, 134, 11, 0.1);
+    color: #8c6d0b;
+}
+
+.result-card.delinquant .action-link.details:hover {
+    background: #b8860b;
+    color: white;
+}
+
+.result-card.delinquant .action-link.notification {
+    background: rgba(26, 26, 26, 0.08);
+    color: #1a1a1a;
+}
+
+.result-card.delinquant .action-link.notification:hover {
+    background: #1a1a1a;
+    color: #b8860b;
+}
+
+/* Section Divider */
+.section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(184, 134, 11, 0.3) 50%, transparent 100%);
+    margin: 2.5rem 0;
+    position: relative;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1a1a1a;
+    color: #b8860b;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    border: 1px solid #b8860b;
+     font-size: 18px;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+/* Floating Action Button */
+.fab-add-child {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    z-index: 100;
+    text-decoration: none;
+    border: 2px solid #d4a520;
+}
+
+.fab-add-child:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #8c6d0b 0%, #6b4f08 100%);
+    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.5);
+}
+
+.fab-add-child i {
+    font-size: 24px;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modern-header {
+        padding: 2rem 0 4rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+        align-items: center;
+    }
+    
+    .search-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .search-actions {
+        flex-direction: column;
+    }
+    
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    
+    .badge-count {
+        align-self: flex-end;
+    }
+    
+    .mandataire-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .action-link {
+        justify-content: center;
+    }
+    
+    .empty-state-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .add-child-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.7rem 1.2rem;
+    }
+    
+    .fab-add-child {
+        bottom: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .fab-add-child i {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-card {
+        padding: 1.5rem;
+    }
+    
+    .system-title {
+        font-size: 1.1rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .user-badge {
+        padding: 0.75rem 1rem;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .fab-add-child {
+        bottom: 15px;
+        left: 15px;
+        width: 45px;
+        height: 45px;
+    }
+}
+
+/* Section combinée : enfants mهددون & في خلاف مع القانون */
+.section-header.combined::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 180px;
+    height: 2px;
+    background: linear-gradient(90deg, #b8860b 0%, #1a1a1a 100%);
+    border-radius: 2px;
+}
+
+.section-header.combined .section-title::before {
+    content: '\f0c0';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: #b8860b;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, rgba(184,134,11,.12), rgba(26,26,26,.08));
+    padding: .5rem;
+    border-radius: 10px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <!-- Header -->
+    <div class="modern-header">
+        <div class="header-content">
+            <div class="brand-section">
+                <div class="system-title">
+                    <i class="fas fa-child"></i>
+                    <span>البحث عن طفل</span>
+                </div>
+
+            </div>
+            
+            {% if request.user.delegate_profile %}
+            <div class="user-badge">
+                <div class="user-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name">{{ request.user.delegate_profile.first_name }} {{ request.user.delegate_profile.last_name }}</span>
+                    <span class="user-role">مندوب حماية الطفولة</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Zone de Recherche -->
+    <div class="search-wrapper">
+        <div class="search-card">
+            <div class="search-header">
+                <h2>
+                    <i class="fas fa-search"></i>
+                    البحث
+                </h2>
+                <p>البحث باستخدام معايير متعددة</p>
+            </div>
+            
+            <form method="get" class="search-form" id="searchForm" onsubmit="return handleSearch(event)">
+                <!-- Prénom -->
+                <div class="input-group">
+                    <label>الاسم</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="prenom" value="{{ request.GET.prenom }}" placeholder=" الاسم">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+
+                <!-- Nom -->
+                <div class="input-group">
+                    <label>اللقب</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="nom" value="{{ request.GET.nom }}" placeholder="اللقب">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                </div>
+
+                <!-- Nom de mère -->
+                <div class="input-group">
+                    <label>اسم الام</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="nom_mere" value="{{ request.GET.nom_mere }}" placeholder="اسم الام">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                </div>
+
+                <!-- Nom de père -->
+                <div class="input-group">
+                    <label>اسم الاب</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="nom_pere" value="{{ request.GET.nom_pere }}" placeholder="اسم الاب">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                </div>
+
+                <!-- Date de naissance -->
+                <div class="input-group">
+                    <label>تاريخ الولادة</label>
+                    <div class="input-wrapper">
+                        <input type="date" name="date_naissance" value="{{ request.GET.date_naissance }}">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+
+                <!-- UID -->
+                <div class="input-group">
+                    <label>المعرف الوحيد</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="uid" value="{{ request.GET.uid }}" placeholder="رقم المعرف ">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                </div>
+
+                <!-- Wilaya -->
+                <div class="input-group">
+                    <label>مكان ولادة الطفل</label>
+                    <div class="input-wrapper">
+                        <select name="wilaya">
+                            <option value="">اختر الولاية</option>
+                            {% for code, name in WILAYAS %}
+                                <option value="{{ code }}" {% if request.GET.wilaya == code|stringformat:"s" %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Boutons -->
+                <div class="search-actions">
+                    <button type="submit" class="search-btn" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                        <span>بحث</span>
+                    </button>
+                    <button type="button" class="reset-btn" onclick="resetSearchForm()">
+                        <i class="fas fa-undo"></i>
+                        <span>تحديث</span>
+                    </button>
+                    <a href="{% url 'index2' %}" class="reset-btn back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>رجوع</span>
+                    </a>
+                    <!-- Nouveau bouton pour ajouter un enfant -->
+                    <a href="{% url 'child_create' %}" class="reset-btn add-child-btn-header">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>إضافة طفل جديد</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Résultats -->
+    <div class="results-wrapper" id="resultsWrapper">
+
+    {% if not request.GET %}
+        <!-- État initial -->
+        <div class="initial-state">
+            <i class="fas fa-search-plus"></i>
+            <h3>ابدأ البحث</h3>
+            <p>استخدم نموذج البحث أعلاه للعثور على سجلات الأطفال في المنظومة</p>
+            <div class="empty-state-actions" style="margin-top: 1.5rem;">
+                <a href="{% url 'child_create' %}" class="add-child-btn primary">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة طفل جديد</span>
+                </a>
+            </div>
+        </div>
+    {% else %}
+        
+        <!-- Section enfants menacés -->
+        <div class="section-header menaced">
+            <h3 class="section-title">أطفال مهددون</h3>
+            {% if menaced %}
+                <span class="badge-count">{{ menaced|length }}</span>
+            {% endif %}
+        </div>
+
+        {% if menaced %}
+        <div class="results-grid">
+            {% for child in menaced %}
+            <div class="result-card">
+                <div class="card-top">
+    <div class="card-header">
+        <div class="avatar"><i class="fas fa-child"></i></div>
+        <div class="card-top-actions">
+            <span class="card-type type-menaced">مهدد</span>
+            <!-- ✅ Bouton تحيين الوضعية en haut -->
+            <form method="post"
+      action="{% url 'set_child_status' child.id %}"
+      style="display:inline;">
+    {% csrf_token %}
+
+    <input type="hidden"
+           name="status"
+           value="DELINQUENT">
+
+    <button type="submit"
+            class="status-change-btn"
+            onclick="return confirmChangeStatus(
+                '{{ child.first_name }} {{ child.last_name }}'
+            )"
+            title="تحيين الوضعية إلى 'طفل في خلاف مع القانون'">
+
+        <i class="fas fa-exchange-alt"></i>
+
+        <span>تحيين الوضعية</span>
+
+    </button>
+</form>
+        </div>
+    </div>
+</div>
+                <div class="card-body">
+                    <h3>{{ child.first_name }} {{ child.last_name }}</h3>
+                    <div class="meta-info">
+                        <!-- ✅ المعرف الوحيد en premier -->
+                        {% if child.uid %}
+                        <div class="meta-item"><i class="fas fa-id-card"></i><span>المعرف الوحيد: {{ child.uid }}</span></div>
+                        {% endif %}
+                        <!-- ✅ الجنس -->
+                        <div class="meta-item">
+                            <i class="fas fa-venus-mars"></i>
+                            <span>الجنس: 
+                                {% if child.gender == "M" %}
+                                    ذكر
+                                {% elif child.gender == "F" %}
+                                    أنثى
+                                {% else %}
+                                    غير محدد
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% if child.birth_governorate %}
+                        <div class="meta-item"><i class="fas fa-map-marker-alt"></i><span>ولاية {{ child.get_birth_governorate_display }}</span></div>
+                        {% endif %}
+                        {% if child.birth_date %}
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>
+                                {{ child.birth_date|date:"d" }}
+                                {% with month=child.birth_date|date:"n" %}
+                                    {% if month == "1" %}جانفي{% elif month == "2" %}فيفري{% elif month == "3" %}مارس{% elif month == "4" %}أفريل{% elif month == "5" %}ماي{% elif month == "6" %}جوان{% elif month == "7" %}جويلية{% elif month == "8" %}أوت{% elif month == "9" %}سبتمبر{% elif month == "10" %}أكتوبر{% elif month == "11" %}نوفمبر{% elif month == "12" %}ديسمبر{% endif %}
+                                {% endwith %}
+                                {{ child.birth_date|date:"Y" }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if child.delegate_ch %}
+                        <div class="mandataire-info">
+                            <div class="mandataire-row">
+                                <i class="fas fa-building"></i>
+                                <span class="mandataire-label">المكتب المتعهد:</span>
+                                <span class="mandataire-name">{{ child.delegate_ch.get_wilaya_display }}</span>
+                            </div>
+                          
+
+<div class="mandataire-actions">
+    <a href="{% url 'child_detail' child.id %}" class="action-link details">
+        <i class="fas fa-info-circle"></i>
+        <span>أكثر معطيات</span>
+    </a>
+  
+    <!-- ✅ Condition simplifiée - tout délégué peut ajouter -->
+    {% if child.can_notify %}
+        <a href="{% url 'new_notification' child.id %}" class="action-link notification">
+            <i class="fas fa-bell"></i>
+            <span>إضافة إشعار جديد</span>
+        </a>
+    {% else %}
+        <span class="action-link notification disabled" title="يجب تسجيل الدخول كمندوب">
+            <i class="fas fa-bell"></i>
+            <span>إضافة إشعار جديد</span>
+        </span>
+    {% endif %}
+    
+       <a href="{% url 'production_request_list' child.id %}" class="action-link  btn btn-primary btn-sm">
+             مطلب الحماية <i class="fas fa-shield-alt"></i>
+    </a>
+
+  
+</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h4>لا توجد نتائج</h4>
+            <p>لا يوجد أطفال مهددون لمعايير البحث الحالية</p>
+            <div class="empty-state-actions">
+                <a href="{% url 'child_create' %}" class="add-child-btn primary">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة طفل مهدد جديد</span>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if menaced and delinquants %}<div class="section-divider"></div>{% endif %}
+
+        <!-- Section enfants délinquants -->
+        <div class="section-header delinquant">
+            <h3 class="section-title">أطفال في خلاف مع القانون</h3>
+            {% if delinquants %}<span class="badge-count">{{ delinquants|length }}</span>{% endif %}
+        </div>
+
+        {% if delinquants %}
+        <div class="results-grid">
+            {% for enfant in delinquants %}
+            <div class="result-card delinquant">
+                <div class="card-top">
+                    <div class="card-header">
+                        <div class="avatar"><i class="fas fa-user-slash"></i></div>
+                        <span class="card-type type-delinquant">طفل في خلاف مع القانون</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h3>{{ enfant.prenom }} {{ enfant.nom }}</h3>
+                    <div class="meta-info">
+                        <!-- ✅ المعرف الوحيد en premier -->
+                        {% if enfant.uid %}
+                        <div class="meta-item"><i class="fas fa-id-card"></i><span>المعرف الوحيد: {{ enfant.uid }}</span></div>
+                        {% endif %}
+                        <!-- ✅ الجنس -->
+                        <div class="meta-item">
+                            <i class="fas fa-venus-mars"></i>
+                            <span>الجنس: 
+                                {% if enfant.sexe == "M" %}
+                                    ذكر
+                                {% elif enfant.sexe == "F" %}
+                                    أنثى
+                                {% else %}
+                                    غير محدد
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% if enfant.delegue %}
+                        <div class="meta-item"><i class="fas fa-map-marker-alt"></i><span>ولاية: {{ enfant.delegue.get_wilaya_display }}</span></div>
+                        {% endif %}
+                        {% if enfant.date_naissance %}
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>
+                                {{ enfant.date_naissance|date:"d" }}
+                                {% with month=enfant.date_naissance|date:"n" %}
+                                    {% if month == "1" %}جانفي{% elif month == "2" %}فيفري{% elif month == "3" %}مارس{% elif month == "4" %}أفريل{% elif month == "5" %}ماي{% elif month == "6" %}جوان{% elif month == "7" %}جويلية{% elif month == "8" %}أوت{% elif month == "9" %}سبتمبر{% elif month == "10" %}أكتوبر{% elif month == "11" %}نوفمبر{% elif month == "12" %}ديسمبر{% endif %}
+                                {% endwith %}
+                                {{ enfant.date_naissance|date:"Y" }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if enfant.delegue %}
+                    <div class="mandataire-info">
+                        <div class="mandataire-row">
+                            <i class="fas fa-building"></i>
+                            <span class="mandataire-label">المكتب المتعهد:</span>
+                            <span class="mandataire-name">{{ enfant.delegue.get_wilaya_display }}</span>
+                        </div>
+                        <!-- ✅ Seulement 2 boutons pour les délinquants (sans مطلب الحماية) -->
+                        <div class="mandataire-actions">
+                            <a href="{% url 'enfant_delinquent_detail' enfant.id %}" class="action-link details">
+                                <i class="fas fa-info-circle"></i>
+                                <span>أكثر معطيات</span>
+                            </a>
+                            <a href="{% url 'intervention_create' enfant.id %}" class="action-link notification">
+                                <i class="fas fa-bell"></i>
+                                <span>إضافة مطلب وساطة</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h4>لا توجد نتائج</h4>
+            <p>لا يوجد أطفال في خلاف مع القانون مطابقون لمعايير البحث الحالية</p>
+            <div class="empty-state-actions">
+                <a href="{% url 'child_create' %}" class="add-child-btn secondary">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة طفل في خلاف مع القانون جديد</span>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+    {% endif %}
+    </div>
+</div>
+
+ 
+{% if request.GET and transitioned_children %}
+
+<div class="section-divider"></div>
+
+<div class="section-header combined">
+
+    <h3 class="section-title">
+        أطفال مهددون & خلاف مع القانون
+    </h3>
+
+    <span class="badge-count">
+        {{ transitioned_children|length }}
+    </span>
+
+</div>
+
+<div class="results-grid">
+
+    {% for child in transitioned_children %}
+
+    <div class="result-card delinquant">
+
+        <div class="card-top">
+
+            <div class="card-header">
+
+                <div class="avatar">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+
+                <span class="card-type type-delinquant">
+                    طفل مهدد ثم في خلاف مع القانون
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            <h3>
+                {{ child.first_name }} {{ child.last_name }}
+            </h3>
+
+            <div class="meta-info">
+
+                {% if child.uid %}
+                <div class="meta-item">
+
+                    <i class="fas fa-id-card"></i>
+
+                    <span>
+                        المعرف الوحيد: {{ child.uid }}
+                    </span>
+
+                </div>
+                {% endif %}
+
+
+                <div class="meta-item">
+
+                    <i class="fas fa-venus-mars"></i>
+
+                    <span>
+                        الجنس:
+
+                        {% if child.gender == "M" %}
+                            ذكر
+                        {% elif child.gender == "F" %}
+                            أنثى
+                        {% else %}
+                            غير محدد
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                {% if child.birth_governorate %}
+
+                <div class="meta-item">
+
+                    <i class="fas fa-map-marker-alt"></i>
+
+                    <span>
+                        ولاية {{ child.get_birth_governorate_display }}
+                    </span>
+
+                </div>
+
+                {% endif %}
+
+
+                {% if child.birth_date %}
+
+                <div class="meta-item">
+
+                    <i class="fas fa-calendar"></i>
+
+                    <span>
+                        {{ child.birth_date|date:"d/m/Y" }}
+                    </span>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if child.delegate_ch %}
+
+            <div class="mandataire-info">
+
+                <div class="mandataire-row">
+
+                    <i class="fas fa-building"></i>
+
+                    <span class="mandataire-label">
+                        المكتب المتعهد:
+                    </span>
+
+                    <span class="mandataire-name">
+                        {{ child.delegate_ch.get_wilaya_display }}
+                    </span>
+
+                </div>
+
+
+                <div class="mandataire-actions">
+
+                    <!-- أكثر معطيات -->
+                    <a href="{% url 'enfant_delinquent_detail' child.id %}"
+                       class="action-link details">
+
+                        <i class="fas fa-info-circle"></i>
+
+                        <span>
+                            أكثر معطيات
+                        </span>
+
+                    </a>
+
+
+                    <!-- إضافة مطلب وساطة -->
+                    <a href="{% url 'intervention_create' child.id %}"
+                       class="action-link notification">
+
+                        <i class="fas fa-bell"></i>
+
+                        <span>
+                            إضافة مطلب وساطة
+                        </span>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+
+
+<!-- Floating Action Button pour ajouter un enfant rapidement -->
+<a href="{% url 'child_create' %}" class="fab-add-child" title="إضافة طفل جديد">
+    <i class="fas fa-plus"></i>
+</a>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast">
+    <i class="fas fa-check-circle" style="margin-left: 0.5rem;"></i>
+    <span id="toastMessage">تم إعادة تعيين البحث</span>
+</div>
+
+
+
+<script>
+function handleSearch(event) {
+    const form = document.getElementById('searchForm');
+    const btn = document.getElementById('searchBtn');
+
+    const inputs = form.querySelectorAll('input[type="text"], input[type="date"], select');
+    let filled = false;
+
+    inputs.forEach(input => {
+        if (input.value.trim() !== '') {
+            filled = true;
+        }
+    });
+
+    if (!filled) {
+        event.preventDefault();
+        showToast('الرجاء تعبئة حقل واحد على الأقل للبحث');
+        return false;
+    }
+
+    btn.classList.add('loading');
+    btn.innerHTML = '<span>جاري البحث...</span>';
+    return true;
+}
+
+function resetSearchForm() {
+    const form = document.getElementById('searchForm');
+    form.reset();
+    showToast('تم إعادة تعيين حقول البحث');
+
+    setTimeout(() => {
+        window.location.href = window.location.pathname;
+    }, 800);
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.querySelector('#toastMessage').textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function confirmChangeStatus(childName) {
+    return confirm(
+        'هل أنت متأكد من تحيين وضعية الطفل "' +
+        childName +
+        '" من "مهدد" إلى "في خلاف مع القانون"؟\n\n' +
+        'سيتم نقل الطفل إلى قائمة أطفال مهددون & خلاف مع القانون.'
+    );
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.result-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+
+    const inputs = document.querySelectorAll('.input-wrapper input, .input-wrapper select');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.parentElement.style.transform = 'scale(1.02)';
+            this.parentElement.parentElement.style.zIndex = '10';
+        });
+
+        input.addEventListener('blur', function() {
+            this.parentElement.parentElement.style.transform = 'scale(1)';
+            this.parentElement.parentElement.style.zIndex = '1';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,711 @@
+{% extends 'account/Header.html' %}
+ {% load static %}
+ {% load custom_tags %}
+
+  {% load widget_tweaks %} 
+  {% load dict_extras %}
+{% block content %}
+
+<style>
+  
+    .content {
+      margin-right: 270px;
+      margin-top: 300px;
+      padding: 20px;
+    }
+
+    .card {
+    transform: scale(1.05);           /* تكبير الكارد قليلاً */
+    border-radius: 12px;              /* زوايا أجمل */
+}
+.card-header h4 {
+    font-size: 28px;                  /* تكبير العنوان */
+    font-weight: 800;                 /* سمك الخط */
+    letter-spacing: 1px;              /* تباعد بسيط */
+    font-family: "Amiri", serif;      /* نفس خط المنظومة */
+    
+}
+
+    .section-title {
+        background: #e9ecef;
+        padding: 10px;
+        border-right: 4px solid #b9f8ab;
+        font-weight: bold;
+        margin-top: 2px;
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .unmarried-box, .foreign-box {
+        border: 2px solid #b9f8ab;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 6px;
+        background: #f8faff;
+    }
+    /* إجبار جميع عناصر النموذج على الاصطفاف يميناً */
+.form-group, .row, label, input, select {
+    direction: rtl;
+    text-align: right;
+}
+
+/* ضبط اتجاه الأعمدة داخل Bootstrap row */
+.row > [class*="col-"] {
+    text-align: right !important;
+}
+.section-title {
+    font-family: "Amiri", serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: #0a0a0a;
+    text-align: right;
+    margin-bottom: 15px;
+    border-right: 4px solid #111111;
+    padding-right: 10px;
+}
+.content {
+    margin-right: 280px; /* espace pour le sidebar */
+    margin-top: 80px;   /* pour ne pas chevaucher header */
+    padding: 20px;
+}
+
+
+   /* Formulaire en RTL */
+form {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Labels */
+form label {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Champs texte, date, select, textarea */
+form input[type="text"],
+form input[type="date"],
+form textarea,
+form select {
+    text-align: right;
+    direction: rtl;
+}
+
+/* Radios et checkboxes */
+form input[type="radio"],
+form input[type="checkbox"] {
+    float: right;      /* bouton à droite */
+    margin-left: 10px; /* espace entre bouton et label */
+}
+
+/* Paragraphes à l'intérieur des cartes */
+.card-body p {
+    text-align: right;
+}
+
+/* Options multiples dans les cards */
+.card-body div > label {
+    display: inline-block;
+    margin-right: 5px;
+    text-align: right;
+}
+
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .unmarried-box, .foreign-box {
+        border: 2px solid #0b0b0b;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 6px;
+        background: #f8faff;
+    }
+    .container {
+    margin-top: 300px; /* ou margin-top: calc(50px + 60px + 50px) si tu veux plus précis */
+     margin-right: 300px;
+}
+.modal-content {
+    overflow: visible !important;
+}
+
+.modal-body {
+    overflow-y: auto !important;
+}
+
+.card-body {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+<div class="content"> <!-- espace pour le sidebar -->
+
+    <h2 style="text-align:center;">قائمة الإشعارات للطفل {{ child.first_name }} {{ child.last_name }}</h2>
+
+<!-- Boutons avant le tableau avec marge en bas -->
+<div class="mb-3 text-start">
+     <a href="{% url 'child_list_Investigation' %}" class="btn btn-sm me-2 text-black"
+   style="background-color: #d4a520;">
+        <i class="fas fa-arrow-right me-2"></i>
+        العودة إلى إجراءات صلاحيات تقدير جدية الإشعار
+    </a>
+
+    <button onclick="printTable()" 
+        class="btn btn-sm text-black me-2"
+        style="background-color:#d4a520;"
+        title="طباعة الجدول">
+    🖨️ طباعة قائمة الإشعارات
+</button>
+
+  <a href="{% url 'new_notification' child.id %}"
+   class="btn btn-sm me-2 text-black"
+   style="background-color: #d4a520;"
+   title="إضافة إشعار جديد">
+  إضافة إشعار جديد
+</a> <a href="{% url 'child_list_institutions' %}" class="btn btn-sm me-2 text-black"
+   style="background-color: #d4a520;">العودة لقائمة الأطفال</a>
+</div>
+<div id="print-table-area">
+  <table class=" table-bordered" style="text-align:center;">
+    <thead>
+        <tr style="background-color:#c4c0c0;">
+            <th>رقم الإشعار</th>
+            <th>تاريخ إدخال الإشعار بالمنظومة المعلوماتية</th>
+            <th>تاريخ الإشعار</th>
+            <th>مصدر الإشعار</th>
+            <th>طريقة الإشعار</th>
+            <th>انواع التهديد</th>
+            <th>مصدر التهديد</th>
+            <th>مكان التهديد</th>
+            <th>بيانات عن الاشعار</th>
+            <th>تحيين الاشعار</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for notif in notifications %}
+        <tr style="font-size: 14px;">
+            <td>{{ notif.notifier_number }}</td>
+            <td>{{ notif.notif_at|date:"d/m/Y H:i" }}</td>
+            <td>{{ notif.notification_date|date:"d/m/Y" }}</td>
+            <td>
+    {% if notif.notifier_source == "other" and notif.notifier_source_other %}
+        {{ notif.notifier_source_other }}
+    {% else %}
+        {{ notif.get_notifier_source_display }}
+    {% endif %}
+</td>
+
+            <td>{{ notif.get_notification_method_display }}</td>
+            <td>
+        {% if notif.threats %}
+    {% for category, items in notif.threats.items %}
+        <div class="mb-1">
+           <span class="fw-bold" style="color:#002a4e;">
+                {{ THREATS_CATEGORY_LABELS|get_item:category }} :
+            </span>
+
+            {% for item in items %}
+
+    {% with category_labels=THREATS_LABELS|get_item:category %}
+        
+        {% with label=category_labels|get_item:item %}
+            
+            {% if label %}
+                {{ label }}
+            {% else %}
+                {{ item }}
+            {% endif %}
+
+        {% endwith %}
+
+    {% endwith %}
+
+    {% if not forloop.last %}، {% endif %}
+
+{% endfor %}
+        </div>
+    {% endfor %}
+{% else %}
+    -
+{% endif %}
+
+
+
+            </td>
+            <td>{{ notif.get_threat_source_display }}</td>
+            <td>{{ notif.get_threat_location_display }}</td>
+            <td>
+                <!-- Bouton pour ouvrir le modal -->
+                <button type="button" style="font-size: 12px; "class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#notifModal{{ notif.id }}">
+ عرض الاشعار
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="notifModal{{ notif.id }}" tabindex="-1" aria-labelledby="notifModalLabel{{ notif.id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-lg modal-dialog-centered" style="margin-top: 100px; margin-right: 300px;">
+                    <div class="modal-content"  >
+                     
+                       
+                        <div class="modal-header text-white"  style="background-color: #003154; display: flex; flex-direction: column; align-items: flex-start;">
+    
+                        <h5 class="modal-title">
+        الطفل : {{ child.first_name }} {{ child.last_name }}
+    </h5>
+    <h5 class="modal-title" id="notifModalLabel{{ notif.id }}">
+        بيانات عن الإشعار رقم {{ notif.notifier_number }}
+    </h5>
+</div>
+
+
+                      <div class="modal-body text-end" id="print-area-{{ notif.id }}">
+                        <p><strong>تاريخ الإشعار:</strong> {{ notif.notification_date|date:"d/m/Y" }}</p>
+<p><strong>مصدر الإشعار:</strong>
+    {% if notif.notifier_source == "other" and notif.notifier_source_other %}
+        {{ notif.notifier_source_other }}
+    {% else %}
+        {{ notif.get_notifier_source_display }}
+    {% endif %}
+</p>
+                        <p><strong>طريقة الإشعار:</strong> {{ notif.get_notification_method_display }}</p>
+                     <p><strong>أنواع التهديد:</strong></p> 
+
+ {% if notif.threats %}
+    {% for category, items in notif.threats.items %}
+        <div class="mb-1">
+           <span class="fw-bold" style="color:#0e0e0f;">
+                {{ THREATS_CATEGORY_LABELS|get_item:category }} :
+            </span>
+
+           {% for item in items %}
+
+    {% with category_labels=THREATS_LABELS|get_item:category %}
+        
+        {% with label=category_labels|get_item:item %}
+            
+            {% if label %}
+                {{ label }}
+            {% else %}
+                {{ item }}
+            {% endif %}
+
+        {% endwith %}
+
+    {% endwith %}
+
+    {% if not forloop.last %}، {% endif %}
+
+{% endfor %}
+        </div>
+    {% endfor %}
+{% else %}
+    -
+{% endif %}
+
+
+
+
+                        <p><strong>مصدر التهديد:</strong> {{ notif.get_threat_source_display }}</p>
+                        <p><strong>مكان التهديد:</strong> {{ notif.get_threat_location_display }}</p>
+                      </div>
+
+                     
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                       
+                          <button type="button" class="btn btn-primary"
+            onclick="printNotif('{{ notif.id }}')">
+        🖨️ طباعة
+    </button>
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </td>
+
+
+            <td>
+    <!-- Bouton pour ouvrir le modal de mise à jour -->
+<button type="button"
+        class="btn btn-secondary btn-sm"
+        data-bs-toggle="modal"
+        data-bs-target="#updateModal{{ notif.id }}"
+        title="تحيين الإشعار">
+    <i class="fas fa-edit"></i>
+</button>
+
+    <!-- Modal de mise à jour -->
+   <div class="modal fade" id="updateModal{{ notif.id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ notif.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+     style="margin-top: 100px; margin-right: 300px;">
+
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color:  #050505">
+                <h5 class="modal-title" id="updateModalLabel{{ notif.id }}">تحيين الإشعار رقم {{ notif.notifier_number }}</h5>
+                
+            </div>
+            <div class="modal-body text-end"
+     style="
+        max-height: 75vh;
+        overflow-y: auto;
+     ">
+
+                <form id="updateForm{{ notif.id }}" method="post" action="{% url 'update_notification' notif.id %}">
+    {% csrf_token %}
+
+                    <!-- Dates -->
+                    <label>تاريخ الإشعار</label>
+                    <input type="date" name="notification_date" class="form-control mb-2" value="{{ notif.notification_date|date:'Y-m-d' }}">
+
+                   <br>
+                   <br>
+                    <!-- Source du notification -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-info fw-bold" style="background-color: linear-gradient(135deg, #b9f8ab, #b9f8ab, #b9f8ab);;">مصدر الإشعار</div>
+                        <div class="card-body">
+                            {% for value,label in notifier_source_choices %}
+                              <div class="form-check">
+    <input class="form-check-input " type="radio" name="notifier_source" value="{{ value }}" {% if notif.notifier_source == value %}checked{% endif %}>
+    <label class="form-check-label me-4">{{ label }}</label>
+</div>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Méthode de notification -->
+                   <div class="card mb-3">
+    <div class="card-header bg-info fw-bold">طريقة الإشعار</div>
+
+    <div class="card-body"
+         style="
+            max-height: none !important;
+            height: auto !important;
+            overflow: visible !important;
+         ">
+        {% for value, label in notification_method_choices %}
+            <div class="form-check mb-1">
+                <input class="form-check-input"
+                       type="radio"
+                       name="notification_method"
+                       id="method_{{ notif.id }}_{{ value }}"
+                       value="{{ value }}"
+                       {% if notif.notification_method == value %}checked{% endif %}>
+                <label class="form-check-label me-4"
+                       for="method_{{ notif.id }}_{{ value }}">
+                    {{ label }}
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<hr class="my-4">
+<hr class="my-4">
+<hr class="my-4">
+<hr class="my-4">
+
+
+
+                    <!-- Types de menaces -->
+                    <div class="card mb-3">
+    <div class="card-header bg-info fw-bold">أشكال التهديد</div>
+    <div class="card-body">
+        {% for category, items in THREATS_CHOICES.items %}
+           {% if category == 'loss' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">فقدان السند العائلي</label><br>
+    {% elif category == 'neglect' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">الإهمال والتشرد</label><br>
+    {% elif category == 'care' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">التقصير في التربية والرعاية</label><br>
+    {% elif category == 'guardian' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">عجز الأبوين أو الولي</label><br>
+    {% elif category == 'suicide_methods' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">محاولة الانتحار – الوسيلة</label><br>
+    {% elif category == 'suicide_reasons' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">محاولة الانتحار – الأسباب</label><br>
+    {% elif category == 'suicide_place' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">محاولة الانتحار – المكان</label><br>
+    {% elif category == 'abuse_types' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">اعتياد سوء معاملة الطفل</label><br>
+    {% elif category == 'sexual_exploitation' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">استغلال الطفل جنسيًا</label><br>
+    {% elif category == 'organized_crime' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">استغلال الطفل في الإجرام المنظم</label><br>
+    {% elif category == 'economic_exploitation' %}
+        <label class="me-4" style="color:#003154; font-weight:600;">تعريض الطفل للتسول أو استغلاله اقتصاديًا</label><br>
+    {% endif %}
+            {% for value, label in items %}
+                <div class="form-check">
+                    <input class="form-check-input"
+       type="checkbox"
+       name="threats_{{ category }}"
+       value="{{ value }}"
+       {% if notif.threats|get_item:category and value in notif.threats|get_item:category %}checked{% endif %}>
+ <label class="form-check-label me-4">{{ label }}</label>
+                </div>
+            {% endfor %}
+            <hr>
+        {% endfor %}
+    </div>
+</div>
+
+
+                    <!-- Source du menace -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-info fw-bold">مصدر التهديد</div>
+                        <div class="card-body">
+                            {% for value,label in threat_source_choices %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="threat_source" value="{{ value }}" {% if notif.threat_source == value %}checked{% endif %}>
+                                    <label class="form-check-label me-4">{{ label }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Lieu du menace -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-info fw-bold">مكان التهديد</div>
+                        <div class="card-body">
+                            {% for value,label in threat_location_choices %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="threat_location" value="{{ value }}" {% if notif.threat_location == value %}checked{% endif %}>
+                                    <label class="form-check-label me-4">{{ label }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+     
+
+                    <button type="submit" class="btn btn-success w-100 mt-3" style="background-color:  #101010">تسجيل التغييرات</button>
+</form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</td>
+
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="9" class="text-center">لا توجد إشعارات لهذا الطفل</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"></script>
+
+
+<script>
+
+
+document.querySelectorAll('.btn-print').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const divId = btn.dataset.printId;
+        printNotif(divId);
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    {% for notif in notifications %}
+    const form{{ notif.id }} = document.getElementById("updateForm{{ notif.id }}");
+    form{{ notif.id }}.addEventListener("submit", function(e){
+        
+        const url = form{{ notif.id }}.action;
+        const formData = new FormData(form{{ notif.id }});
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Mettre à jour les champs dans le tableau
+            document.querySelector("#notifRow{{ notif.id }} .notification_date").textContent = data.notification_date;
+            
+            document.querySelector("#notifRow{{ notif.id }} .notifier_source").textContent = data.notifier_source;
+            document.querySelector("#notifRow{{ notif.id }} .notification_method").textContent = data.notification_method;
+            document.querySelector("#notifRow{{ notif.id }} .threats").innerHTML = data.threats_html;
+            document.querySelector("#notifRow{{ notif.id }} .threat_source").textContent = data.threat_source;
+            document.querySelector("#notifRow{{ notif.id }} .threat_location").textContent = data.threat_location;
+
+            // Fermer le modal
+            var myModal = bootstrap.Modal.getInstance(document.getElementById("updateModal{{ notif.id }}"));
+            myModal.hide();
+        })
+        .catch(error => console.error(error));
+    });
+    {% endfor %}
+});
+
+function printNotif(notifId) {
+    const content = document.getElementById('print-area-' + notifId).innerHTML;
+
+    const printWindow = window.open('', '', 'width=900,height=700');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>طباعة الإشعار</title>
+                <style>
+                    body {
+                        direction: rtl;
+                        font-family: Arial, sans-serif;
+                        padding: 20px;
+                    }
+                    h3 {
+                        text-align: center;
+                        margin-bottom: 20px;
+                    }
+                    ul {
+                        padding-right: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <h3>بيانات الإشعار</h3>
+                ${content}
+            </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+}
+
+function printTable() {
+    let printContents = document.getElementById('print-table-area').innerHTML;
+    let originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = `
+        <html dir="rtl">
+        <head>
+            <title>طباعة قائمة الإشعارات</title>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                table { width:100%; border-collapse: collapse; }
+                th, td {
+                    border:1px solid #000;
+                    padding:6px;
+                    font-size:12px;
+                }
+                th {
+                    background:#eaeaea;
+                }
+                ul { padding-right:15px; }
+            </style>
+        </head>
+        <body>
+            <h3 style="text-align:center;">
+                قائمة الإشعارات للطفل {{ child.first_name }} {{ child.last_name }}
+            </h3>
+            ${printContents}
+        </body>
+        </html>
+    `;
+
+    window.print();
+    document.body.innerHTML = originalContents;
+    location.reload();
+}
+</script>
+
+{% if show_success_modal %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    let openedModal = document.querySelector(".modal.show");
+    if (openedModal) {
+        let m = bootstrap.Modal.getInstance(openedModal);
+        if (m) m.hide();
+    }
+
+    let successModalEl = document.getElementById("successModal");
+    if (successModalEl) {
+        let successModal = new bootstrap.Modal(successModalEl);
+        successModal.show();
+    }
+
+    setTimeout(() => {
+        location.href = "{% url 'list_notification' child.id %}";
+    }, 4000);
+});
+</script>
+{% endif %}
+
+
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+
+      <!-- Header -->
+      <div class="modal-header text-white"
+           style="background: linear-gradient(135deg, #003154, #0059a8);">
+        <h5 class="modal-title">
+          ✔️ تمّ تحيين اشعار الطفل بنجاح
+        </h5>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body text-center"
+           style="background-color:#f4f8fb;">
+
+        <i class="bi bi-check-circle-fill"
+           style="font-size:40px; color:#040404;"></i>
+
+        <h4 class="mt-3 text-dark">
+          تم تسجيل التغييرات بنجاح
+        </h4>
+
+    
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}
+
+
+

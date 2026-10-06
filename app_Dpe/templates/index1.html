@@ -14,26 +14,83 @@
     <link rel="stylesheet" href="{% static 'css/splash.css' %}">
 
     <style>
+.logo-nav[src*="logo-femme"] {
+    height: 50px !important;          /* taille plus grande */
+    width: auto !important;
+    mix-blend-mode: multiply;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: translateY(-4px);     /* ajustement fin si besoin */
+}
+    .gov-banner {
+        background: #d51c5c; /* bleu foncé officiel */
+        color: #ffffff;
+        padding: 8px 0;
+        font-size: 15px;
+        font-weight: 300;
+        gap: 5px;
+    }
+
+    .gov-banner .flag-tn {
+  
+    width: auto;
+    max-width: 30px; /* نقص العرض */
+    object-fit: contain;
+    display: block;
+    gap: 5px;
+}
+ .flag-tn {
+    height: 30px;
+    
+    
+}
+    .gov-banner .gov-title {
+        color: #ffffff !important;
+        font-family: "Times New Roman", serif;
+        letter-spacing: 0.5px;
+    }
+
+  
         body, h1, h2, h3, h4, p, a, button {
             font-family: "Times New Roman", serif !important;
         }
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #a8d8ff, #b8e4ff, #cfeeff);
-            color: #003154;
-        }
+      
+  body {
+    margin: 0;
+    font-family: "Times New Roman", serif !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(100, 100, 100, .03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(150, 150, 150, .04) 0%, transparent 40%),
+        linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    color: #2d003a;
+    position: relative;
+}
 
-        #hero-section {
-            min-height: 55vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 60px 20px;
-        }
+/* Logo DPE ultra-fin, centré, fixe */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("{% static 'images/dpe.png' %}") center/contain no-repeat;
+    opacity: .025;   /* presque invisible */
+    z-index: 0;
+    pointer-events: none;
+}
+    #home {
+        flex: 1;
+    }
+
+#hero-section {
+    min-height: 30vh !important;
+    padding: 20px 10px !important;
+}
+
+
 
         #hero-section h1 {
             font-size: 70px;
@@ -41,19 +98,46 @@
             margin-bottom: 60px;
         }
 
+        /* ====== BOUTON دخول - NOUVEAU STYLE ====== */
         #hero-section .btn-primary {
             font-size: 22px;
-            padding: 12px 40px;
-            border-radius: 10px;
-            background-color: #005a9e;
-            border: none;
-            color: white;
-            transition: 0.3s;
+            padding: 14px 50px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #bcd630 0%, #bcd630 100%);
+            border: 2px solid #bcd630;
+            color: #060606;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px #bcd630;
+            position: relative;
+            overflow: hidden;
+            font-weight: bold;
+        }
+
+        #hero-section .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(184,134,11,0.2), transparent);
+            transition: left 0.5s;
         }
 
         #hero-section .btn-primary:hover {
-            background-color: #0075c9;
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, #d51c5c 0%, #d51c5c 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-color: #d51c5c;
+        }
+
+        #hero-section .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        #hero-section .btn-primary i {
+            margin-left: 10px;
+            color: #26ACE2;
         }
 
         @media (max-width: 768px) {
@@ -62,9 +146,62 @@
             }
             #hero-section .btn-primary {
                 font-size: 18px;
-                padding: 10px 28px;
+                padding: 12px 35px;
             }
         }
+
+        .logo-nav {
+        height: 65px;     /* اضبط حجم الصور */
+        object-fit: contain;
+    }
+   .navbar {
+    min-height: 5px;
+    background: #ffffff !important;  /* ====== ARRIÈRE-PLAN BLANC ====== */
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);  /* ombre légère */
+    gap: 20px;
+     padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+    .navbar-center-text span {
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 1.4;
+    }
+
+    .navbar-center-text .small {
+        font-size: 14px !important;
+        font-weight: normal !important;
+    }
+    .nav-section img {
+    margin-left: 20px !important; /* فراغ صغير من اليسار */
+     gap: 20px;
+}
+
+.navbar-center-text {
+    flex-grow: 1;
+}
+
+.container {
+    gap: 5px; /* نفس المسافة بين الصور */
+}
+    .logo-femme {
+        height: 75px !important; 
+        width: auto !important;
+        filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.15));
+    }
+
+  /* Responsive : centrage et réduction */
+    @media (max-width: 576px) {
+        .gov-banner {
+            font-size: 13px;
+            padding: 6px 0;
+        }
+        .gov-banner .flag-tn {
+            height: 36px;
+        }
+    }
+
     </style>
 </head>
 
@@ -73,42 +210,71 @@
     <section id="splash">
         <div class="splash-inner">
             <img src="{% static 'images/dpe.png' %}" alt="Logo DPE" class="splash-logo">
-            <p class="splash-text">مندوبية حماية الطفولة</p>
+            <p class="splash-text">
+                المنظومة المعلوماتية لمندوبي حماية الطفولة
+            </p>
             <div class="splash-spinner"></div>
         </div>
     </section>
 
+
+<div class="gov-banner">
+    <div class="container d-flex flex-column align-items-center justify-content-center">
+
+        <img src="{% static 'images/Armoiries.png' %}"
+             alt="Armoiries de la Tunisie"
+             class="flag-tn">
+
+        <span class="gov-title fw-bold mb-0">
+            الجمهوريّة التونسيّة
+        </span>
+
+    </div>
+</div>
+
+
+
+
+
     <!-- ====== HOME PAGE ====== -->
-    <div id="home" class="d-none">
-        <!-- Navbar -->
-        <nav class="navbar navbar-light bg-white shadow-sm py-2">
-            <div class="container d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <img src="{% static 'images/logo-femme.png' %}" alt="Ministère Femme" class="logo-nav">
-                </div>
 
-                <div class="text-center d-flex flex-column align-items-center flex-grow-1">
-                    <img src="{% static 'images/tunisie.png' %}" alt="République" class="logo-nav mb-1">
-                    <span class="text-tunisie">الجمهورية التونسية</span>
-                    <span class="text-tunisie small">
-                        وزارة الأسرة والمرأة والطفولة وكبار السن<br>
-                        مكتب المندوب العام لحماية الطفولة
-                    </span>
-                </div>
+<nav class="navbar navbar-light shadow-sm py-0">
+    <div class="container-fluid d-flex align-items-center">
 
-                <div class="d-flex align-items-center">
-                    <img src="{% static 'images/dpe.png' %}" alt="DPE" class="logo-nav">
-                </div>
-            </div>
-        </nav>
+        <!-- الصورة على اليسار -->
+        <div class="nav-section d-flex align-items-center">
+            <img src="{% static 'images/logo-femme.png' %}"
+                 alt="Ministère Femme"
+                 class="logo-nav">
+        </div>
 
-        <!-- Hero -->
-        <section id="hero-section">
-            <div class="container">
-                <h1>المنظومة المعلوماتية لمندوبي حماية الطفولة</h1>
-                <a href="{% url 'login' %}" class="btn btn-primary">
+    </div>
+</nav>
+
+
+
+
+<br>
+  <div id="home" class="d-none">
+
+    <section id="hero-section">
+        <div class="container text-center">
+
+            <h1 class="text-center">
+                المنظومة المعلوماتية لمندوبي حماية الطفولة
+            </h1>
+
+            <div class="text-center">
+                <a href="{% url 'login_delegate' %}" class="btn btn-primary">
                     <i class="fa-solid fa-right-to-bracket"></i> دخول
                 </a>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+<br><br>
                 <!-- Info Sections -->
 <section class="info-section py-4">
     <div class="container">
@@ -116,30 +282,31 @@
 
             <!-- مندوبي حماية الطفولة -->
             <div class="col-md-3 col-sm-6 mb-4">
-                <i class="fa-solid fa-user-shield mb-2" style="font-size: 38px; color:#0d6efd;"></i>
-                <h5 class="mb-2">مندوبي حماية الطفولة</h5>
-                <p style="font-size: 14px;">متابعة وتسيير عمل مندوبي حماية الطفولة بكفاءة وفعالية.</p>
+                <i class="fa-solid fa-user-shield mb-2" style="font-size: 38px; color:#F37820; "></i>
+                
+                <p style="font-size: 18px; font-weight: bold;">متابعة نشاط مندوبي حماية الطفولة </p>
             </div>
 
             <!-- إضافة أطفال -->
             <div class="col-md-3 col-sm-6 mb-4">
-                <i class="fa-solid fa-child mb-2" style="font-size: 38px; color:#198754;"></i>
-                <h5 class="mb-2">إضافة أطفال</h5>
-                <p style="font-size: 14px;">تسجيل الحالات الجديدة بطريقة منظمة لضمان سرعة التدخل.</p>
+               <i class="fa-solid fa-clipboard-list mb-2"
+   style="font-size: 38px; color:#F37820;"></i>
+               
+                <p style="font-size: 18px; font-weight: bold;">تسجيل مختلف التدخلات بخصوص الطفل</p>
             </div>
 
             <!-- البحث والتقصي -->
             <div class="col-md-3 col-sm-6 mb-4">
-                <i class="fa-solid fa-search mb-2" style="font-size: 38px; color:#dc3545;"></i>
-                <h5 class="mb-2">البحث والتقصّي</h5>
-                <p style="font-size: 14px;">تنفيذ عمليات البحث والتقصي بشكل دقيق وميداني.</p>
+                <i class="fa-solid fa-search mb-2" style="font-size: 38px; color:#F37820;"></i>
+                
+                <p style="font-size: 18px; font-weight: bold;">بحث معمق و دقيق </p>
             </div>
 
             <!-- تحليل البيانات -->
             <div class="col-md-3 col-sm-6 mb-4">
-                <i class="fa-solid fa-chart-line mb-2" style="font-size: 38px; color:#6f42c1;"></i>
-                <h5 class="mb-2">تحليل البيانات</h5>
-                <p style="font-size: 14px;">تحليل البيانات وإصدار تقارير دقيقة لدعم القرارات.</p>
+                <i class="fa-solid fa-chart-line mb-2" style="font-size: 38px; color:#F37820;"></i>
+              
+                <p style="font-size: 18px; font-weight: bold;">تحليل البيانات وإصدار احصائيات  </p>
             </div>
 
         </div>
@@ -148,11 +315,11 @@
             </div>
         </section>
 
-
+</div>
 
         <!-- Footer -->
         {% include "account/footer.html" %}
-    </div>
+    
 
     <!-- ====== ANIMATION SCRIPT ====== -->
     <script>

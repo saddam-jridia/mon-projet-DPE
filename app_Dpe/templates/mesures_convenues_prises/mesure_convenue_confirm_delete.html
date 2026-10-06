@@ -1,0 +1,181 @@
+{% extends 'account/Header.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    body {
+        background: #f4f6f9;
+        font-family: "Times New Roman", serif;
+    }
+    .content {
+        padding: 20px;
+        min-height: 100vh;
+        margin-right: 270px;
+    }
+    .delete-container {
+        max-width: 600px;
+        margin: 50px auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .delete-header {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+        color: #d4a520;
+        padding: 20px;
+        text-align: center;
+        border-bottom: 2px solid #d4a520;
+    }
+    .delete-header i {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+    .delete-body {
+        padding: 30px;
+        text-align: center;
+    }
+    .delete-body p {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .delete-body .warning-text {
+        color: #dc3545;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+    .delete-actions {
+        padding: 20px;
+        text-align: center;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+    .btn-confirm-delete {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-confirm-delete:hover {
+        background-color: #c82333;
+        transform: translateY(-2px);
+        color: white;
+    }
+    .btn-cancel {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-cancel:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+    }
+    .info-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: right;
+    }
+    .info-card .info-row {
+        margin: 8px 0;
+        font-size: 0.9rem;
+    }
+    .info-card .info-label {
+        font-weight: bold;
+        color: #1a1a1a;
+    }
+    @media (max-width: 768px) {
+        .content {
+            padding: 15px;
+            margin-right: 0;
+        }
+        .delete-container {
+            margin: 20px;
+        }
+    }
+</style>
+
+<div class="content">
+    <div class="delete-container">
+        <div class="delete-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>⚠️ تأكيد حذف التدبير الاتفاقي</h3>
+        </div>
+        
+        <div class="delete-body">
+            <p>هل أنت متأكد من حذف هذا التدبير الاتفاقي؟</p>
+            
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-child"></i> الطفل:</span>
+                    <span>{{ mesure.child.first_name }} {{ mesure.child.last_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-id-card"></i> المعرف الوحيد:</span>
+                    <span>{{ mesure.child.uid }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-bell"></i> رقم الإشعار:</span>
+                    <span>{{ mesure.notification.notifier_number|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-calendar"></i> تاريخ التدبير:</span>
+                    <span>{{ mesure.measure_date|date:"d/m/Y"|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-handshake"></i> نوع التدبير:</span>
+                    <span>
+                        {% if mesure.agreement_type == "keep_in_family_commitment" %}
+                            إبقاء الطفل مع إلتزام الأبوين
+                        {% elif mesure.agreement_type == "keep_in_family_social_support" %}
+                            إبقاء الطفل مع تدخل اجتماعي
+                        {% elif mesure.agreement_type == "keep_in_family_prevent_contact" %}
+                            إبقاء الطفل مع منع الاتصال
+                        {% elif mesure.agreement_type == "temporary_placement" %}
+                            إيداع الطفل مؤقتا
+                        {% else %}
+                            {{ mesure.agreement_type|default:"-" }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <p class="warning-text">
+                <i class="fas fa-trash-alt"></i> هذا الإجراء لا يمكن التراجع عنه!
+            </p>
+        </div>
+        
+        <div class="delete-actions">
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn-confirm-delete">
+                    <i class="fas fa-trash-alt"></i> نعم، احذف
+                </button>
+            </form>
+            <a href="{% url 'mesure_convenue_list' %}" class="btn-cancel">
+                <i class="fas fa-times"></i> إلغاء
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
