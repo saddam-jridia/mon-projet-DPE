@@ -721,7 +721,20 @@ table td {
 
 
 
+<!-- ملاحظات -->
+<div class="mb-3 mt-3">
+    <label for="notes_{{ child.id }}" class="form-label fw-bold">
+        ملاحظات
+    </label>
 
+    <textarea
+        name="notes"
+        id="notes_{{ child.id }}"
+        class="form-control"
+        rows="4"
+        placeholder="أدخل الملاحظات إن وجدت..."
+    >{{ child.notes|default_if_none:'' }}</textarea>
+</div>
 
 
 
@@ -1086,7 +1099,10 @@ table td {
 
 {% endif %}
 
-
+<tr>
+    <th>الملاحظات</th>
+    <td>{{ child.notes|default:"-" }}</td>
+</tr>
 
             </tbody>
         </table>
