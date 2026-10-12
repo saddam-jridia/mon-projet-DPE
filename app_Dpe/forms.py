@@ -50,7 +50,7 @@ class ChildForm(forms.ModelForm):
             'nationality','birth_status','child_identity_type','identity_proof',
             'mother_age_at_birth','birth_place_detail','siblings_outside_marriage',
             'children_disposition','identity_documents_available',
-            'foreign_family_status','siblings_outside', 'siblings_out', 
+            'foreign_family_status','siblings_outside', 'siblings_out', 'notes',
         ]
 
         widgets = {

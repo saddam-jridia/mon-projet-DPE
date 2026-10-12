@@ -1003,7 +1003,19 @@ body {
                             </div>
                         </div>
                     </div>
+<div class="mb-3">
+    <label for="id_notes" class="form-label">
+        ملاحظات
+    </label>
 
+    <textarea
+        name="notes"
+        id="id_notes"
+        class="form-control"
+        rows="4"
+        placeholder="أدخل الملاحظات إن وجدت..."
+    >{{ form.notes.value|default_if_none:'' }}</textarea>
+</div>
                 
 
 
