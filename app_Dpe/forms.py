@@ -83,22 +83,54 @@ class ChildForm(forms.ModelForm):
         return birth_date  
 
       
+        
     def clean_registration_number(self):
         number = self.cleaned_data.get("registration_number")
         reg_type = self.cleaned_data.get("registration_type")
 
-        # Seulement si l'enfant est "مرسم"
+        # Corriger les valeurs vides ou "None"
+        if number is None:
+            number = ""
+
+        number = str(number).strip()
+
+        if number.lower() in ("none", "null"):
+            number = ""
+
+        # Si l'enfant est مرسم, le numéro est obligatoire
         if reg_type == "REGISTERED":
             if not number:
                 raise forms.ValidationError("عدد الرسم إجباري.")
 
             if not number.isdigit():
-                raise forms.ValidationError("عدد الرسم يجب أن يحتوي على أرقام فقط.")
+                raise forms.ValidationError(
+                    "عدد الرسم يجب أن يحتوي على أرقام فقط."
+                )
 
             if len(number) != 7:
-                raise forms.ValidationError("عدد الرسم يجب أن يتكون من 7 أرقام.")
+                raise forms.ValidationError(
+                    "عدد الرسم يجب أن يتكون من 7 أرقام."
+                )
+
+            return number
+
+        # Si l'enfant n'est pas مرسم, le numéro n'est pas obligatoire
+        if not number:
+            return None
+
+        # Si un numéro est fourni, vérifier son format
+        if not number.isdigit():
+            raise forms.ValidationError(
+                "عدد الرسم يجب أن يحتوي على أرقام فقط."
+            )
+
+        if len(number) != 7:
+            raise forms.ValidationError(
+                "عدد الرسم يجب أن يتكون de 7 chiffres."
+            )
 
         return number
+
 
   
 

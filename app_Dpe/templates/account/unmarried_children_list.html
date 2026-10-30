@@ -56,7 +56,7 @@ table td {
                 <th>المعرف الوحيد</th>
                 <th>الاسم</th>
                 <th>اللقب</th>
-                <th>تاريخ الميلاد</th>
+                <th>تاريخ الولادة</th>
                 <th>مكان الولادة</th>
                 <th>تاريخ الإدخال بالمنظومة</th>
                 <th>بيانات عن الطفل</th>
@@ -111,7 +111,7 @@ table td {
             <tr><th>المعرف الوحيد</th><td>{{ child.uid }}</td></tr>
             <tr><th>الاسم</th><td>{{ child.first_name }}</td></tr>
             <tr><th>اللقب</th><td>{{ child.last_name }}</td></tr>
-            <tr><th>تاريخ الميلاد</th><td>{{ child.birth_date|date:"d/m/Y" }}</td></tr>
+            <tr><th>تاريخ الولادة</th><td>{{ child.birth_date|date:"d/m/Y" }}</td></tr>
             <tr><th>مكان الولادة</th><td>{{ child.get_birth_place_display }}</td></tr>
                 {% if child.birth_place == "IN_COUNTRY" %}
                 <tr><th>الولاية</th><td>{{ child.get_birth_governorate_display }}</td></tr>
