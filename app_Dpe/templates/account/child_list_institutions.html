@@ -183,7 +183,7 @@ table td {
                 <th>المعرف الوحيد</th>
                 <th>الاسم</th>
                 <th>اللقب</th>
-                <th>تاريخ الميلاد</th>
+                <th>تاريخ الولادة</th>
                 <th>الجنس</th>
                 <th> تاريخ التسجيل بالمنظومة</th>
                 <th>بيانات<br> عن الطفل </th>
@@ -232,7 +232,12 @@ table td {
        id="updateChildModal{{ child.id }}"
        tabindex="-1"
        aria-hidden="true">
-
+{% if form.errors %}
+<div class="alert alert-danger text-end" role="alert">
+    <strong>لم يتم حفظ التغييرات. يرجى تصحيح الأخطاء التالية:</strong>
+    {{ form.errors }}
+</div>
+{% endif %}
        <div class="modal-dialog modal-lg modal-dialog-centered" style="margin-top: 100px; margin-right: 300px;">
         <div class="modal-content">
             <div class="modal-header text-white" style="background-color:  #d4a520">
@@ -287,33 +292,44 @@ table td {
 </select>
 
 <!-- الولاية -->
-<div id="gov_box_{{ child.id }}" style="display:none;color: #002547;">
-  <label>الولاية</label>
-  <select name="birth_governorate"
-        id="birth_governorate"
-        class="form-select mb-2">
 
-    <option value="">اختر الولاية</option>
-    {% for v,l in child.TUNISIA_GOVERNORATES %}
+<!-- الولاية -->
+<div id="gov_box_{{ child.id }}"
+     style="display:none; color:#002547;">
 
-      <option value="{{ v }}" {% if child.birth_governorate == v %}selected{% endif %}>{{ l }}</option>
-    {% endfor %}
-  </select>
+    <label>الولاية</label>
+
+    <select name="birth_governorate"
+            id="birth_governorate_{{ child.id }}"
+            class="form-select mb-2">
+
+        <option value="">اختر الولاية</option>
+
+        {% for v, l in child.TUNISIA_GOVERNORATES %}
+            <option value="{{ v }}"
+                {% if child.birth_governorate == v %}selected{% endif %}>
+                {{ l }}
+            </option>
+        {% endfor %}
+    </select>
 </div>
 
 <!-- المعتمدية -->
-<div id="dept_box_{{ child.id }}" style="display:none;color: #002547;">
-  <label>المعتمدية</label>
+<div id="dept_box_{{ child.id }}"
+     style="display:none; color:#002547;">
+
+    <label>المعتمدية</label>
 
     <select name="birth_department"
-        class="form-select mb-2"
-        data-old="{{ child.birth_department }}">
-</select>
+            id="birth_department_{{ child.id }}"
+            class="form-select mb-2"
+            data-old="{{ child.birth_department|default_if_none:'' }}">
 
+        <option value="">اختر المعتمدية</option>
 
-    
-  </select>
+    </select>
 </div>
+
 <!-- الدولة (في حالة خارج البلاد) -->
 <div id="country_box_{{ child.id }}" style="display:none;color: #002547;">
   <label>الدولة</label>
@@ -832,7 +848,7 @@ table td {
                 <tr><th>الاسم</th><td>{{ child.first_name }}</td></tr>
                 <tr><th>اللقب</th><td>{{ child.last_name }}</td></tr>
                 <tr><th>الجنس</th><td>{{ child.get_gender_display |default:"-"}}</td></tr>
-                <tr><th>تاريخ الميلاد</th><td>{{ child.birth_date|date:"d/m/Y" |default:"-" }}</td></tr>
+                <tr><th>تاريخ الولادة</th><td>{{ child.birth_date|date:"d/m/Y" |default:"-" }}</td></tr>
                 <tr><th>مكان الولادة</th><td>{{ child.get_birth_place_display |default:"-"}}</td></tr>
                 {% if child.birth_place == "IN_COUNTRY" %}
                 <tr><th>الولاية</th><td>{{ child.get_birth_governorate_display |default:"-"}}</td></tr>

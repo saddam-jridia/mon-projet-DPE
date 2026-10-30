@@ -275,9 +275,10 @@ def save_session_children(sender, user, request, **kwargs):
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
+
+
 @login_required
 def child_update(request, pk):
-
     child = get_object_or_404(Child, pk=pk)
 
     persons = ['الأم', 'الأب', 'العائلة الموسعة']
@@ -288,105 +289,113 @@ def child_update(request, pk):
     ]
 
     initial_status = child.initial_status_at_birth or {}
+    form = ChildForm(instance=child)
+    show_success_modal = False
 
     if request.method == "POST":
-        print("Avant formulaire :", child.status)
         form = ChildForm(request.POST, instance=child)
-        
+        print("POST reçu :", request.POST)
+        print("Formulaire valide :", form.is_valid())
+        print("Erreurs formulaire :", form.errors)
+
+        # لا نحدّث الحقول التي لم تُرسل في الطلب.
+        # هذا يحافظ على قيمها القديمة إذا لم تكن موجودة في النموذج.
+        for field_name in list(form.fields.keys()):
+            if field_name not in request.POST:
+                form.fields.pop(field_name)
 
         if form.is_valid():
-            child = form.save(commit=False)
-            print("Après form.save :", child.status)
+            try:
+                with transaction.atomic():
+                    child = form.save(commit=False)
 
-            # champs supplémentaires
-            child.health_status = request.POST.get("health_status")
-            child.disability_type = request.POST.get("disability_type")
-            child.disability_degree = request.POST.get("disability_degree")
+                    # الحقول الإضافية: لا تغيّرها إذا لم تُرسل.
+                    extra_fields = [
+                        'health_status',
+                        'disability_type',
+                        'disability_degree',
+                    ]
 
-            # JSON initial_status_at_birth
-            new_initial = {}
-            for p in persons:
-                value = request.POST.get(f"initial_{p}")
-                if value:
-                    new_initial[p] = value
+                    for field_name in extra_fields:
+                        if field_name in request.POST:
+                            setattr(
+                                child,
+                                field_name,
+                                request.POST.get(field_name) or None
+                            )
 
-            child.initial_status_at_birth = new_initial
+                    # الحفاظ على الموقف الأولي القديم عند ترك الاختيار فارغًا.
+                    old_initial = child.initial_status_at_birth or {}
+                    new_initial = dict(old_initial)
 
-            
+                    for person in persons:
+                        key = f"initial_{person}"
+                        value = request.POST.get(key, "").strip()
 
-            child.save()
-            print("Child ID:", child.id)
-            print("Status:", child.status)
-            print("Delegate child:", child.delegate_ch)
-            print("Current delegate:", request.user.delegate_profile)
+                        if value:
+                            new_initial[person] = value
 
-            print("Tous les enfants:", Child.objects.count())
+                    child.initial_status_at_birth = new_initial
 
-            print("Même delegate:", Child.objects.filter(delegate_ch=request.user.delegate_profile).count())
+                    child.save()
 
-            print("Même status:", Child.objects.filter(status="THREATENED").count())
+                # نعرض رسالة النجاح فقط بعد نجاح الحفظ.
+                show_success_modal = True
+                initial_status = child.initial_status_at_birth or {}
 
-            print("Delegate + status:", Child.objects.filter( delegate_ch=request.user.delegate_profile,status="THREATENED").count())
-            # -----------------------------
-            # Recharger les données de la liste
-            # -----------------------------
-            governorates = Child.TUNISIA_GOVERNORATES
-            selected_governorate = request.GET.get("governorate", "")
-            selected_gender = request.GET.get("gender", "")
+                # إعادة تهيئة النموذج بالقيم المحفوظة.
+                form = ChildForm(instance=child)
 
-            delegates = Delegate.objects.exclude(
-                user=request.user
-            ).exclude(
-                email__isnull=True
-            ).exclude(
-                email=""
-            )
+            except Exception:
+                # لا نخفي الخطأ الحقيقي أثناء التطوير.
+                raise
 
-            if hasattr(request.user, "delegate_profile"):
-                children = Child.objects.filter(
-                    delegate_ch=request.user.delegate_profile,
-                    status="THREATENED"
-                ).order_by("created_at")
-            else:
-                children = Child.objects.none()
-
-            if selected_governorate:
-                children = children.filter(
-                    birth_governorate=selected_governorate
-                )
-
-            if selected_gender:
-                children = children.filter(
-                    gender=selected_gender
-                )
-
-            return render(request, "account/child_list_institutions.html", {
-                "children": children,
-                "child": child,
-                "form": form,
-                "governorates": governorates,
-                "selected_governorate": selected_governorate,
-                "selected_gender": selected_gender,
-                "DEPARTMENTS": Child.DEPARTMENTS,
-                "total_children": children.count(),
-                "persons": persons,
-                "zip_values": zip_values,
-                "delegates": delegates,
-                "initial_status": new_initial,
-                "show_success_modal": True,
-            })
-
+    if hasattr(request.user, "delegate_profile"):
+        children = Child.objects.filter(
+            delegate_ch=request.user.delegate_profile,
+            status="THREATENED"
+        ).order_by("-created_at")
     else:
-        form = ChildForm(instance=child)
+        children = Child.objects.none()
 
-    return render(request, "account/child_list_institutions.html", {
-        "form": form,
-        "child": child,
-        "persons": persons,
-        "zip_values": zip_values,
-        "initial_status": initial_status,
-        "DEPARTMENTS": Child.DEPARTMENTS,
-    })  
+    selected_governorate = request.GET.get("governorate", "")
+    selected_gender = request.GET.get("gender", "")
+
+    if selected_governorate:
+        children = children.filter(
+            birth_governorate=selected_governorate
+        )
+
+    if selected_gender:
+        children = children.filter(gender=selected_gender)
+
+    delegates = Delegate.objects.exclude(
+        user=request.user
+    ).exclude(
+        email__isnull=True
+    ).exclude(
+        email=""
+    )
+
+    return render(
+        request,
+        "account/child_list_institutions.html",
+        {
+            "children": children,
+            "child": child,
+            "form": form,
+            "governorates": Child.TUNISIA_GOVERNORATES,
+            "selected_governorate": selected_governorate,
+            "selected_gender": selected_gender,
+            "DEPARTMENTS": Child.DEPARTMENTS,
+            "total_children": children.count(),
+            "persons": persons,
+            "zip_values": zip_values,
+            "delegates": delegates,
+            "initial_status": initial_status,
+            "show_success_modal": show_success_modal,
+        }
+    )
 
 from django.contrib.auth.decorators import login_required
 
@@ -814,6 +823,7 @@ def list_notification(request, child_id):
         ("behavior_disor", "التخلي عن طفل مولود خارج اطار الزواج"),
         ("behavior_disord", "اضطرابات سلوكية"),
         ("behavior_disordd", "ايذاء النفس "),
+        ("suicide_attempt", "محاولة الانتحار"),
   
     ],
 
@@ -821,7 +831,7 @@ def list_notification(request, child_id):
     # محاولة الانتحار – الوسيلة
     # ---------------------------------------------------------
     "suicide_methods": [
-        ("dangerous_liquids", "محاولة انتحار الطفل بمواد خطرة أو أدوية"),
+        ("dangerous_liquids", "محاولة انتحار الطفل بتناول مواد خطرة أو أدوية"),
         ("burning", "محاولة انتحار الطفل بسكب مواد قابلة للاحتراق على جسده"),
         ("hanging", "محاولة انتحار الطفل شنقًا"),
         ("cutting", "محاولة الانتحار بقطع الشرايين"),
@@ -963,106 +973,393 @@ def list_notification(request, child_id):
         "economic_exploitation": "تعريض الطفل للتسول أو استغلاله اقتصاديًا",
     }
 
+        # Valeurs connues et catégories destinées au formulaire de modification
     for notification in notifications:
+        threats = notification.threats or {}
 
+        if isinstance(threats, str):
+            try:
+                threats = json.loads(threats)
+            except (json.JSONDecodeError, TypeError):
+                threats = {}
+
+        if not isinstance(threats, dict):
+            threats = {}
+
+        # Conserver les valeurs originales pour les cases cochées
+        notification.threats_data = threats
+
+        # Préparer les libellés affichés dans le tableau
         threats_display = {}
 
-        for category, values in (notification.threats or {}).items():
+        for category, values in threats.items():
+            if not isinstance(values, list):
+                values = [values] if values else []
 
             labels = THREATS_LABELS.get(category, {})
-
             display_values = []
 
             for value in values:
-
-            # Anciennes données contenant "other"
                 if value == "other":
                     continue
-
-            # Valeur connue → traduction arabe
-            # Valeur inconnue → texte personnalisé écrit par l'utilisateur
-                display_values.append(
-                    labels.get(value, value)
-                )
+                display_values.append(labels.get(value, value))
 
             threats_display[category] = display_values
 
         notification.threats_display = threats_display
-       # Récupérer les choices directement depuis le modèle
-    notifier_source_choices = NouveauNotification._meta.get_field('notifier_source').choices
-    notification_method_choices = NouveauNotification._meta.get_field('notification_method').choices
-    threat_source_choices = NouveauNotification._meta.get_field('threat_source').choices
-    threat_location_choices = NouveauNotification._meta.get_field('threat_location').choices
 
-    # Catégories de menaces (juste les clés pour loop)
-    categories = {k: [v[0] for v in THREATS_CHOICES[k]] for k in THREATS_CHOICES}
+        # Préparer les catégories pour le modal
+        threats_form = []
+
+        for category_key, choices in THREATS_CHOICES.items():
+            saved_values = threats.get(category_key, [])
+
+            if not isinstance(saved_values, list):
+                saved_values = [saved_values] if saved_values else []
+
+            known_values = [value for value, label in choices]
+            has_other_option = any(value == "other" for value, label in choices)
+
+            # Les textes personnalisés sont les valeurs inconnues
+            custom_values = [
+                value for value in saved_values
+                if value not in known_values
+            ]
+
+            # Si le texte personnalisé a été enregistré, cocher « Autre »
+            selected_values = [
+                value for value in saved_values
+                if value in known_values and value != "other"
+            ]
+
+            if has_other_option and custom_values:
+                selected_values.append("other")
+
+            # Les catégories sans option « other » gardent simplement
+            # leur texte personnalisé dans le champ texte
+            threats_form.append({
+                "key": category_key,
+                "label": THREATS_CATEGORY_LABELS.get(
+                    category_key, category_key
+                ),
+                "choices": choices,
+                "selected": selected_values,
+                "other_text": "، ".join(str(v) for v in custom_values),
+                "has_other_option": has_other_option,
+                "field_name": {
+                    "loss": "threats_loss",
+                    "neglect": "threats_neglect",
+                    "care": "threats_care",
+                    "guardian": "threats_guardian",
+                    "suicide_methods": "suicide_methods",
+                    "suicide_reasons": "suicide_reasons",
+                    "suicide_place": "suicide_place",
+                    "abuse_types": "abuse_types",
+                    "sexual_exploitation": "sexual_exploitation",
+                    "organized_crime": "organized_crime",
+                    "economic_exploitation": "economic_exploitation",
+                }[category_key],
+                "other_field": {
+                    "loss": "threats_loss_other",
+                    "neglect": "threats_neglect_other",
+                    "care": "threats_care_other",
+                    "guardian": "threats_guardian_other",
+                    "suicide_methods": "suicide_methods_other",
+                    "suicide_reasons": "suicide_reasons_other",
+                    "suicide_place": "suicide_place_other",
+                    "abuse_types": "abuse_types_other",
+                    "sexual_exploitation": "sexual_exploitation_other",
+                    "organized_crime": "organized_crime_other",
+                    "economic_exploitation": "economic_exploitation_other",
+                }[category_key],
+            })
+
+        notification.threats_form = threats_form
+
+    # Récupérer les choix depuis le modèle
+    notifier_source_choices = (
+        NouveauNotification._meta.get_field("notifier_source").choices
+    )
+    notification_method_choices = (
+        NouveauNotification._meta.get_field("notification_method").choices
+    )
+    threat_source_choices = (
+        NouveauNotification._meta.get_field("threat_source").choices
+    )
+    threat_location_choices = (
+        NouveauNotification._meta.get_field("threat_location").choices
+    )
 
     context = {
         "child": child,
         "notifications": notifications,
         "THREATS_LABELS": THREATS_LABELS,
         "THREATS_CHOICES": THREATS_CHOICES,
+        "THREATS_CATEGORY_LABELS": THREATS_CATEGORY_LABELS,
         "notifier_source_choices": notifier_source_choices,
         "notification_method_choices": notification_method_choices,
         "threat_source_choices": threat_source_choices,
         "threat_location_choices": threat_location_choices,
-        "categories": categories,
-        "THREATS_CATEGORY_LABELS": THREATS_CATEGORY_LABELS,
     }
 
     return render(request, "account/listenotification.html", context)
 
+
+import json
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+
+
+# Champs du formulaire : nom de catégorie -> nom du champ HTML.
+THREAT_FIELDS = {
+    "loss": "threats_loss",
+    "neglect": "threats_neglect",
+    "care": "threats_care",
+    "guardian": "threats_guardian",
+    "suicide_methods": "suicide_methods",
+    "suicide_reasons": "suicide_reasons",
+    "suicide_place": "suicide_place",
+    "abuse_types": "abuse_types",
+    "sexual_exploitation": "sexual_exploitation",
+    "organized_crime": "organized_crime",
+    "economic_exploitation": "economic_exploitation",
+}
+
+# Valeurs prédéfinies présentes dans votre formulaire.
+# Elles permettent de distinguer les choix des textes personnalisés.
+KNOWN_THREATS = {
+    "loss": {
+        "parents_dead", "parents_hospitalized", "natural_disaster",
+        "adoptive_parent_dead", "divorce_refusal",
+        "parent_absence_unknown", "step_parent_refusal",
+        "chronic_mental_illness", "parents_unknown_location",
+        "parents_imprisoned", "conflict_zones",
+    },
+    "neglect": {
+        "hygiene_food", "abandonment", "school_absence",
+        "medical_refusal", "disabled_child", "medical",
+        "medical_re", "medical_ref", "medical_refuse",
+    },
+    "care": {
+        "no_civil_registration", "no_school", "prevent_study",
+        "no_supervision", "no_vaccines", "digital_risks",
+        "dig", "digi", "digit", "digital", "digital_ri",
+        "digital_ris", "digital_risk",
+    },
+    "guardian": {
+        "dangerous_behavior", "poverty_illness", "school_dropout",
+        "begging", "runaway", "behavior_disorder", "beh", "beha",
+        "behavi", "behavior", "behavior_d", "behavior_dis",
+        "behavior_diso", "behavior_disor", "behavior_disord",
+        "behavior_disordd", "suicide_attempt",
+    },
+    "suicide_methods": {
+        "dangerous_liquids", "burning", "hanging", "cutting",
+        "jumping", "overdose",
+    },
+    "suicide_reasons": {
+        "cyber_blackmail", "social_injustice", "family_conflicts",
+        "accident", "school_failure", "emotional_shock",
+        "emotional", "shock",
+    },
+    "suicide_place": {
+        "home", "school", "public_space", "care_center",
+    },
+    "abuse_types": {
+        "detention", "public_violence", "institutional_physical",
+        "institutional_verbal", "family_physical", "family_moral",
+        "physical", "moral", "witness_violence", "discrimination",
+        "hard_work", "food_deprivation", "step_parent_abuse",
+        "media_defamation", "torture", "disability_abuse",
+    },
+    "sexual_exploitation": {
+        "incest", "family_exploitation", "child_on_child",
+        "staff_exploitation", "with_partner", "casual_person",
+        "homosexual_relations", "online_exploitation",
+        "brothels_service", "sexual_materials", "prostitution",
+        "pornography", "prostitution_networks",
+        "sex_by_exploiter", "sex_in_presence", "illegal_adoption",
+    },
+    "organized_crime": {
+        "illegal_border", "smuggling", "violence_incitation",
+        "hate_ideas", "hate_recruitment", "online_violence",
+        "drug_distribution", "theft", "alcohol_sales",
+        "stolen_goods", "public_property", "organized_begging",
+        "armed_conflict", "trafficking", "illegal_adoption",
+        "selling_child", "organ_trafficking",
+    },
+    "economic_exploitation": {
+        "early_work", "public_shows", "marginal_activities",
+        "begging", "domestic_work", "agriculture", "industry",
+        "illegal_adoption",
+    },
+}
+
+
+@login_required
 def update_notification(request, notif_id):
-    notification = get_object_or_404(NouveauNotification, id=notif_id)
-    child = notification.child
+    delegate = getattr(request.user, "delegate_profile", None)
 
-    if request.method == "POST":
-        # Mettre à jour les champs
-        notification.notification_date = request.POST.get('notification_date')
-        notification.threat_date = request.POST.get('threat_date')
-        notification.notifier_source = request.POST.get('notifier_source')
-        notification.notification_method = request.POST.get('notification_method')
-        notification.threat_source = request.POST.get('threat_source')
-        notification.threat_location = request.POST.get('threat_location')
+    if delegate is None:
+        messages.error(
+            request,
+            "Vous n'êtes pas autorisé à modifier cette notification."
+        )
+        return redirect("child_list_institutions")
 
-        # Reconstituer le dictionnaire des menaces
-        categories = {
-            "loss": ("threats_loss", "threats_loss_other"),
-            "neglect": ("threats_neglect", "threats_neglect_other"),
-            "care": ("threats_care", "threats_care_other"),
-            "guardian": ("threats_guardian", "threats_guardian_other"),
-        }
+    # Empêche un délégué de modifier la notification d'un autre délégué.
+    notif = get_object_or_404(
+        NouveauNotification,
+        id=notif_id,
+        created_by=delegate,
+    )
 
-        threats = {}
-        for category, (field_list, field_other) in categories.items():
-            selected = request.POST.getlist(field_list)
-            other = request.POST.get(field_other)
-            if other and other.strip():
-                selected.append(other.strip())
-            if selected:
-                threats[category] = selected
+    # Charger le JSON existant de façon sécurisée.
+    saved_threats = notif.threats or {}
 
-        notification.threats = threats
-        notification.save()
+    if isinstance(saved_threats, str):
+        try:
+            saved_threats = json.loads(saved_threats)
+        except (json.JSONDecodeError, TypeError):
+            saved_threats = {}
 
-        notifications = NouveauNotification.objects.filter(child=child).order_by("-notif_at")
-        
-        return render(
-           request,
-           "account/listenotification.html",
-           {
-              "child": child,
-              "notifications": notifications,
-              "notification_method_choices": NouveauNotification.METHOD_CHOICES,
-              "notifier_source_choices": NouveauNotification.NOTIFIER_SOURCE_CHOICES,
-              "threat_source_choices": NouveauNotification.THREAT_SOURCE_CHOICES,
-              "threat_location_choices": NouveauNotification.THREAT_PLACE_CHOICES,
-              "THREATS_CHOICES":  NouveauNotification.threats,
-              "show_success_modal": True,
-            }
+    if not isinstance(saved_threats, dict):
+        saved_threats = {}
+
+    # Préparer les cases cochées et les textes « Autre » pour le GET.
+    selected_threats = {}
+    other_values = {}
+
+    for category in THREAT_FIELDS:
+        values = saved_threats.get(category, [])
+
+        if not isinstance(values, list):
+            values = []
+
+        values = [str(value) for value in values]
+
+        known = KNOWN_THREATS.get(category, set())
+
+        selected_threats[category] = [
+            value for value in values
+            if value in known
+        ]
+
+        # Lors de la création, le texte « Autre » était ajouté à la fin.
+        custom_values = [
+            value for value in values
+            if value not in known and value != "other"
+        ]
+
+        other_values[category] = (
+            custom_values[-1] if custom_values else ""
         )
 
-    
+        # Les catégories avec une case « Autre » doivent être cochées
+        # lorsque le texte personnalisé existe.
+        if other_values[category] and category not in {
+            "loss", "neglect", "care", "guardian"
+        }:
+            selected_threats[category].append("other")
+
+    if request.method == "POST":
+        # Champs généraux
+        notif.notification_date = (
+            request.POST.get("notification_date") or None
+        )
+
+        notif.notifier_source = request.POST.get(
+            "notifier_source", ""
+        )
+
+        if notif.notifier_source == "other":
+            notif.notifier_source_other = request.POST.get(
+                "notifier_source_other", ""
+            ).strip()
+        else:
+            notif.notifier_source_other = ""
+
+        notif.notification_method = request.POST.get(
+            "notification_method", ""
+        )
+
+        notif.threat_source = request.POST.get(
+            "threat_source", ""
+        )
+
+        notif.threat_location = request.POST.get(
+            "threat_location", ""
+        )
+
+        # Reconstruire le JSON des menaces.
+        updated_threats = {}
+
+        for category, field_name in THREAT_FIELDS.items():
+            selected = request.POST.getlist(field_name)
+
+            other_text = request.POST.get(
+                f"{field_name}_other", ""
+            ).strip()
+
+            # Les quatre premières catégories ont un champ texte
+            # « Autre » sans case à cocher dédiée.
+            has_dedicated_other_checkbox = category not in {
+                "loss", "neglect", "care", "guardian"
+            }
+
+            if has_dedicated_other_checkbox:
+                has_other = "other" in selected
+                selected = [
+                    value for value in selected
+                    if value != "other"
+                ]
+
+                if has_other and other_text:
+                    selected.append(other_text)
+            else:
+                # Dans ces catégories, le texte seul suffit.
+                if other_text:
+                    selected.append(other_text)
+
+            if selected:
+                updated_threats[category] = selected
+
+        notif.threats = updated_threats
+        notif.save()
+
+        messages.success(
+            request,
+            "تم تعديل الإشعار بنجاح."
+        )
+
+        # Adaptez ce nom à celui de votre URL de liste.
+        return redirect(
+            "list_notification",
+            notif.child_id
+        )
+
+    context = {
+        "notif": notif,
+        "child": notif.child,
+        "selected_threats": selected_threats,
+        "other_values": other_values,
+        "notifier_source_choices":
+            NouveauNotification.NOTIFIER_SOURCE_CHOICES,
+        "notification_method_choices":
+            NouveauNotification.METHOD_CHOICES,
+        "threat_source_choices":
+            NouveauNotification.THREAT_SOURCE_CHOICES,
+        "threat_location_choices":
+            NouveauNotification.THREAT_PLACE_CHOICES,
+    }
+
+    return render(
+        request,
+        "account/notification_update.html",
+        context,
+    )
 
 
 # ==================== RECHERCHE ====================

@@ -139,19 +139,63 @@ form input[type="checkbox"] {
     margin-top: 300px; /* ou margin-top: calc(50px + 60px + 50px) si tu veux plus précis */
      margin-right: 300px;
 }
+/* Cadre principal du modal */
 .modal-content {
+    height: auto !important;
+    min-height: 0;
+    overflow: visible !important;
+    margin-top: 120px;
+    background: #f8faff;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+/* Corps du formulaire */
+.modal-content .modal-body {
+    height: auto !important;
+    min-height: 0;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 20px;
+    background: #f8faff;
+    direction: rtl;
+    text-align: right;
+}
+
+/* Conteneur des champs */
+.modal-content .modal-body form {
+    height: auto !important;
+    min-height: 0;
     overflow: visible !important;
 }
 
-.modal-body {
-    overflow-y: auto !important;
-}
-
-.card-body {
-    overflow: visible !important;
+/* Conteneur des menaces */
+.modal-content .modal-body .form-group,
+.modal-content .modal-body .row,
+.modal-content .modal-body .col-md-12,
+.modal-content .modal-body .col-12 {
     height: auto !important;
     max-height: none !important;
+    overflow: visible !important;
 }
+
+/* Éviter que les éléments flottants coupent le cadre */
+.modal-content .modal-body::after,
+.modal-content .modal-body form::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+/* Pied du formulaire */
+.modal-content .modal-footer {
+    position: relative;
+    clear: both;
+    background: #f8faff;
+    border-top: 1px solid #dee2e6;
+}
+
+
 
 </style>
 
@@ -267,7 +311,7 @@ form input[type="checkbox"] {
 
                 <!-- Modal -->
                 <div class="modal fade" id="notifModal{{ notif.id }}" tabindex="-1" aria-labelledby="notifModalLabel{{ notif.id }}" aria-hidden="true">
-                  <div class="modal-dialog modal-lg modal-dialog-centered" style="margin-top: 100px; margin-right: 300px;">
+                  <div class="modal-dialog modal-lg modal-dialog-centered" style="margin-top: 80px; margin-right: 300px;">
                     <div class="modal-content"  >
                      
                        
@@ -359,158 +403,225 @@ form input[type="checkbox"] {
     <i class="fas fa-edit"></i>
 </button>
 
-    <!-- Modal de mise à jour -->
-   <div class="modal fade" id="updateModal{{ notif.id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ notif.id }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
-     style="margin-top: 100px; margin-right: 300px;">
 
-        <div class="modal-content">
-            <div class="modal-header text-white" style="background-color:  #050505">
-                <h5 class="modal-title" id="updateModalLabel{{ notif.id }}">تحيين الإشعار رقم {{ notif.notifier_number }}</h5>
-                
-            </div>
-            <div class="modal-body text-end"
-     style="
-        max-height: 75vh;
-        overflow-y: auto;
-     ">
+<!-- Modal de mise à jour -->
+<div class="modal fade"
+     id="updateModal{{ notif.id }}"
+     tabindex="-1"
+     aria-labelledby="updateModalLabel{{ notif.id }}"
+     aria-hidden="true">
 
-                <form id="updateForm{{ notif.id }}" method="post" action="{% url 'update_notification' notif.id %}">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content" dir="rtl">
+
+            <form method="POST"
+      id="updateForm{{ notif.id }}"
+      action="{% url 'update_notification' notif.id %}">
     {% csrf_token %}
 
-                    <!-- Dates -->
-                    <label>تاريخ الإشعار</label>
-                    <input type="date" name="notification_date" class="form-control mb-2" value="{{ notif.notification_date|date:'Y-m-d' }}">
+                <!-- En-tête -->
+                <div class="modal-header" style="background-color: #003154; display: flex; flex-direction: column; align-items: flex-start;">
+                    <h5 class="modal-title"
+                        id="updateModalLabel{{ notif.id }}" style="color: #f4f4f5;">
+                        تحيين الإشعار رقم {{ notif.notifier_number }}
+                    </h5>
 
-                   <br>
-                   <br>
-                    <!-- Source du notification -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-info fw-bold" style="background-color: linear-gradient(135deg, #b9f8ab, #b9f8ab, #b9f8ab);;">مصدر الإشعار</div>
-                        <div class="card-body">
-                            {% for value,label in notifier_source_choices %}
-                              <div class="form-check">
-    <input class="form-check-input " type="radio" name="notifier_source" value="{{ value }}" {% if notif.notifier_source == value %}checked{% endif %}>
-    <label class="form-check-label me-4">{{ label }}</label>
-</div>
-
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- Méthode de notification -->
-                   <div class="card mb-3">
-    <div class="card-header bg-info fw-bold">طريقة الإشعار</div>
-
-    <div class="card-body"
-         style="
-            max-height: none !important;
-            height: auto !important;
-            overflow: visible !important;
-         ">
-        {% for value, label in notification_method_choices %}
-            <div class="form-check mb-1">
-                <input class="form-check-input"
-                       type="radio"
-                       name="notification_method"
-                       id="method_{{ notif.id }}_{{ value }}"
-                       value="{{ value }}"
-                       {% if notif.notification_method == value %}checked{% endif %}>
-                <label class="form-check-label me-4"
-                       for="method_{{ notif.id }}_{{ value }}">
-                    {{ label }}
-                </label>
-            </div>
-        {% endfor %}
-    </div>
-</div>
-<hr class="my-4">
-<hr class="my-4">
-<hr class="my-4">
-<hr class="my-4">
-
-
-
-                    <!-- Types de menaces -->
-                    <div class="card mb-3">
-    <div class="card-header bg-info fw-bold">أشكال التهديد</div>
-    <div class="card-body">
-        {% for category, items in THREATS_CHOICES.items %}
-           {% if category == 'loss' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">فقدان السند العائلي</label><br>
-    {% elif category == 'neglect' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">الإهمال والتشرد</label><br>
-    {% elif category == 'care' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">التقصير في التربية والرعاية</label><br>
-    {% elif category == 'guardian' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">عجز الأبوين أو الولي</label><br>
-    {% elif category == 'suicide_methods' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">محاولة الانتحار – الوسيلة</label><br>
-    {% elif category == 'suicide_reasons' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">محاولة الانتحار – الأسباب</label><br>
-    {% elif category == 'suicide_place' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">محاولة الانتحار – المكان</label><br>
-    {% elif category == 'abuse_types' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">اعتياد سوء معاملة الطفل</label><br>
-    {% elif category == 'sexual_exploitation' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">استغلال الطفل جنسيًا</label><br>
-    {% elif category == 'organized_crime' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">استغلال الطفل في الإجرام المنظم</label><br>
-    {% elif category == 'economic_exploitation' %}
-        <label class="me-4" style="color:#003154; font-weight:600;">تعريض الطفل للتسول أو استغلاله اقتصاديًا</label><br>
-    {% endif %}
-            {% for value, label in items %}
-                <div class="form-check">
-                    <input class="form-check-input"
-       type="checkbox"
-       name="threats_{{ category }}"
-       value="{{ value }}"
-       {% if notif.threats|get_item:category and value in notif.threats|get_item:category %}checked{% endif %}>
- <label class="form-check-label me-4">{{ label }}</label>
+                   
                 </div>
-            {% endfor %}
-            <hr>
-        {% endfor %}
-    </div>
-</div>
 
+                <!-- Corps -->
+                <div class="modal-body">
 
-                    <!-- Source du menace -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-info fw-bold">مصدر التهديد</div>
-                        <div class="card-body">
-                            {% for value,label in threat_source_choices %}
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="threat_source" value="{{ value }}" {% if notif.threat_source == value %}checked{% endif %}>
-                                    <label class="form-check-label me-4">{{ label }}</label>
+                    <div class="row g-3">
+
+                        <!-- Date -->
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                تاريخ الإشعار
+                            </label>
+
+                            <input type="date"
+                                   class="form-control"
+                                   name="notification_date"
+                                   value="{{ notif.notification_date|date:'Y-m-d' }}"
+                                   required>
+                        </div>
+
+                     
+
+                        <!-- Source de notification -->
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                مصدر الإشعار
+                            </label>
+
+                            <select class="form-select"
+                                    name="notifier_source"
+                                    id="source_{{ notif.id }}"
+                                    onchange="toggleNotifierOther('{{ notif.id }}')"
+                                    required>
+
+                                {% for value, label in notifier_source_choices %}
+                                    <option value="{{ value }}"
+                                        {% if notif.notifier_source == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                            <input type="text"
+                                   class="form-control mt-2"
+                                   name="notifier_source_other"
+                                   id="source_other_{{ notif.id }}"
+                                   placeholder="حدد المصدر الآخر"
+                                   value="{{ notif.notifier_source_other|default:'' }}"
+                                   {% if notif.notifier_source != 'other' %}hidden{% endif %}>
+                        </div>
+
+                        <!-- Méthode -->
+                        <div class="col-md-6">
+                            <label class="form-label d-block">
+                                طريقة الإشعار
+                            </label>
+
+                            {% for value, label in notification_method_choices %}
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="notification_method"
+                                           id="method_{{ notif.id }}_{{ forloop.counter }}"
+                                           value="{{ value }}"
+                                           {% if notif.notification_method == value %}checked{% endif %}
+                                           required>
+
+                                    <label class="form-check-label"
+                                           for="method_{{ notif.id }}_{{ forloop.counter }}">
+                                        {{ label }}
+                                    </label>
                                 </div>
                             {% endfor %}
                         </div>
+
+                       
+
                     </div>
 
-                    <!-- Lieu du menace -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-info fw-bold">مكان التهديد</div>
-                        <div class="card-body">
-                            {% for value,label in threat_location_choices %}
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="threat_location" value="{{ value }}" {% if notif.threat_location == value %}checked{% endif %}>
-                                    <label class="form-check-label me-4">{{ label }}</label>
+                    <hr>
+
+                    <h5 class="mb-3">أنواع التهديدات</h5>
+
+                    <!-- Toutes les catégories définies dans THREATS_CHOICES -->
+                    {% for category in notif.threats_form %}
+
+                        <div class="border rounded p-3 mb-3">
+
+                            <h6 class="mb-3">
+                                {{ category.label }}
+                            </h6>
+
+                            {% for value, label in category.choices %}
+                                <div class="form-check mb-1">
+
+                                    <input class="form-check-input threat-checkbox"
+                                           type="checkbox"
+                                           name="{{ category.field_name }}"
+                                           value="{{ value }}"
+                                           id="threat_{{ notif.id }}_{{ category.key }}_{{ forloop.counter }}"
+                                           data-category="{{ category.key }}"
+                                           {% if value in category.selected %}checked{% endif %}>
+
+                                    <label class="form-check-label"
+                                           for="threat_{{ notif.id }}_{{ category.key }}_{{ forloop.counter }}">
+                                        {{ label }}
+                                    </label>
+
                                 </div>
                             {% endfor %}
-                        </div>
-                    </div>
-     
 
-                    <button type="submit" class="btn btn-success w-100 mt-3" style="background-color:  #101010">تسجيل التغييرات</button>
-</form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-            </div>
+                            <!-- Champ texte pour les valeurs personnalisées -->
+                            <input type="text"
+                                   class="form-control mt-2"
+                                   name="{{ category.other_field }}"
+                                   id="other_{{ notif.id }}_{{ category.key }}"
+                                   value="{{ category.other_text }}"
+                                   placeholder="أخرى، يرجى التحديد">
+
+                        </div>
+
+                    {% endfor %}
+
+                     <!-- Source de menace -->
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                مصدر التهديد
+                            </label>
+
+                            <select class="form-select"
+                                    name="threat_source">
+                                {% for value, label in threat_source_choices %}
+                                    <option value="{{ value }}"
+                                        {% if notif.threat_source == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Lieu de menace -->
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                مكان التهديد
+                            </label>
+
+                            <select class="form-select"
+                                    name="threat_location">
+                                {% for value, label in threat_location_choices %}
+                                    <option value="{{ value }}"
+                                        {% if notif.threat_location == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                </div>
+
+                <!-- Pied de modal -->
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        إلغاء
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        حفظ التعديلات
+                    </button>
+                </div>
+
+            </form>
+
         </div>
     </div>
 </div>
+
+<script>
+function toggleNotifierOther(id) {
+    const select = document.getElementById('source_' + id);
+    const input = document.getElementById('source_other_' + id);
+
+    if (!select || !input) return;
+
+    const show = select.value === 'other';
+
+    input.hidden = !show;
+    input.required = show;
+
+    // Ne pas effacer le texte automatiquement :
+    // il peut être utile si l'utilisateur change puis rétablit son choix.
+}
+</script>
 
 </td>
 
@@ -668,6 +779,42 @@ document.addEventListener("DOMContentLoaded", function () {
         location.href = "{% url 'list_notification' child.id %}";
     }, 4000);
 });
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('[id^="updateModal"]').forEach(function (modal) {
+        const id = modal.id.replace("updateModal", "");
+        const otherBox = document.getElementById("source_other_box_" + id);
+        const otherInput = document.getElementById("source_other_" + id);
+
+        function toggleSourceOther() {
+            const selected = modal.querySelector(
+                'input[name="notifier_source"]:checked'
+            );
+
+            const show = selected && selected.value === "other";
+
+            if (otherBox) {
+                otherBox.style.display = show ? "block" : "none";
+            }
+
+            if (otherInput) {
+                otherInput.required = !!show;
+            }
+        }
+
+        modal.querySelectorAll('input[name="notifier_source"]')
+            .forEach(function (radio) {
+                radio.addEventListener("change", toggleSourceOther);
+            });
+
+        toggleSourceOther();
+    });
+});
+
+
+
 </script>
 {% endif %}
 

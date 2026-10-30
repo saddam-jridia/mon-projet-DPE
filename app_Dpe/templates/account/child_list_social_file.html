@@ -1278,54 +1278,66 @@
                 </div>
             </div>
 
-            <!-- خارج البلاد -->
-            <div class="residence-fields {% if notif.social_file and notif.social_file.mother_residence_location == 'outside' %}active{% endif %}" 
-                 id="mother-outside-{{ notif.id }}">
-                <div class="form-group">
-                    <label>الدولة</label>
-                    <select name="mother_country_abroad" class="form-control country-select">
-                         <!-- الدول العربية -->
-            <option value="tunisia" {% if notif.social_file and notif.social_file.mother_country_abroad == 'tunisia' %}selected{% endif %}>تونس</option>
-            <option value="algeria" {% if notif.social_file and notif.social_file.mother_country_abroad == 'algeria' %}selected{% endif %}>الجزائر</option>
-            <option value="morocco" {% if notif.social_file and notif.social_file.mother_country_abroad == 'morocco' %}selected{% endif %}>المغرب</option>
-            <option value="libya" {% if notif.social_file and notif.social_file.mother_country_abroad == 'libya' %}selected{% endif %}>ليبيا</option>
-            <option value="egypt" {% if notif.social_file and notif.social_file.mother_country_abroad == 'egypt' %}selected{% endif %}>مصر</option>
-            <option value="saudi_arabia" {% if notif.social_file and notif.social_file.mother_country_abroad == 'saudi_arabia' %}selected{% endif %}>السعودية</option>
-            <option value="uae" {% if notif.social_file and notif.social_file.mother_country_abroad == 'uae' %}selected{% endif %}>الإمارات</option>
-            <option value="qatar" {% if notif.social_file and notif.social_file.mother_country_abroad == 'qatar' %}selected{% endif %}>قطر</option>
+           
+<!-- خارج البلاد -->
+<div class="residence-fields {% if notif.social_file and notif.social_file.mother_residence_location == 'outside' %}active{% endif %}"
+     id="mother-outside-{{ notif.id }}">
+
+    <div class="form-group">
+        <label>الدولة</label>
+
+        <select name="mother_country_abroad"
+                class="form-control country-select">
+
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.mother_country_abroad %}selected{% endif %}>
+                -- اختر الدولة --
+            </option>
+
+            <!-- الدول العربية -->
+            <option value="tunisia" {% if notif.social_file.mother_country_abroad == 'tunisia' %}selected{% endif %}>تونس</option>
+            <option value="algeria" {% if notif.social_file.mother_country_abroad == 'algeria' %}selected{% endif %}>الجزائر</option>
+            <option value="morocco" {% if notif.social_file.mother_country_abroad == 'morocco' %}selected{% endif %}>المغرب</option>
+            <option value="libya" {% if notif.social_file.mother_country_abroad == 'libya' %}selected{% endif %}>ليبيا</option>
+            <option value="egypt" {% if notif.social_file.mother_country_abroad == 'egypt' %}selected{% endif %}>مصر</option>
+            <option value="saudi_arabia" {% if notif.social_file.mother_country_abroad == 'saudi_arabia' %}selected{% endif %}>السعودية</option>
+            <option value="uae" {% if notif.social_file.mother_country_abroad == 'uae' %}selected{% endif %}>الإمارات</option>
+            <option value="qatar" {% if notif.social_file.mother_country_abroad == 'qatar' %}selected{% endif %}>قطر</option>
 
             <!-- أوروبا -->
-            <option value="france" {% if notif.social_file and notif.social_file.mother_country_abroad == 'france' %}selected{% endif %}>فرنسا</option>
-            <option value="italy" {% if notif.social_file and notif.social_file.mother_country_abroad == 'italy' %}selected{% endif %}>إيطاليا</option>
-            <option value="germany" {% if notif.social_file and notif.social_file.mother_country_abroad == 'germany' %}selected{% endif %}>ألمانيا</option>
-            <option value="spain" {% if notif.social_file and notif.social_file.mother_country_abroad == 'spain' %}selected{% endif %}>إسبانيا</option>
-            <option value="belgium" {% if notif.social_file and notif.social_file.mother_country_abroad == 'belgium' %}selected{% endif %}>بلجيكا</option>
-            <option value="netherlands" {% if notif.social_file and notif.social_file.mother_country_abroad == 'netherlands' %}selected{% endif %}>هولندا</option>
-            <option value="switzerland" {% if notif.social_file and notif.social_file.mother_country_abroad == 'switzerland' %}selected{% endif %}>سويسرا</option>
+            <option value="france" {% if notif.social_file.mother_country_abroad == 'france' %}selected{% endif %}>فرنسا</option>
+            <option value="italy" {% if notif.social_file.mother_country_abroad == 'italy' %}selected{% endif %}>إيطاليا</option>
+            <option value="germany" {% if notif.social_file.mother_country_abroad == 'germany' %}selected{% endif %}>ألمانيا</option>
+            <option value="spain" {% if notif.social_file.mother_country_abroad == 'spain' %}selected{% endif %}>إسبانيا</option>
+            <option value="belgium" {% if notif.social_file.mother_country_abroad == 'belgium' %}selected{% endif %}>بلجيكا</option>
+            <option value="netherlands" {% if notif.social_file.mother_country_abroad == 'netherlands' %}selected{% endif %}>هولندا</option>
+            <option value="switzerland" {% if notif.social_file.mother_country_abroad == 'switzerland' %}selected{% endif %}>سويسرا</option>
 
             <!-- آسيا -->
-            <option value="china" {% if notif.social_file and notif.social_file.mother_country_abroad == 'china' %}selected{% endif %}>الصين</option>
-            <option value="japan" {% if notif.social_file and notif.social_file.mother_country_abroad == 'japan' %}selected{% endif %}>اليابان</option>
-            <option value="india" {% if notif.social_file and notif.social_file.mother_country_abroad == 'india' %}selected{% endif %}>الهند</option>
-            <option value="turkey" {% if notif.social_file and notif.social_file.mother_country_abroad == 'turkey' %}selected{% endif %}>تركيا</option>
+            <option value="china" {% if notif.social_file.mother_country_abroad == 'china' %}selected{% endif %}>الصين</option>
+            <option value="japan" {% if notif.social_file.mother_country_abroad == 'japan' %}selected{% endif %}>اليابان</option>
+            <option value="india" {% if notif.social_file.mother_country_abroad == 'india' %}selected{% endif %}>الهند</option>
+            <option value="turkey" {% if notif.social_file.mother_country_abroad == 'turkey' %}selected{% endif %}>تركيا</option>
 
             <!-- أمريكا -->
-            <option value="usa" {% if notif.social_file and notif.social_file.mother_country_abroad == 'usa' %}selected{% endif %}>الولايات المتحدة</option>
-            <option value="canada" {% if notif.social_file and notif.social_file.mother_country_abroad == 'canada' %}selected{% endif %}>كندا</option>
-            <option value="brazil" {% if notif.social_file and notif.social_file.mother_country_abroad == 'brazil' %}selected{% endif %}>البرازيل</option>
+            <option value="usa" {% if notif.social_file.mother_country_abroad == 'usa' %}selected{% endif %}>الولايات المتحدة</option>
+            <option value="canada" {% if notif.social_file.mother_country_abroad == 'canada' %}selected{% endif %}>كندا</option>
+            <option value="brazil" {% if notif.social_file.mother_country_abroad == 'brazil' %}selected{% endif %}>البرازيل</option>
 
             <!-- إفريقيا -->
-            <option value="south_africa" {% if notif.social_file and notif.social_file.mother_country_abroad == 'south_africa' %}selected{% endif %}>جنوب إفريقيا</option>
-            <option value="nigeria" {% if notif.social_file and notif.social_file.mother_country_abroad == 'nigeria' %}selected{% endif %}>نيجيريا</option>
+            <option value="south_africa" {% if notif.social_file.mother_country_abroad == 'south_africa' %}selected{% endif %}>جنوب إفريقيا</option>
+            <option value="nigeria" {% if notif.social_file.mother_country_abroad == 'nigeria' %}selected{% endif %}>نيجيريا</option>
 
             <!-- أوقيانوسيا -->
-            <option value="australia" {% if notif.social_file and notif.social_file.mother_country_abroad == 'australia' %}selected{% endif %}>أستراليا</option>
-            <option value="new_zealand" {% if notif.social_file and notif.social_file.mother_country_abroad == 'new_zealand' %}selected{% endif %}>نيوزيلندا</option>
+            <option value="australia" {% if notif.social_file.mother_country_abroad == 'australia' %}selected{% endif %}>أستراليا</option>
+            <option value="new_zealand" {% if notif.social_file.mother_country_abroad == 'new_zealand' %}selected{% endif %}>نيوزيلندا</option>
 
-            <option value="other" {% if notif.social_file and notif.social_file.mother_country_abroad == 'other' %}selected{% endif %}>أخرى</option>
-       </select>
-                </div>
-            </div>
+            <option value="other" {% if notif.social_file.mother_country_abroad == 'other' %}selected{% endif %}>أخرى</option>
+
+        </select>
+    </div>
+</div>
+
         </div>
 
      <!-- المستوى التعليمي للأم -->
@@ -1364,93 +1376,110 @@
 
     <!-- الوضعية المهنية للأم -->
 
-<div class="form-section">
 
-    <h6><i class="fas fa-briefcase"></i> الوضعية المهنية للأم</h6>
+<div class="form-section">
+    <h6>
+        <i class="fas fa-briefcase"></i>
+        الوضعية المهنية للأم
+    </h6>
 
     <div class="form-group">
+        <select name="mother_profession"
+                id="mother_profession_{{ notif.id }}"
+                class="form-control">
 
-        <select name="mother_profession" id="mother_profession_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.mother_job_status %}
+                    selected
+                {% endif %}>
+                -- اختر الوضعية المهنية --
+            </option>
 
             <option value="employee"
-                {% if notif.social_file and notif.social_file.mother_job_status == 'employee' %}selected{% endif %}>
+                {% if notif.social_file.mother_job_status == 'employee' %}selected{% endif %}>
                 موظفة
             </option>
 
             <option value="worker"
-                {% if notif.social_file and notif.social_file.mother_job_status == 'worker' %}selected{% endif %}>
+                {% if notif.social_file.mother_job_status == 'worker' %}selected{% endif %}>
                 عاملة
             </option>
 
             <option value="self_employed"
-                {% if notif.social_file and notif.social_file.mother_job_status == 'self_employed' %}selected{% endif %}>
+                {% if notif.social_file.mother_job_status == 'self_employed' %}selected{% endif %}>
                 مهنة حرة
             </option>
 
             <option value="monthly_pension"
-                {% if notif.social_file and notif.social_file.mother_job_status == 'monthly_pension' %}selected{% endif %}>
+                {% if notif.social_file.mother_job_status == 'monthly_pension' %}selected{% endif %}>
                 جراية شهرية
             </option>
 
             <option value="unemployed"
-                {% if notif.social_file and notif.social_file.mother_job_status == 'unemployed' %}selected{% endif %}>
+                {% if notif.social_file.mother_job_status == 'unemployed' %}selected{% endif %}>
                 عاطلة عن العمل
             </option>
 
             <option value="notmo"
-                {% if notif.social_file and notif.social_file.mother_job_status == 'notmo' %}selected{% endif %}>
+                {% if notif.social_file.mother_job_status == 'notmo' %}selected{% endif %}>
                 غير محددة
             </option>
-
         </select>
-
     </div>
-
 </div>
+
 <!-- الوضعية الصحية الحالية للأم -->
 
-<div class="form-section">
 
-    <h6><i class="fas fa-heartbeat"></i> الوضعية الصحية الحالية للأم</h6>
+<div class="form-section">
+    <h6>
+        <i class="fas fa-heartbeat"></i>
+        الوضعية الصحية الحالية للأم
+    </h6>
 
     <div class="form-group">
+        <select name="mother_health_status"
+                id="mother_health_status_{{ notif.id }}"
+                class="form-control">
 
-        <select name="mother_health_status" id="mother_health_status_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.mother_health_status %}
+                    selected
+                {% endif %}>
+                -- اختر الوضعية الصحية --
+            </option>
 
             <option value="good"
-                {% if notif.social_file and notif.social_file.mother_health_status == 'good' %}selected{% endif %}>
+                {% if notif.social_file.mother_health_status == 'good' %}selected{% endif %}>
                 في حالة صحية طيبة
             </option>
 
             <option value="chronic"
-                {% if notif.social_file and notif.social_file.mother_health_status == 'chronic' %}selected{% endif %}>
+                {% if notif.social_file.mother_health_status == 'chronic' %}selected{% endif %}>
                 في حالة مرض مزمن
             </option>
 
             <option value="mental"
-                {% if notif.social_file and notif.social_file.mother_health_status == 'mental' %}selected{% endif %}>
+                {% if notif.social_file.mother_health_status == 'mental' %}selected{% endif %}>
                 في حالة مرض نفسي
             </option>
 
             <option value="disability"
-                {% if notif.social_file and notif.social_file.mother_health_status == 'disability' %}selected{% endif %}>
+                {% if notif.social_file.mother_health_status == 'disability' %}selected{% endif %}>
                 تعاني من وضعية إعاقة
             </option>
 
             <option value="disab"
-                {% if notif.social_file and notif.social_file.mother_health_status == 'disab' %}selected{% endif %}>
+                {% if notif.social_file.mother_health_status == 'disab' %}selected{% endif %}>
                 حالة وفاة
             </option>
 
             <option value="notheal"
-                {% if notif.social_file and notif.social_file.mother_health_status == 'notheal' %}selected{% endif %}>
+                {% if notif.social_file.mother_health_status == 'notheal' %}selected{% endif %}>
                 غير محدد
             </option>
-
         </select>
-
     </div>
-
 </div>
 
         <div class="step-nav-buttons">
@@ -2013,138 +2042,160 @@
 </div>
         </div>
 
-     <!-- المستوى التعليمي للأب -->
-
+     
+<!-- المستوى التعليمي للأب -->
 <div class="form-section">
 
-    <h6><i class="fas fa-graduation-cap"></i> المستوى التعليمي للأب</h6>
+    <h6>
+        <i class="fas fa-graduation-cap"></i>
+        المستوى التعليمي للأب
+    </h6>
 
     <div class="form-group">
 
-        <select name="father_education" id="father_education_{{ notif.id }}" class="form-control">
+        <select name="father_education"
+                id="father_education_{{ notif.id }}"
+                class="form-control">
+
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.father_education_level %}
+                    selected
+                {% endif %}>
+                -- اختر المستوى التعليمي --
+            </option>
 
             <option value="illiterate"
-                {% if notif.social_file and notif.social_file.father_education_level == 'illiterate' %}selected{% endif %}>
+                {% if notif.social_file.father_education_level == 'illiterate' %}selected{% endif %}>
                 أمي
             </option>
 
             <option value="basic"
-                {% if notif.social_file and notif.social_file.father_education_level == 'basic' %}selected{% endif %}>
+                {% if notif.social_file.father_education_level == 'basic' %}selected{% endif %}>
                 تعليم أساسي
             </option>
 
             <option value="secondary"
-                {% if notif.social_file and notif.social_file.father_education_level == 'secondary' %}selected{% endif %}>
+                {% if notif.social_file.father_education_level == 'secondary' %}selected{% endif %}>
                 تعليم ثانوي
             </option>
 
             <option value="higher"
-                {% if notif.social_file and notif.social_file.father_education_level == 'higher' %}selected{% endif %}>
+                {% if notif.social_file.father_education_level == 'higher' %}selected{% endif %}>
                 تعليم عالي
             </option>
 
             <option value="noted"
-                {% if notif.social_file and notif.social_file.father_education_level == 'noted' %}selected{% endif %}>
+                {% if notif.social_file.father_education_level == 'noted' %}selected{% endif %}>
                 غير محدد
             </option>
 
         </select>
 
     </div>
-
 </div>
-      <!-- الوضعية المهنية للأب -->
 
+  
+<!-- الوضعية المهنية للأب -->
 <div class="form-section">
-
     <h6><i class="fas fa-briefcase"></i> الوضعية المهنية للأب</h6>
 
     <div class="form-group">
+        <select name="father_profession"
+                id="father_profession_{{ notif.id }}"
+                class="form-control">
 
-        <select name="father_profession" id="father_profession_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.father_job_status %}
+                    selected
+                {% endif %}>
+                -- اختر الوضعية المهنية --
+            </option>
 
             <option value="employee"
-                {% if notif.social_file and notif.social_file.father_job_status == 'employee' %}selected{% endif %}>
+                {% if notif.social_file.father_job_status == 'employee' %}selected{% endif %}>
                 موظف
             </option>
 
             <option value="worker"
-                {% if notif.social_file and notif.social_file.father_job_status == 'worker' %}selected{% endif %}>
+                {% if notif.social_file.father_job_status == 'worker' %}selected{% endif %}>
                 عامل
             </option>
 
             <option value="self_employed"
-                {% if notif.social_file and notif.social_file.father_job_status == 'self_employed' %}selected{% endif %}>
+                {% if notif.social_file.father_job_status == 'self_employed' %}selected{% endif %}>
                 مهنة حرة
             </option>
 
             <option value="monthly_pension"
-                {% if notif.social_file and notif.social_file.father_job_status == 'monthly_pension' %}selected{% endif %}>
+                {% if notif.social_file.father_job_status == 'monthly_pension' %}selected{% endif %}>
                 جراية شهرية
             </option>
 
             <option value="unemployed"
-                {% if notif.social_file and notif.social_file.father_job_status == 'unemployed' %}selected{% endif %}>
+                {% if notif.social_file.father_job_status == 'unemployed' %}selected{% endif %}>
                 عاطل عن العمل
             </option>
 
             <option value="notfa"
-                {% if notif.social_file and notif.social_file.father_job_status == 'notfa' %}selected{% endif %}>
+                {% if notif.social_file.father_job_status == 'notfa' %}selected{% endif %}>
                 غير محدد
             </option>
 
         </select>
-
     </div>
-
 </div>
-    
 
-  <!-- الوضعية الصحية الحالية للأب -->
 
+<!-- الوضعية الصحية الحالية للأب -->
 <div class="form-section">
-
     <h6><i class="fas fa-heartbeat"></i> الوضعية الصحية الحالية للأب</h6>
 
     <div class="form-group">
+        <select name="father_health_status"
+                id="father_health_status_{{ notif.id }}"
+                class="form-control">
 
-        <select name="father_health_status" id="father_health_status_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.father_health_status %}
+                    selected
+                {% endif %}>
+                -- اختر الوضعية الصحية --
+            </option>
 
             <option value="good"
-                {% if notif.social_file and notif.social_file.father_health_status == 'good' %}selected{% endif %}>
+                {% if notif.social_file.father_health_status == 'good' %}selected{% endif %}>
                 في وضعية صحية طيبة
             </option>
 
             <option value="chronic"
-                {% if notif.social_file and notif.social_file.father_health_status == 'chronic' %}selected{% endif %}>
+                {% if notif.social_file.father_health_status == 'chronic' %}selected{% endif %}>
                 يعاني من مرض مزمن
             </option>
 
             <option value="mental"
-                {% if notif.social_file and notif.social_file.father_health_status == 'mental' %}selected{% endif %}>
+                {% if notif.social_file.father_health_status == 'mental' %}selected{% endif %}>
                 يعاني من مرض نفسي
             </option>
 
             <option value="disability"
-                {% if notif.social_file and notif.social_file.father_health_status == 'disability' %}selected{% endif %}>
+                {% if notif.social_file.father_health_status == 'disability' %}selected{% endif %}>
                 يعاني من وضعية إعاقة
             </option>
 
             <option value="disab"
-                {% if notif.social_file and notif.social_file.father_health_status == 'disab' %}selected{% endif %}>
+                {% if notif.social_file.father_health_status == 'disab' %}selected{% endif %}>
                 حالة وفاة
             </option>
 
             <option value="notheal"
-                {% if notif.social_file and notif.social_file.father_health_status == 'notheal' %}selected{% endif %}>
+                {% if notif.social_file.father_health_status == 'notheal' %}selected{% endif %}>
                 غير محدد
             </option>
 
         </select>
-
     </div>
-
 </div>
+
         <div class="step-nav-buttons">
             <button type="button" class="btn btn-step-prev btn-step" onclick="goToStep{{ notif.id }}(1)">
                 <i class="fas fa-arrow-right"></i> السابق
@@ -2159,225 +2210,252 @@
     <div class="step-content" id="step-3-{{ notif.id }}">
         <h5 class="mb-3"><i class="fas fa-users"></i> <b>بيانات العائلة</b></h5>
 
-      <!-- صنف العائلة -->
-
+     
+<!-- صنف العائلة -->
 <div class="form-section">
-
-    <h6 class="required-field"><i class="fas fa-home"></i> صنف العائلة</h6>
+    <h6 class="required-field">
+        <i class="fas fa-home"></i> صنف العائلة
+    </h6>
 
     <div class="form-group">
+        <select name="family_type"
+                id="family_type_{{ notif.id }}"
+                class="form-control">
 
-        <select name="family_type" id="family_type_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.family_type %}selected{% endif %}>
+                -- اختر صنف العائلة --
+            </option>
 
             <option value="biological"
-                {% if notif.social_file and notif.social_file.family_type == 'biological' %}selected{% endif %}>
+                {% if notif.social_file.family_type == 'biological' %}selected{% endif %}>
                 عائلة بيولوجية
             </option>
 
             <option value="single_parent"
-                {% if notif.social_file and notif.social_file.family_type == 'single_parent' %}selected{% endif %}>
+                {% if notif.social_file.family_type == 'single_parent' %}selected{% endif %}>
                 عائلة ذات ولي واحد
             </option>
 
             <option value="extended"
-                {% if notif.social_file and notif.social_file.family_type == 'extended' %}selected{% endif %}>
+                {% if notif.social_file.family_type == 'extended' %}selected{% endif %}>
                 عائلة موسعة
             </option>
 
             <option value="host_family"
-                {% if notif.social_file and notif.social_file.family_type == 'host_family' %}selected{% endif %}>
+                {% if notif.social_file.family_type == 'host_family' %}selected{% endif %}>
                 عائلة استقبال
             </option>
 
             <option value="adoption"
-                {% if notif.social_file and notif.social_file.family_type == 'adoption' %}selected{% endif %}>
+                {% if notif.social_file.family_type == 'adoption' %}selected{% endif %}>
                 عائلة تبني
             </option>
 
             <option value="kafala"
-                {% if notif.social_file and notif.social_file.family_type == 'kafala' %}selected{% endif %}>
+                {% if notif.social_file.family_type == 'kafala' %}selected{% endif %}>
                 عائلة كفالة
             </option>
 
         </select>
-
     </div>
-
 </div>
 
-      <!-- الوضعية العلائقية للوالدين -->
 
+    
+<!-- الوضعية العلائقية للوالدين -->
 <div class="form-section">
-
-    <h6 class="required-field"><i class="fas fa-heart"></i> الوضعية العلائقية للوالدين</h6>
+    <h6 class="required-field">
+        <i class="fas fa-heart"></i> الوضعية العلائقية للوالدين
+    </h6>
 
     <div class="form-group">
+        <select name="parents_relationship"
+                id="parents_relationship_{{ notif.id }}"
+                class="form-control">
 
-        <select name="parents_relationship" id="parents_relationship_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.parents_relationship %}selected{% endif %}>
+                -- اختر الوضعية العلائقية --
+            </option>
 
             <option value="marriage"
-                {% if notif.social_file and notif.social_file.parents_relationship == 'marriage' %}selected{% endif %}>
+                {% if notif.social_file.parents_relationship == 'marriage' %}selected{% endif %}>
                 زواج
             </option>
 
             <option value="divorce"
-                {% if notif.social_file and notif.social_file.parents_relationship == 'divorce' %}selected{% endif %}>
+                {% if notif.social_file.parents_relationship == 'divorce' %}selected{% endif %}>
                 طلاق
             </option>
 
             <option value="separation"
-                {% if notif.social_file and notif.social_file.parents_relationship == 'separation' %}selected{% endif %}>
+                {% if notif.social_file.parents_relationship == 'separation' %}selected{% endif %}>
                 فراق
             </option>
 
             <option value="mother_death"
-                {% if notif.social_file and notif.social_file.parents_relationship == 'mother_death' %}selected{% endif %}>
+                {% if notif.social_file.parents_relationship == 'mother_death' %}selected{% endif %}>
                 وفاة الأم
             </option>
 
             <option value="father_death"
-                {% if notif.social_file and notif.social_file.parents_relationship == 'father_death' %}selected{% endif %}>
+                {% if notif.social_file.parents_relationship == 'father_death' %}selected{% endif %}>
                 وفاة الأب
             </option>
 
             <option value="both_death"
-                {% if notif.social_file and notif.social_file.parents_relationship == 'both_death' %}selected{% endif %}>
-                الوالدين متوفيان
+                {% if notif.social_file.parents_relationship == 'both_death' %}selected{% endif %}>
+                الوالدان متوفيان
             </option>
 
             <option value="illegal_relation"
-                {% if notif.social_file and notif.social_file.parents_relationship == 'illegal_relation' %}selected{% endif %}>
+                {% if notif.social_file.parents_relationship == 'illegal_relation' %}selected{% endif %}>
                 علاقة على خلاف الصيغ القانونية
             </option>
 
             <option value="undeclared"
-                {% if notif.social_file and notif.social_file.parents_relationship == 'undeclared' %}selected{% endif %}>
+                {% if notif.social_file.parents_relationship == 'undeclared' %}selected{% endif %}>
                 غير مصرح به
             </option>
 
         </select>
-
     </div>
-
 </div>
 
-       <!-- مصدر دخل العائلة -->
-
+     
+<!-- مصدر دخل العائلة -->
 <div class="form-section">
-
-    <h6 class="required-field"><i class="fas fa-coins"></i> مصدر دخل العائلة</h6>
+    <h6 class="required-field">
+        <i class="fas fa-coins"></i> مصدر دخل العائلة
+    </h6>
 
     <div class="form-group">
+        <select name="family_income_source"
+                id="family_income_source_{{ notif.id }}"
+                class="form-control">
 
-        <select name="family_income_source" id="family_income_source_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.family_income_source %}selected{% endif %}>
+                -- اختر مصدر دخل العائلة --
+            </option>
 
             <option value="social_aid"
-                {% if notif.social_file and notif.social_file.family_income_source == 'social_aid' %}selected{% endif %}>
+                {% if notif.social_file.family_income_source == 'social_aid' %}selected{% endif %}>
                 إعانة اجتماعية
             </option>
 
             <option value="alimony"
-                {% if notif.social_file and notif.social_file.family_income_source == 'alimony' %}selected{% endif %}>
+                {% if notif.social_file.family_income_source == 'alimony' %}selected{% endif %}>
                 نفقة
             </option>
 
             <option value="salary"
-                {% if notif.social_file and notif.social_file.family_income_source == 'salary' %}selected{% endif %}>
+                {% if notif.social_file.family_income_source == 'salary' %}selected{% endif %}>
                 راتب
             </option>
 
             <option value="pension"
-                {% if notif.social_file and notif.social_file.family_income_source == 'pension' %}selected{% endif %}>
+                {% if notif.social_file.family_income_source == 'pension' %}selected{% endif %}>
                 مدخول أعمال حرة
             </option>
 
             <option value="other"
-                {% if notif.social_file and notif.social_file.family_income_source == 'other' %}selected{% endif %}>
+                {% if notif.social_file.family_income_source == 'other' %}selected{% endif %}>
                 أخرى
             </option>
 
         </select>
-
     </div>
-
 </div>
 
-      <!-- الوضعية الاجتماعية -->
 
+<!-- الوضعية الاجتماعية -->
 <div class="form-section">
-
-    <h6 class="required-field"><i class="fas fa-balance-scale"></i> الوضعية الاجتماعية لعائلة الطفل</h6>
+    <h6 class="required-field">
+        <i class="fas fa-balance-scale"></i> الوضعية الاجتماعية لعائلة الطفل
+    </h6>
 
     <div class="form-group">
+        <select name="family_social_status"
+                id="family_social_status_{{ notif.id }}"
+                class="form-control">
 
-        <select name="family_social_status" id="family_social_status_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.family_social_status %}selected{% endif %}>
+                -- اختر الوضعية الاجتماعية --
+            </option>
 
             <option value="poor"
-                {% if notif.social_file and notif.social_file.family_social_status == 'poor' %}selected{% endif %}>
+                {% if notif.social_file.family_social_status == 'poor' %}selected{% endif %}>
                 عائلة معوزة، فقيرة
             </option>
 
             <option value="low_income"
-                {% if notif.social_file and notif.social_file.family_social_status == 'low_income' %}selected{% endif %}>
+                {% if notif.social_file.family_social_status == 'low_income' %}selected{% endif %}>
                 عائلة محدودة الدخل
             </option>
 
             <option value="average"
-                {% if notif.social_file and notif.social_file.family_social_status == 'average' %}selected{% endif %}>
+                {% if notif.social_file.family_social_status == 'average' %}selected{% endif %}>
                 متوسطة
             </option>
 
             <option value="well_off"
-                {% if notif.social_file and notif.social_file.family_social_status == 'well_off' %}selected{% endif %}>
+                {% if notif.social_file.family_social_status == 'well_off' %}selected{% endif %}>
                 ميسورة الحال
             </option>
 
         </select>
-
     </div>
-
 </div>
 
-    <!-- الولوج للخدمات الصحية -->
 
+<!-- الولوج للخدمات الصحية -->
 <div class="form-section">
-
-    <h6 class="required-field"><i class="fas fa-hospital"></i> الولوج للخدمات الصحية</h6>
+    <h6 class="required-field">
+        <i class="fas fa-hospital"></i> الولوج للخدمات الصحية
+    </h6>
 
     <div class="form-group">
+        <select name="health_access"
+                id="health_access_{{ notif.id }}"
+                class="form-control">
 
-        <select name="health_access" id="health_access_{{ notif.id }}" class="form-control">
+            <option value=""
+                {% if not notif.social_file or not notif.social_file.health_access %}selected{% endif %}>
+                -- اختر نوع التغطية الصحية --
+            </option>
 
             <option value="health_fund"
-                {% if notif.social_file and notif.social_file.health_access == 'health_fund' %}selected{% endif %}>
+                {% if notif.social_file.health_access == 'health_fund' %}selected{% endif %}>
                 عائلة تتمتع بالتغطية الصحية من طرف الصناديق
             </option>
 
             <option value="free_card"
-                {% if notif.social_file and notif.social_file.health_access == 'free_card' %}selected{% endif %}>
+                {% if notif.social_file.health_access == 'free_card' %}selected{% endif %}>
                 عائلة تتمتع ببطاقة العلاج المجاني
             </option>
 
             <option value="reduced_rate"
-                {% if notif.social_file and notif.social_file.health_access == 'reduced_rate' %}selected{% endif %}>
+                {% if notif.social_file.health_access == 'reduced_rate' %}selected{% endif %}>
                 عائلة تتمتع ببطاقة العلاج بالتعريفة المنخفضة
             </option>
 
             <option value="no_coverage_poor"
-                {% if notif.social_file and notif.social_file.health_access == 'no_coverage_poor' %}selected{% endif %}>
+                {% if notif.social_file.health_access == 'no_coverage_poor' %}selected{% endif %}>
                 عائلة معوزة لا تتمتع بأي تغطية صحية
             </option>
 
             <option value="no_coverage_rich"
-                {% if notif.social_file and notif.social_file.health_access == 'no_coverage_rich' %}selected{% endif %}>
+                {% if notif.social_file.health_access == 'no_coverage_rich' %}selected{% endif %}>
                 عائلة ميسورة لا تتمتع بتغطية صحية
             </option>
 
         </select>
-
     </div>
-
 </div>
+
 
         <div class="step-nav-buttons">
             <button type="button" class="btn btn-step-prev btn-step" onclick="goToStep{{ notif.id }}(2)">

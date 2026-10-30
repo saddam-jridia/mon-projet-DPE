@@ -213,7 +213,7 @@ form input[type="checkbox"] {
             <h5><strong>الجنس:</strong> {{ child.get_gender_display }}</h5>
         </div>
         <div class="col-md-6">
-            <h5><strong>تاريخ الميلاد:</strong> {{ child.birth_date|date:"d/m/Y"|default:"-" }}</h5>
+            <h5><strong>تاريخ الولادة:</strong> {{ child.birth_date|date:"d/m/Y"|default:"-" }}</h5>
         </div>
     </div>
 
@@ -416,7 +416,7 @@ form input[type="checkbox"] {
     
     <hr>
     <label class="fw-bold">الوسيلة</label><br>
-    <input type="checkbox" name="suicide_methods" value="dangerous_liquids">محاولة انتحار الطفل بمواد خطرة أو أدوية<br>
+    <input type="checkbox" name="suicide_methods" value="dangerous_liquids">محاولة انتحار الطفل بتناول مواد خطرة أو أدوية<br>
     <input type="checkbox" name="suicide_methods" value="burning">محاولة انتحار الطفل بسكب مواد قابلة للاحتراق على جسده<br>
     <input type="checkbox" name="suicide_methods" value="hanging">محاولة انتحار الطفل شنقًا<br>
     <input type="checkbox" name="suicide_methods" value="cutting">محاولة الانتحار بقطع الشرايين<br>

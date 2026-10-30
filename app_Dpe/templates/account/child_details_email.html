@@ -127,7 +127,7 @@ td {
         <td>{{ child.last_name }}</td>
       </tr>
       <tr>
-        <th>تاريخ الميلاد</th>
+        <th>تاريخ الولادة</th>
         <td>{{ child.birth_date|date:"d/m/Y"|default:"-" }}</td>
       </tr>
      <tr><th>مكان الولادة</th><td>{{ child.get_birth_place_display |default:"-"}}</td></tr>
