@@ -206,4 +206,12 @@ urlpatterns = [
         views.resume_suivi,
         name='resume_suivi'
     ),
+
+    path(
+    'child/<int:pk>/toggle-visibility/<str:model_type>/',
+    views.toggle_child_visibility,
+    name='toggle_child_visibility'
+),
+
+
 ]

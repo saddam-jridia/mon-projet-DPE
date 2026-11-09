@@ -8,42 +8,28 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-    /* Couleurs principales - harmonisées avec navbar/footer */
-    --primary: #b8860b;           /* Or foncé (gold) */
-    --primary-dark: #8c6d0b;      /* Or plus foncé */
-    --primary-light: #f4e4bc;     /* Or très clair */
-    --accent: #d4a520;            /* Or accent */
-    --danger: #c41230;            /* Rouge officiel */
-    
-    /* Couleurs de fond */
-    --bg: #f5f5f5;                /* Gris très clair */
-    --card-bg: #ffffff;           /* Blanc */
-    --text: #1a1a1a;              /* Noir navbar */
-    --text-light: #5a5b5d;        /* Gris foncé */
-    
-    /* Ombres et effets */
+    --primary: #b8860b;
+    --primary-dark: #8c6d0b;
+    --primary-light: #f4e4bc;
+    --accent: #d4a520;
+    --danger: #c41230;
+    --bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-light: #5a5b5d;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
     --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
-    
-    /* Bordures */
     --radius: 20px;
     --radius-sm: 12px;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html, body {
-    height: 100%;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
 
 body {
     font-family: 'Tajawal', sans-serif;
-    background: 
+    background:
         radial-gradient(circle at 10% 20%, rgba(184, 134, 11, 0.03) 0%, transparent 40%),
         radial-gradient(circle at 90% 80%, rgba(184, 134, 11, 0.04) 0%, transparent 40%),
         linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
@@ -53,9 +39,7 @@ body {
 }
 
 /* ---------- Main Content ---------- */
-.main-content {
-    min-height: calc(100vh - 200px);
-}
+.main-content { min-height: calc(100vh - 200px); }
 
 /* ---------- Header ---------- */
 .modern-header {
@@ -66,366 +50,211 @@ body {
     overflow: hidden;
     border-bottom: 3px solid #b8860b;
 }
-
 .modern-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 600px;
-    height: 600px;
+    content: ''; position: absolute; top: -50%; right: -10%;
+    width: 600px; height: 600px;
     background: rgba(184, 134, 11, 0.05);
-    border-radius: 50%;
-    pointer-events: none;
+    border-radius: 50%; pointer-events: none;
 }
-
 .modern-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
     height: 120px;
     background: linear-gradient(to top, var(--bg), transparent);
     pointer-events: none;
 }
-
 .header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    position: relative;
-    z-index: 2;
+    max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    position: relative; z-index: 2;
 }
-
-.brand-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
+.brand-section { display: flex; flex-direction: column; gap: 0.5rem; }
 .system-title {
-    font-size: 1.75rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    color: #ffffff;
+    font-size: 1.75rem; font-weight: 800;
+    display: flex; align-items: center; gap: 0.75rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3); color: #ffffff;
 }
-
-.system-title i {
-    font-size: 2rem;
-    opacity: 0.9;
-    color: #b8860b;
-}
-
-.subtitle {
-    font-size: 1rem;
-    opacity: 0.85;
-    font-weight: 400;
-    color: #e0e0e0;
-}
-
+.system-title i { font-size: 2rem; opacity: 0.9; color: #b8860b; }
+.subtitle { font-size: 1rem; opacity: 0.85; font-weight: 400; color: #e0e0e0; }
 .user-badge {
     background: rgba(184, 134, 11, 0.15);
     backdrop-filter: blur(12px);
     padding: 1rem 1.5rem;
     border-radius: var(--radius);
     border: 1px solid rgba(184, 134, 11, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    display: flex; align-items: center; gap: 1rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
-
 .user-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
+    width: 45px; height: 45px; border-radius: 50%;
     background: rgba(184, 134, 11, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 1.25rem;
     border: 2px solid rgba(184, 134, 11, 0.4);
     color: #b8860b;
 }
-
-.user-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.user-name {
-    font-weight: 700;
-    font-size: 1.05rem;
-    color: #ffffff;
-}
-
-.user-role {
-    font-size: 0.8rem;
-    opacity: 0.85;
-    font-weight: 500;
-    color: #f4e4bc;
-}
+.user-details { display: flex; flex-direction: column; gap: 0.2rem; }
+.user-name { font-weight: 700; font-size: 1.05rem; color: #ffffff; }
+.user-role { font-size: 0.8rem; opacity: 0.85; font-weight: 500; color: #f4e4bc; }
 
 /* ---------- Zone de Recherche ---------- */
 .search-wrapper {
-    max-width: 1000px;
-    margin: -4rem auto 3rem;
-    padding: 0 1.5rem;
-    position: relative;
-    z-index: 10;
+    max-width: 1000px; margin: -4rem auto 3rem; padding: 0 1.5rem;
+    position: relative; z-index: 10;
 }
-
 .search-card {
     background: var(--card-bg);
     border-radius: var(--radius);
     padding: 2.5rem;
     box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.02);
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
     animation: slideUp 0.6s ease-out;
     border: 1px solid rgba(184, 134, 11, 0.1);
 }
-
-/* ✅ NOUVEAU : Bouton تحيين الوضعية en haut de la carte */
-.card-top-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+.card-top-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
 .status-change-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
+    display: inline-flex; align-items: center; gap: 0.35rem;
     padding: 0.4rem 0.75rem;
     background: linear-gradient(135deg, rgba(196, 18, 48, 0.1) 0%, rgba(196, 18, 48, 0.05) 100%);
     color: #c41230;
     border: 1.5px solid rgba(196, 18, 48, 0.3);
     border-radius: 50px;
     font-family: 'Tajawal', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.75rem; font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
 }
-
 .status-change-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
     transition: left 0.5s ease;
 }
-
-.status-change-btn:hover::before {
-    left: 100%;
-}
-
+.status-change-btn:hover::before { left: 100%; }
 .status-change-btn:hover {
     background: linear-gradient(135deg, #c41230 0%, #a00e27 100%);
-    color: white;
-    border-color: #c41230;
+    color: white; border-color: #c41230;
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(196, 18, 48, 0.35);
 }
-
 .status-change-btn:active {
     transform: translateY(0);
     box-shadow: 0 2px 6px rgba(196, 18, 48, 0.3);
 }
+.status-change-btn i { font-size: 0.8rem; transition: transform 0.3s ease; }
+.status-change-btn:hover i { transform: rotate(180deg); }
 
-.status-change-btn i {
-    font-size: 0.8rem;
-    transition: transform 0.3s ease;
+.status-locked-badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background: linear-gradient(135deg, rgba(90, 91, 93, 0.1) 0%, rgba(90, 91, 93, 0.05) 100%);
+    color: #5a5b5d;
+    border: 1.5px solid rgba(90, 91, 93, 0.3);
+    border-radius: 50px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.75rem; font-weight: 700;
+    white-space: nowrap;
+    cursor: not-allowed;
+    user-select: none;
 }
+.status-locked-badge i { font-size: 0.75rem; color: #5a5b5d; }
 
-.status-change-btn:hover i {
-    transform: rotate(180deg);
-}
-
-/* ✅ Badge de type amélioré */
 .card-type {
     padding: 0.35rem 0.85rem;
     border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 800;
+    font-size: 0.75rem; font-weight: 800;
     letter-spacing: 0.5px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
+    display: inline-flex; align-items: center; gap: 0.3rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
-
 .card-type::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    display: inline-block;
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; display: inline-block;
 }
-
 .type-menaced::before {
     background: #b8860b;
     box-shadow: 0 0 8px rgba(184, 134, 11, 0.6);
     animation: pulseDot 2s infinite;
 }
-
 .type-delinquant::before {
     background: #1a1a1a;
     box-shadow: 0 0 8px rgba(26, 26, 26, 0.4);
 }
-
 @keyframes pulseDot {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.6; transform: scale(1.2); }
 }
 
-/* Amélioration du card-top */
 .card-top {
     padding: 1.25rem;
     background: linear-gradient(135deg, #faf8f3 0%, #fff 100%);
     border-bottom: 1px solid rgba(184, 134, 11, 0.1);
     position: relative;
 }
-
 .card-top::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 1.25rem;
-    right: 1.25rem;
-    height: 1px;
+    content: ''; position: absolute;
+    bottom: -1px; left: 1.25rem; right: 1.25rem; height: 1px;
     background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.2), transparent);
 }
 
-/* Responsive pour le bouton */
 @media (max-width: 480px) {
-    .status-change-btn {
-        padding: 0.35rem 0.6rem;
-        font-size: 0.7rem;
-    }
-    
-    .status-change-btn span {
-        display: none;
-    }
-    
-    .status-change-btn i {
-        font-size: 0.9rem;
-    }
-    
-    .card-type {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.7rem;
-    }
+    .status-change-btn { padding: 0.35rem 0.6rem; font-size: 0.7rem; }
+    .status-change-btn span { display: none; }
+    .status-change-btn i { font-size: 0.9rem; }
+    .status-locked-badge { padding: 0.35rem 0.6rem; font-size: 0.7rem; }
+    .status-locked-badge span { display: none; }
+    .status-locked-badge i { font-size: 0.85rem; }
+    .card-type { font-size: 0.7rem; padding: 0.3rem 0.7rem; }
 }
 
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-
 .search-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
     background: linear-gradient(90deg, #b8860b 0%, #f4e4bc 100%);
 }
-
-.search-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
+.search-header { text-align: center; margin-bottom: 2rem; }
 .search-header h2 {
-    color: var(--text);
-    font-size: 1.75rem;
-    font-weight: 800;
+    color: var(--text); font-size: 1.75rem; font-weight: 800;
     margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
+    display: flex; align-items: center; justify-content: center; gap: 0.75rem;
 }
+.search-header h2 i { color: var(--primary); font-size: 1.5rem; }
+.search-header p { color: var(--text-light); font-size: 1rem; font-weight: 400; }
 
-.search-header h2 i {
-    color: var(--primary);
-    font-size: 1.5rem;
-}
-
-.search-header p {
-    color: var(--text-light);
-    font-size: 1rem;
-    font-weight: 400;
-}
-
-/* Formulaire optimisé */
 .search-form {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.25rem;
 }
-
-.input-group {
-    position: relative;
-}
-
-.input-group.full-width {
-    grid-column: 1 / -1;
-}
+.input-group { position: relative; }
+.input-group.full-width { grid-column: 1 / -1; }
 
 .input-group label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-weight: 600;
-    color: var(--text);
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
-    
+    display: block; margin-bottom: 0.6rem; padding-right: 0.5rem;
+    font-weight: 600; color: var(--text); font-size: 0.9rem;
+    transition: color 0.3s ease; text-align: right;
 }
 
-.input-wrapper {
-    position: relative;
-}
+.input-wrapper { position: relative; }
 
 .input-wrapper i {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
+    position: absolute; left: 1rem; top: 50%;
     transform: translateY(-50%);
-    color: var(--primary);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    opacity: 0.6;
-    pointer-events: none;
+    color: var(--primary); font-size: 1rem;
+    transition: all 0.3s ease; opacity: 0.6;
+    pointer-events: auto; cursor: pointer;
 }
 
 .input-wrapper input,
 .input-wrapper select {
     width: 100%;
-    padding: 0.9rem 2.8rem 0.9rem 1rem;
+    padding: 0.9rem 1rem 0.9rem 2.8rem;
     border: 2px solid #e2e8f0;
     border-radius: var(--radius-sm);
     font-family: 'Tajawal', sans-serif;
@@ -433,52 +262,37 @@ body {
     transition: all 0.3s ease;
     background: #f8fafc;
     color: var(--text);
-}
-
-.input-wrapper input[type="date"] {
     text-align: right;
 }
-
+.input-wrapper input[type="date"] {
+    text-align: right;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
 .input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
-    position: absolute;
-    left: 1rem;
-    right: auto;
-    opacity: 0.6;
-    cursor: pointer;
-    filter: invert(0.4) sepia(1) saturate(5) hue-rotate(10deg);
+    display: none; -webkit-appearance: none;
+    opacity: 0; width: 0; height: 0;
+    padding: 0; margin: 0;
 }
-
-.input-wrapper input[type="date"]:focus::-webkit-calendar-picker-indicator {
-    opacity: 1;
+.input-wrapper input[type="date"]::-webkit-inner-spin-button,
+.input-wrapper input[type="date"]::-webkit-clear-button {
+    display: none;
 }
-
 .input-wrapper input:hover,
-.input-wrapper select:hover {
-    border-color: #b8860b;
-    background: #fff;
-}
-
+.input-wrapper select:hover { border-color: #b8860b; background: #fff; }
 .input-wrapper input:focus,
 .input-wrapper select:focus {
-    outline: none;
-    border-color: var(--primary);
+    outline: none; border-color: var(--primary);
     background: #fff;
     box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.1);
 }
-
 .input-wrapper input:focus + i,
-.input-wrapper select:focus + i {
-    opacity: 1;
-    color: var(--primary-dark);
-}
+.input-wrapper select:focus + i { opacity: 1; color: var(--primary-dark); }
 
 .search-actions {
     grid-column: 1 / -1;
-    display: flex;
-    gap: 1rem;
-    margin-top: 0.5rem;
+    display: flex; gap: 1rem; margin-top: 0.5rem;
 }
-
 .search-btn {
     flex: 1;
     background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
@@ -487,49 +301,27 @@ body {
     padding: 1rem 2rem;
     border-radius: var(--radius-sm);
     font-family: 'Tajawal', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.1rem; font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
 }
-
 .search-btn:hover {
     background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
     border-color: #d4a520;
     transform: translateY(-2px);
     box-shadow: 0 10px 15px -3px rgba(184, 134, 11, 0.3);
 }
-
-.search-btn:active {
-    transform: translateY(0);
-}
-
-.search-btn.loading {
-    pointer-events: none;
-    opacity: 0.8;
-}
-
+.search-btn:active { transform: translateY(0); }
+.search-btn.loading { pointer-events: none; opacity: 0.8; }
 .search-btn.loading::after {
-    content: '';
-    width: 20px;
-    height: 20px;
-    border: 2px solid transparent;
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-right: 0.5rem;
+    content: ''; width: 20px; height: 20px;
+    border: 2px solid transparent; border-top-color: white;
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 0.5rem;
 }
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .reset-btn {
     padding: 1rem 2rem;
@@ -538,288 +330,151 @@ body {
     border: 2px solid #e2e8f0;
     border-radius: var(--radius-sm);
     font-family: 'Tajawal', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1rem; font-weight: 600;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    display: inline-flex; align-items: center; gap: 0.5rem;
     transition: all 0.3s ease;
 }
-
 .reset-btn:hover {
-    background: #f1f5f9;
-    color: var(--text);
-    border-color: #b8860b;
-    transform: translateY(-1px);
+    background: #f1f5f9; color: var(--text);
+    border-color: #b8860b; transform: translateY(-1px);
 }
-
-.reset-btn:active {
-    transform: translateY(0);
-}
+.reset-btn:active { transform: translateY(0); }
 
 .back-btn {
     background: linear-gradient(135deg, #fefefe 0%, #f1f5f9 100%);
     color: #1a1a1a;
     border: 2px solid #b8860b;
     transition: all 0.3s ease, transform 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    position: relative;
-    overflow: hidden;
-    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    position: relative; overflow: hidden; text-decoration: none;
 }
-
-.back-btn i {
-    transition: transform 0.3s ease;
-}
-
+.back-btn i { transition: transform 0.3s ease; }
 .back-btn:hover {
     background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
-    color: white;
-    border-color: #d4a520;
+    color: white; border-color: #d4a520;
     transform: translateY(-2px);
     text-decoration: none;
 }
-
-.back-btn:hover i {
-    transform: translateX(-4px) rotate(-15deg);
-}
-
-.back-btn:active {
-    transform: translateY(0);
-}
-
-/* Bouton Ajouter enfant */
-.add-child-btn-header {
-    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
-    color: white;
-    border: 2px solid #d4a520;
-    transition: all 0.3s ease;
-}
-
-.add-child-btn-header:hover {
-    background: linear-gradient(135deg, #8c6d0b 0%, #6b4f08 100%);
-    color: white;
-    transform: translateY(-2px);
-}
+.back-btn:hover i { transform: translateX(-4px) rotate(-15deg); }
+.back-btn:active { transform: translateY(0); }
 
 /* ---------- États des Résultats ---------- */
 .results-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.5rem 4rem;
+    max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 4rem;
     min-height: 300px;
 }
-
-/* État initial */
+.post-search-actions {
+    display: flex; justify-content: flex-end; margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
 .initial-state {
-    text-align: center;
-    padding: 4rem 2rem;
+    text-align: center; padding: 4rem 2rem;
     background: rgba(255,255,255,0.9);
     border-radius: var(--radius);
     border: 2px dashed var(--primary-light);
     backdrop-filter: blur(4px);
     animation: fadeIn 0.8s ease-out;
 }
-
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 .initial-state i {
-    font-size: 4rem;
-    color: var(--primary);
-    margin-bottom: 1.5rem;
-    opacity: 0.3;
+    font-size: 4rem; color: var(--primary);
+    margin-bottom: 1.5rem; opacity: 0.3;
     animation: pulse 2s infinite;
 }
-
 @keyframes pulse {
     0%, 100% { transform: scale(1); opacity: 0.3; }
     50% { transform: scale(1.05); opacity: 0.5; }
 }
-
 .initial-state h3 {
-    color: var(--text);
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
-    font-weight: 700;
+    color: var(--text); font-size: 1.5rem;
+    margin-bottom: 0.75rem; font-weight: 700;
 }
-
 .initial-state p {
-    color: var(--text-light);
-    font-size: 1rem;
-    max-width: 400px;
-    margin: 0 auto;
+    color: var(--text-light); font-size: 1rem;
+    max-width: 400px; margin: 0 auto;
 }
-
-/* État vide */
 .empty-state {
-    text-align: center;
-    padding: 3rem 2rem;
+    text-align: center; padding: 3rem 2rem;
     background: rgba(255,255,255,0.9);
     border-radius: var(--radius);
     border: 2px solid #fee2e2;
     margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
     animation: shakeIn 0.5s ease-out;
 }
-
 @keyframes shakeIn {
     0% { transform: translateX(-10px); opacity: 0; }
     50% { transform: translateX(5px); }
     100% { transform: translateX(0); opacity: 1; }
 }
-
 .empty-state::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--danger);
-    opacity: 0.5;
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: var(--danger); opacity: 0.5;
 }
-
 .empty-state i {
-    font-size: 3rem;
-    color: var(--danger);
-    margin-bottom: 1rem;
-    opacity: 0.6;
+    font-size: 3rem; color: var(--danger);
+    margin-bottom: 1rem; opacity: 0.6;
 }
-
 .empty-state h4 {
-    color: var(--danger);
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    color: var(--danger); font-size: 1.2rem;
+    margin-bottom: 0.5rem; font-weight: 700;
 }
-
-.empty-state p {
-    color: var(--text-light);
-    font-size: 0.9rem;
-}
-
-/* Styles pour les boutons d'ajout d'enfant */
-.empty-state-actions {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+.empty-state p { color: var(--text-light); font-size: 0.9rem; }
 
 .add-child-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
+    display: inline-flex; align-items: center; gap: 0.6rem;
     padding: 0.8rem 1.5rem;
     border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1rem; font-weight: 600;
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
     border: 2px solid transparent;
 }
-
-.add-child-btn i {
-    font-size: 1.1rem;
-}
-
+.add-child-btn i { font-size: 1.1rem; }
 .add-child-btn.primary {
     background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
-    color: white;
-    border-color: #d4a520;
+    color: white; border-color: #d4a520;
     box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
 }
-
 .add-child-btn.primary:hover {
     background: linear-gradient(135deg, #8c6d0b 0%, #6b4f08 100%);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
 }
-
-.add-child-btn.secondary {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
-    color: #b8860b;
-    border: 2px solid #b8860b;
-}
-
-.add-child-btn.secondary:hover {
-    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
-    color: white;
-    transform: translateY(-2px);
-}
-
-.add-child-btn:active {
-    transform: translateY(0);
-}
-
-/* Style pour le cas où aucune catégorie n'a de résultats */
-.full-empty {
-    background: rgba(255,255,255,0.95);
-    border: 2px dashed rgba(184, 134, 11, 0.3);
-    margin-top: 1rem;
-}
-
-.full-empty .empty-state-actions {
-    margin-top: 1rem;
-}
+.add-child-btn:active { transform: translateY(0); }
 
 /* Section Headers */
 .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.5rem; padding-bottom: 0.75rem;
     border-bottom: 2px solid #e2e8f0;
     position: relative;
     animation: slideInRight 0.5s ease-out;
 }
-
 @keyframes slideInRight {
     from { opacity: 0; transform: translateX(-20px); }
     to { opacity: 1; transform: translateX(0); }
 }
-
 .section-header.menaced::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    right: 0;
-    width: 120px;
-    height: 2px;
-    background: #b8860b;
-    border-radius: 2px;
+    content: ''; position: absolute;
+    bottom: -2px; right: 0; width: 120px; height: 2px;
+    background: #b8860b; border-radius: 2px;
 }
-
 .section-header.delinquant::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    right: 0;
-    width: 120px;
-    height: 2px;
-    background: #1a1a1a;
-    border-radius: 2px;
+    content: ''; position: absolute;
+    bottom: -2px; right: 0; width: 120px; height: 2px;
+    background: #1a1a1a; border-radius: 2px;
 }
-
 .section-title {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    font-size: 1.8rem; font-weight: 800; color: var(--text);
+    display: flex; align-items: center; gap: 0.75rem;
 }
-
 .section-header.menaced .section-title::before {
     content: '\f06a';
     font-family: 'Font Awesome 6 Free';
@@ -827,10 +482,8 @@ body {
     color: #b8860b;
     font-size: 1.1rem;
     background: rgba(184, 134, 11, 0.1);
-    padding: 0.5rem;
-    border-radius: 10px;
+    padding: 0.5rem; border-radius: 10px;
 }
-
 .section-header.delinquant .section-title::before {
     content: '\f0e3';
     font-family: 'Font Awesome 6 Free';
@@ -838,30 +491,24 @@ body {
     color: #1a1a1a;
     font-size: 1.1rem;
     background: rgba(26, 26, 26, 0.08);
-    padding: 0.5rem;
-    border-radius: 10px;
+    padding: 0.5rem; border-radius: 10px;
 }
-
 .badge-count {
     background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
     color: #b8860b;
     border: 1px solid #b8860b;
     padding: 0.35rem 1rem;
     border-radius: 50px;
-    font-size: 0.875rem;
-    font-weight: 700;
+    font-size: 0.875rem; font-weight: 700;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    min-width: 40px;
-    text-align: center;
+    min-width: 40px; text-align: center;
     animation: popIn 0.3s ease-out;
 }
-
 @keyframes popIn {
     0% { transform: scale(0); }
     80% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
-
 .section-header.delinquant .badge-count {
     background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
     color: #ffffff;
@@ -876,7 +523,6 @@ body {
     gap: 1.25rem;
     margin-bottom: 3rem;
 }
-
 .result-card {
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -889,448 +535,286 @@ body {
     animation: fadeInUp 0.5s ease-out;
     animation-fill-mode: both;
 }
-
 .result-card:nth-child(1) { animation-delay: 0.1s; }
 .result-card:nth-child(2) { animation-delay: 0.2s; }
 .result-card:nth-child(3) { animation-delay: 0.3s; }
 .result-card:nth-child(4) { animation-delay: 0.4s; }
-
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-
 .result-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg), 0 0 20px rgba(184, 134, 11, 0.15);
     border-color: #b8860b;
 }
-
-.card-top {
-    padding: 1.25rem;
-    background: linear-gradient(135deg, #faf8f3 0%, #fff 100%);
-    border-bottom: 1px solid rgba(184, 134, 11, 0.1);
-}
-
 .result-card.delinquant .card-top {
     background: linear-gradient(135deg, #f5f5f5 0%, #fff 100%);
     border-bottom: 1px solid rgba(26, 26, 26, 0.1);
 }
-
 .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
 }
-
 .avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
+    width: 50px; height: 50px; border-radius: 12px;
     background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 1.25rem;
-    color: #b8860b;
-    font-weight: 700;
+    color: #b8860b; font-weight: 700;
     border: 2px solid #b8860b;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
 }
-
 .result-card:hover .avatar {
     transform: scale(1.05) rotate(5deg);
     box-shadow: 0 4px 8px rgba(184, 134, 11, 0.3);
 }
-
 .result-card.delinquant .avatar {
     color: #1a1a1a;
     border-color: #1a1a1a;
     background: linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 100%);
 }
-
 .result-card.delinquant:hover .avatar {
     border-color: #b8860b;
     color: #b8860b;
 }
-
-.card-type {
-    padding: 0.3rem 0.8rem;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
 .type-menaced {
     background: rgba(184, 134, 11, 0.1);
     color: #8c6d0b;
     border: 1px solid rgba(184, 134, 11, 0.3);
 }
-
 .type-delinquant {
     background: rgba(26, 26, 26, 0.08);
     color: #1a1a1a;
     border: 1px solid rgba(26, 26, 26, 0.2);
 }
-
-.card-body {
-    padding: 1rem 1.25rem;
-}
-
+.card-body { padding: 1rem 1.25rem; }
 .card-body h3 {
-    font-size: 1.60rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
+    font-size: 1.60rem; font-weight: 700;
+    color: var(--text); margin-bottom: 0.75rem; line-height: 1.4;
 }
-
 .meta-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 1.60rem;
+    display: flex; flex-direction: column;
+    gap: 0.5rem; font-size: 1.60rem;
 }
-
 .meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-light);
-    font-size: 1.15rem;
-    font-weight: 500;
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--text-light); font-size: 1.15rem; font-weight: 500;
 }
-
 .meta-item i {
-    color: #b8860b;
-    font-size: 1.15rem;
-    width: 18px;
-    text-align: center;
-    opacity: 0.8;
+    color: #b8860b; font-size: 1.15rem;
+    width: 18px; text-align: center; opacity: 0.8;
 }
+.result-card.delinquant .meta-item i { color: #5a5b5d; }
 
-.result-card.delinquant .meta-item i {
-    color: #5a5b5d;
-}
-
-/* Style pour le mandataire avec liens */
 .mandataire-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-    padding: 0.75rem;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    margin-top: 0.75rem; padding: 0.75rem;
     border-top: 2px solid rgba(184, 134, 11, 0.2);
     background: rgba(184, 134, 11, 0.03);
     border-radius: 8px;
     margin: 0.75rem -0.5rem -0.5rem -0.5rem;
 }
-
 .mandataire-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
     font-size: 0.9rem;
-    color: #8c6d0b;
-    font-weight: 700;
+    color: #8c6d0b; font-weight: 700;
 }
-
-.mandataire-row i {
-    color: #b8860b;
-    font-size: 1rem;
-}
-
+.mandataire-row i { color: #b8860b; font-size: 1rem; }
 .result-card.delinquant .mandataire-info {
     background: rgba(26, 26, 26, 0.03);
     border-top-color: rgba(26, 26, 26, 0.15);
 }
+.result-card.delinquant .mandataire-row { color: #1a1a1a; }
+.result-card.delinquant .mandataire-row i { color: #5a5b5d; }
+.mandataire-label { font-weight: 800; margin-left: 0.25rem; font-size: 1.15rem; }
+.mandataire-name { font-weight: 600; font-size: 1.15rem; }
 
-.result-card.delinquant .mandataire-row {
-    color: #1a1a1a;
-}
-
-.result-card.delinquant .mandataire-row i {
-    color: #5a5b5d;
-}
-
-.mandataire-label {
-    font-weight: 800;
-    margin-left: 0.25rem;
-     font-size: 1.15rem;
-}
-
-.mandataire-name {
-    font-weight: 600;
-    font-size: 1.15rem;
-}
-
-/* Liens d'action */
 .mandataire-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
+    display: flex; gap: 1rem;
+    margin-top: 0.5rem; padding-top: 0.5rem;
     border-top: 1px dashed rgba(184, 134, 11, 0.2);
-    
+    flex-wrap: wrap;
 }
-
 .action-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8rem;
-    font-weight: 600;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.8rem; font-weight: 600;
     padding: 0.3rem 0.6rem;
     border-radius: 20px;
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
 }
-
-.action-link i {
-    font-size: 0.75rem;
-}
-
+.action-link i { font-size: 0.75rem; }
 .action-link.details {
     background: rgba(184, 134, 11, 0.1);
     color: #8c6d0b;
     border: 1px solid rgba(184, 134, 11, 0.3);
 }
-
 .action-link.details:hover {
-    background: #b8860b;
-    color: white;
+    background: #b8860b; color: white;
     transform: translateY(-2px);
 }
-
 .action-link.notification {
     background: rgba(26, 26, 26, 0.08);
     color: #1a1a1a;
     border: 1px solid rgba(26, 26, 26, 0.2);
 }
-
 .action-link.notification:hover {
-    background: #1a1a1a;
-    color: #b8860b;
+    background: #1a1a1a; color: #b8860b;
     transform: translateY(-2px);
 }
-
-/* ✅ NOUVEAU : Bouton تحيين الوضعية */
-.action-link.change-status-btn {
-    background: rgba(196, 18, 48, 0.08);
-    color: #c41230;
-    border: 1px solid rgba(196, 18, 48, 0.3);
-    font-family: 'Tajawal', sans-serif;
-}
-
-.action-link.change-status-btn:hover {
-    background: #c41230;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(196, 18, 48, 0.3);
-}
-
-.action-link.change-status-btn i {
-    font-size: 0.8rem;
-}
-
 .result-card.delinquant .action-link.details {
     background: rgba(184, 134, 11, 0.1);
     color: #8c6d0b;
 }
-
 .result-card.delinquant .action-link.details:hover {
-    background: #b8860b;
-    color: white;
+    background: #b8860b; color: white;
 }
-
 .result-card.delinquant .action-link.notification {
     background: rgba(26, 26, 26, 0.08);
     color: #1a1a1a;
 }
-
 .result-card.delinquant .action-link.notification:hover {
-    background: #1a1a1a;
-    color: #b8860b;
+    background: #1a1a1a; color: #b8860b;
 }
 
 /* Section Divider */
 .section-divider {
-    height: 1px;
+    height: 2px;
     background: linear-gradient(90deg, transparent 0%, rgba(184, 134, 11, 0.3) 50%, transparent 100%);
-    margin: 2.5rem 0;
+    margin: 3rem 0;
     position: relative;
 }
 
-/* Toast Notification */
 .toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
+    position: fixed; bottom: 2rem; left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: #1a1a1a;
-    color: #b8860b;
+    background: #1a1a1a; color: #b8860b;
     padding: 1rem 2rem;
     border-radius: var(--radius-sm);
     font-weight: 600;
     box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    opacity: 0;
+    z-index: 1000; opacity: 0;
     transition: all 0.3s ease;
     border: 1px solid #b8860b;
-     font-size: 18px;
+    font-size: 18px;
 }
-
 .toast.show {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
 }
 
-/* Floating Action Button */
-.fab-add-child {
+/* ---------- MODAL ---------- */
+.modal-overlay {
     position: fixed;
-    bottom: 30px;
-    left: 30px;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #b8860b 0%, #8c6d0b 100%);
-    border-radius: 50%;
-    display: flex;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
-    z-index: 100;
-    text-decoration: none;
-    border: 2px solid #d4a520;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
 }
-
-.fab-add-child:hover {
-    transform: scale(1.1);
-    background: linear-gradient(135deg, #8c6d0b 0%, #6b4f08 100%);
-    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.5);
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    animation: slideUp 0.3s ease-out;
 }
-
-.fab-add-child i {
-    font-size: 24px;
+.modal-content h3 {
+    margin-bottom: 1rem;
+    color: var(--text);
+    font-weight: 700;
+    text-align: center;
+}
+.modal-content p {
+    margin-bottom: 1.5rem;
+    color: var(--text-light);
+    text-align: center;
+    font-size: 0.95rem;
+}
+.modal-content .form-group { margin-bottom: 1.5rem; }
+.modal-content .form-group label {
+    display: block; margin-bottom: 0.5rem;
+    font-weight: 600; color: var(--text);
+}
+.modal-content .form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1rem;
+    text-align: right;
+}
+.modal-actions {
+    display: flex; gap: 1rem; justify-content: center;
+}
+.btn-cancel {
+    background: transparent;
+    border: 2px solid #e2e8f0;
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Tajawal', sans-serif;
+    color: var(--text-light);
+    transition: all 0.2s ease;
+}
+.btn-cancel:hover { background: #f1f5f9; }
+.btn-confirm {
+    background: #c41230;
     color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Tajawal', sans-serif;
+    transition: all 0.2s ease;
 }
+.btn-confirm:hover { background: #a00e27; }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .modern-header {
-        padding: 2rem 0 4rem;
-    }
-    
+    .modern-header { padding: 2rem 0 4rem; }
     .header-content {
-        flex-direction: column;
-        gap: 1.5rem;
-        text-align: center;
-        align-items: center;
+        flex-direction: column; gap: 1.5rem;
+        text-align: center; align-items: center;
     }
-    
-    .search-form {
-        grid-template-columns: 1fr;
-    }
-    
-    .search-actions {
-        flex-direction: column;
-    }
-    
-    .results-grid {
-        grid-template-columns: 1fr;
-    }
-    
+    .search-form { grid-template-columns: 1fr; }
+    .search-actions { flex-direction: column; }
+    .results-grid { grid-template-columns: 1fr; }
     .section-header {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: flex-start;
+        flex-direction: column; gap: 0.5rem; align-items: flex-start;
     }
-    
-    .badge-count {
-        align-self: flex-end;
-    }
-    
-    .mandataire-actions {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .action-link {
-        justify-content: center;
-    }
-    
-    .empty-state-actions {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.8rem;
-    }
-    
-    .add-child-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 0.7rem 1.2rem;
-    }
-    
-    .fab-add-child {
-        bottom: 20px;
-        left: 20px;
-        width: 50px;
-        height: 50px;
-    }
-    
-    .fab-add-child i {
-        font-size: 20px;
-    }
+    .badge-count { align-self: flex-end; }
+    .mandataire-actions { flex-direction: column; gap: 0.5rem; }
+    .action-link { justify-content: center; }
 }
 
 @media (max-width: 480px) {
-    .search-card {
-        padding: 1.5rem;
-    }
-    
-    .system-title {
-        font-size: 1.1rem;
-    }
-    
-    .subtitle {
-        font-size: 0.9rem;
-    }
-    
+    .search-card { padding: 1.5rem; }
+    .system-title { font-size: 1.1rem; }
+    .subtitle { font-size: 0.9rem; }
     .user-badge {
         padding: 0.75rem 1rem;
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .fab-add-child {
-        bottom: 15px;
-        left: 15px;
-        width: 45px;
-        height: 45px;
+        width: 100%; justify-content: center;
     }
 }
 
-/* Section combinée : enfants mهددون & في خلاف مع القانون */
+/* Section combinée */
 .section-header.combined::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    right: 0;
-    width: 180px;
-    height: 2px;
+    content: ''; position: absolute;
+    bottom: -2px; right: 0; width: 180px; height: 2px;
     background: linear-gradient(90deg, #b8860b 0%, #1a1a1a 100%);
     border-radius: 2px;
 }
-
 .section-header.combined .section-title::before {
     content: '\f0c0';
     font-family: 'Font Awesome 6 Free';
@@ -1342,6 +826,23 @@ body {
     border-radius: 10px;
 }
 
+/* ✅ Nouvelle variante : transition خلاف → مهدد */
+.section-header.combined-reverse::after {
+    content: ''; position: absolute;
+    bottom: -2px; right: 0; width: 180px; height: 2px;
+    background: linear-gradient(90deg, #1a1a1a 0%, #b8860b 100%);
+    border-radius: 2px;
+}
+.section-header.combined-reverse .section-title::before {
+    content: '\f0c0';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: #1a1a1a;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, rgba(26,26,26,.12), rgba(184,134,11,.08));
+    padding: .5rem;
+    border-radius: 10px;
+}
 </style>
 {% endblock %}
 
@@ -1355,9 +856,8 @@ body {
                     <i class="fas fa-child"></i>
                     <span>البحث عن طفل</span>
                 </div>
-
             </div>
-            
+
             {% if request.user.delegate_profile %}
             <div class="user-badge">
                 <div class="user-avatar">
@@ -1382,18 +882,16 @@ body {
                 </h2>
                 <p>البحث باستخدام معايير متعددة</p>
             </div>
-            
+
             <form method="get" class="search-form" id="searchForm" onsubmit="return handleSearch(event)">
-                <!-- Prénom -->
                 <div class="input-group">
                     <label>الاسم</label>
                     <div class="input-wrapper">
-                        <input type="text" name="prenom" value="{{ request.GET.prenom }}" placeholder=" الاسم">
+                        <input type="text" name="prenom" value="{{ request.GET.prenom }}" placeholder="الاسم">
                         <i class="fas fa-user"></i>
                     </div>
                 </div>
 
-                <!-- Nom -->
                 <div class="input-group">
                     <label>اللقب</label>
                     <div class="input-wrapper">
@@ -1402,45 +900,60 @@ body {
                     </div>
                 </div>
 
-                <!-- Nom de mère -->
                 <div class="input-group">
-                    <label>اسم الام</label>
+                    <label>اسم الأم</label>
                     <div class="input-wrapper">
-                        <input type="text" name="nom_mere" value="{{ request.GET.nom_mere }}" placeholder="اسم الام">
+                        <input type="text" name="prenom_mere" value="{{ request.GET.prenom_mere }}" placeholder="اسم الأم">
                         <i class="fas fa-signature"></i>
                     </div>
                 </div>
 
-                <!-- Nom de père -->
                 <div class="input-group">
-                    <label>اسم الاب</label>
+                    <label>لقب الأم</label>
                     <div class="input-wrapper">
-                        <input type="text" name="nom_pere" value="{{ request.GET.nom_pere }}" placeholder="اسم الاب">
+                        <input type="text" name="nom_mere" value="{{ request.GET.nom_mere }}" placeholder="لقب الأم">
                         <i class="fas fa-signature"></i>
                     </div>
                 </div>
 
-                <!-- Date de naissance -->
+                <div class="input-group">
+                    <label>اسم الأب</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="prenom_pere" value="{{ request.GET.prenom_pere }}" placeholder="اسم الأب">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>لقب الأب</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="nom_pere" value="{{ request.GET.nom_pere }}" placeholder="لقب الأب">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                </div>
+
                 <div class="input-group">
                     <label>تاريخ الولادة</label>
                     <div class="input-wrapper">
-                        <input type="date" name="date_naissance" value="{{ request.GET.date_naissance }}">
+                        <input type="date" 
+                            name="date_naissance" 
+                            value="{{ request.GET.date_naissance }}"
+                            max="{% now 'Y-m-d' %}"
+                            id="id_date_naissance_search">
                         <i class="fas fa-calendar-alt"></i>
                     </div>
                 </div>
 
-                <!-- UID -->
                 <div class="input-group">
                     <label>المعرف الوحيد</label>
                     <div class="input-wrapper">
-                        <input type="text" name="uid" value="{{ request.GET.uid }}" placeholder="رقم المعرف ">
+                        <input type="text" name="uid" value="{{ request.GET.uid }}" placeholder="رقم المعرف">
                         <i class="fas fa-fingerprint"></i>
                     </div>
                 </div>
 
-                <!-- Wilaya -->
                 <div class="input-group">
-                    <label>الولاية </label>
+                    <label>الولاية</label>
                     <div class="input-wrapper">
                         <select name="wilaya">
                             <option value="">اختر الولاية</option>
@@ -1452,7 +965,6 @@ body {
                     </div>
                 </div>
 
-                <!-- Boutons -->
                 <div class="search-actions">
                     <button type="submit" class="search-btn" id="searchBtn">
                         <i class="fas fa-search"></i>
@@ -1466,35 +978,31 @@ body {
                         <i class="fas fa-arrow-left"></i>
                         <span>رجوع</span>
                     </a>
-                    <!-- Nouveau bouton pour ajouter un enfant -->
-                    <a href="{% url 'child_create' %}" class="reset-btn add-child-btn-header">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>إضافة طفل جديد</span>
-                    </a>
                 </div>
             </form>
         </div>
     </div>
-    
-    <!-- Résultats -->
+
     <div class="results-wrapper" id="resultsWrapper">
 
     {% if not request.GET %}
-        <!-- État initial -->
         <div class="initial-state">
             <i class="fas fa-search-plus"></i>
             <h3>ابدأ البحث</h3>
             <p>استخدم نموذج البحث أعلاه للعثور على سجلات الأطفال في المنظومة</p>
-            <div class="empty-state-actions" style="margin-top: 1.5rem;">
-                <a href="{% url 'child_create' %}" class="add-child-btn primary">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>إضافة طفل جديد</span>
-                </a>
-            </div>
         </div>
     {% else %}
-        
-        <!-- Section enfants menacés -->
+
+        <div class="post-search-actions">
+            <a href="{% url 'child_create' %}" class="add-child-btn primary">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة طفل جديد</span>
+            </a>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SECTION 1 : أطفال مهددون                            -->
+        <!-- ═══════════════════════════════════════════════════ -->
         <div class="section-header menaced">
             <h3 class="section-title">أطفال مهددون</h3>
             {% if menaced %}
@@ -1507,54 +1015,43 @@ body {
             {% for child in menaced %}
             <div class="result-card">
                 <div class="card-top">
-    <div class="card-header">
-        <div class="avatar"><i class="fas fa-child"></i></div>
-        <div class="card-top-actions">
-            <span class="card-type type-menaced">مهدد</span>
-            <!-- ✅ Bouton تحيين الوضعية en haut -->
-            <form method="post"
-      action="{% url 'set_child_status' child.id %}"
-      style="display:inline;">
-    {% csrf_token %}
+                    <div class="card-header">
+                        <div class="avatar"><i class="fas fa-child"></i></div>
+                        <div class="card-top-actions">
+                            <span class="card-type type-menaced">مهدد</span>
 
-    <input type="hidden"
-           name="status"
-           value="DELINQUENT">
-
-    <button type="submit"
-            class="status-change-btn"
-            onclick="return confirmChangeStatus(
-                '{{ child.first_name }} {{ child.last_name }}'
-            )"
-            title="تحيين الوضعية إلى 'طفل في خلاف مع القانون'">
-
-        <i class="fas fa-exchange-alt"></i>
-
-        <span>تحيين الوضعية</span>
-
-    </button>
-</form>
-        </div>
-    </div>
-</div>
+                            {# ✅ Bouton visible uniquement si aucune transition n'a encore eu lieu #}
+                            {% if not child.status_updated_at %}
+                                <button type="button" 
+                                        class="status-change-btn" 
+                                        onclick="openStatusChangeModal('{{ child.first_name }} {{ child.last_name }}', '{% url 'set_child_status' child.id %}', 'DELINQUENT', 'طفل في خلاف مع القانون', '{{ child.birth_date|date:"Y-m-d" }}')"
+                                        title="تحيين الوضعية إلى 'طفل في خلاف مع القانون'">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    <span>تحيين إلى خلاف مع القانون</span>
+                                </button>
+                            {% else %}
+                                {# 🔒 Déjà transféré (vers خلاف) OU revenu de خلاف : verrouillé #}
+                                <span class="status-locked-badge"
+                                      title="تم تحيين وضعية هذا الطفل بتاريخ {{ child.status_updated_at|date:'d/m/Y' }}">
+                                    <i class="fas fa-lock"></i>
+                                    <span>تم تحيين الوضعية</span>
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body">
                     <h3>{{ child.first_name }} {{ child.last_name }}</h3>
                     <div class="meta-info">
-                        <!-- ✅ المعرف الوحيد en premier -->
                         {% if child.uid %}
                         <div class="meta-item"><i class="fas fa-id-card"></i><span>المعرف الوحيد: {{ child.uid }}</span></div>
                         {% endif %}
-                        <!-- ✅ الجنس -->
                         <div class="meta-item">
                             <i class="fas fa-venus-mars"></i>
-                            <span>الجنس: 
-                                {% if child.gender == "M" %}
-                                    ذكر
-                                {% elif child.gender == "F" %}
-                                    أنثى
-                                {% else %}
-                                    غير محدد
-                                {% endif %}
+                            <span>الجنس:
+                                {% if child.gender == "M" %}ذكر
+                                {% elif child.gender == "F" %}أنثى
+                                {% else %}غير محدد{% endif %}
                             </span>
                         </div>
                         {% if child.birth_governorate %}
@@ -1580,33 +1077,25 @@ body {
                                 <span class="mandataire-label">المكتب المتعهد:</span>
                                 <span class="mandataire-name">{{ child.delegate_ch.get_wilaya_display }}</span>
                             </div>
-                          
 
-<div class="mandataire-actions">
-    <a href="{% url 'child_detail' child.id %}" class="action-link details">
-        <i class="fas fa-info-circle"></i>
-        <span>أكثر معطيات</span>
-    </a>
-  
-    <!-- ✅ Condition simplifiée - tout délégué peut ajouter -->
-    {% if child.can_notify %}
-        <a href="{% url 'new_notification' child.id %}" class="action-link notification">
-            <i class="fas fa-bell"></i>
-            <span>إضافة إشعار جديد</span>
-        </a>
-    {% else %}
-        <span class="action-link notification disabled" title="يجب تسجيل الدخول كمندوب">
-            <i class="fas fa-bell"></i>
-            <span>إضافة إشعار جديد</span>
-        </span>
-    {% endif %}
-    
-       <a href="{% url 'production_request_list' child.id %}" class="action-link  btn btn-primary btn-sm">
-             مطلب الحماية <i class="fas fa-shield-alt"></i>
-    </a>
+                            <div class="mandataire-actions">
+                                <a href="{% url 'child_detail' child.id %}" class="action-link details">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>أكثر معطيات</span>
+                                </a>
 
-  
-</div>
+                                {% if child.can_notify %}
+                                    <a href="{% url 'new_notification' child.id %}" class="action-link notification">
+                                        <i class="fas fa-bell"></i>
+                                        <span>إضافة إشعار جديد</span>
+                                    </a>
+                                {% endif %}
+
+                                <a href="{% url 'production_request_list' child.id %}" class="action-link details">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>مطلب الحماية</span>
+                                </a>
+                            </div>
                         </div>
                     {% endif %}
                 </div>
@@ -1618,18 +1107,14 @@ body {
             <i class="fas fa-inbox"></i>
             <h4>لا توجد نتائج</h4>
             <p>لا يوجد أطفال مهددون لمعايير البحث الحالية</p>
-            <div class="empty-state-actions">
-                <a href="{% url 'child_create' %}" class="add-child-btn primary">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>إضافة طفل مهدد جديد</span>
-                </a>
-            </div>
         </div>
         {% endif %}
 
         {% if menaced and delinquants %}<div class="section-divider"></div>{% endif %}
 
-        <!-- Section enfants délinquants -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SECTION 2 : أطفال في خلاف مع القانون                 -->
+        <!-- ═══════════════════════════════════════════════════ -->
         <div class="section-header delinquant">
             <h3 class="section-title">أطفال في خلاف مع القانون</h3>
             {% if delinquants %}<span class="badge-count">{{ delinquants|length }}</span>{% endif %}
@@ -1642,27 +1127,40 @@ body {
                 <div class="card-top">
                     <div class="card-header">
                         <div class="avatar"><i class="fas fa-user-slash"></i></div>
-                        <span class="card-type type-delinquant">طفل في خلاف مع القانون</span>
+                        <div class="card-top-actions" style="margin-right: auto; justify-content: flex-end;">
+                            <span class="card-type type-delinquant">طفل في خلاف مع القانون</span>
+
+                            {# ✅ Bouton uniquement pour les Child wrappés, pas les EnfantDelinquant #}
+                            {% if enfant.source == 'Child' %}
+                                {% if not enfant.status_updated_at %}
+                                    <button type="button" class="status-change-btn" style="background: rgba(90, 91, 93, 0.1); color: #5a5b5d; border-color: rgba(90, 91, 93, 0.3);"
+                                            onclick="openStatusChangeModal('{{ enfant.prenom }} {{ enfant.nom }}', '{% url 'set_child_status' enfant.id %}', 'THREATENED', 'طفل مهدد', '{{ enfant.date_naissance|date:"Y-m-d" }}')"
+                                            title="تحيين الوضعية إلى 'طفل مهدد'">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        <span>تحيين إلى مهدد</span>
+                                    </button>
+                                {% else %}
+                                    <span class="status-locked-badge" title="تم التحيين بتاريخ {{ enfant.status_updated_at|date:'d/m/Y' }}">
+                                        <i class="fas fa-lock"></i>
+                                        <span>تم تحيين الوضعية</span>
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <h3>{{ enfant.prenom }} {{ enfant.nom }}</h3>
                     <div class="meta-info">
-                        <!-- ✅ المعرف الوحيد en premier -->
                         {% if enfant.uid %}
                         <div class="meta-item"><i class="fas fa-id-card"></i><span>المعرف الوحيد: {{ enfant.uid }}</span></div>
                         {% endif %}
-                        <!-- ✅ الجنس -->
                         <div class="meta-item">
                             <i class="fas fa-venus-mars"></i>
-                            <span>الجنس: 
-                                {% if enfant.sexe == "M" %}
-                                    ذكر
-                                {% elif enfant.sexe == "F" %}
-                                    أنثى
-                                {% else %}
-                                    غير محدد
-                                {% endif %}
+                            <span>الجنس:
+                                {% if enfant.sexe == "M" %}ذكر
+                                {% elif enfant.sexe == "F" %}أنثى
+                                {% else %}غير محدد{% endif %}
                             </span>
                         </div>
                         {% if enfant.delegue %}
@@ -1688,16 +1186,17 @@ body {
                             <span class="mandataire-label">المكتب المتعهد:</span>
                             <span class="mandataire-name">{{ enfant.delegue.get_wilaya_display }}</span>
                         </div>
-                        <!-- ✅ Seulement 2 boutons pour les délinquants (sans مطلب الحماية) -->
                         <div class="mandataire-actions">
                             <a href="{% url 'enfant_delinquent_detail' enfant.id %}" class="action-link details">
                                 <i class="fas fa-info-circle"></i>
                                 <span>أكثر معطيات</span>
                             </a>
+                            {% if enfant.source == 'Child' %}
                             <a href="{% url 'intervention_create' enfant.id %}" class="action-link notification">
                                 <i class="fas fa-bell"></i>
                                 <span>إضافة مطلب وساطة</span>
                             </a>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
@@ -1710,199 +1209,220 @@ body {
             <i class="fas fa-inbox"></i>
             <h4>لا توجد نتائج</h4>
             <p>لا يوجد أطفال في خلاف مع القانون مطابقون لمعايير البحث الحالية</p>
-            <div class="empty-state-actions">
-                <a href="{% url 'child_create' %}" class="add-child-btn secondary">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>إضافة طفل في خلاف مع القانون جديد</span>
-                </a>
-            </div>
         </div>
+        {% endif %}
+
+        {# Séparateur avant section 3 ou 4 #}
+        {% if transitioned_children %}<div class="section-divider"></div>{% endif %}
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SECTION 3 : أطفال مهددون ثم خلاف مع القانون          -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        {% if transitioned_children %}
+
+        <div class="section-header combined">
+            <h3 class="section-title">أطفال مهددون ثم خلاف مع القانون</h3>
+            <span class="badge-count">{{ transitioned_children|length }}</span>
+        </div>
+
+        <div class="results-grid">
+            {% for child in transitioned_children %}
+            <div class="result-card delinquant">
+                <div class="card-top">
+                    <div class="card-header">
+                        <div class="avatar">
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                        <span class="card-type type-delinquant">
+                            مهدد ثم خلاف مع القانون
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h3>{{ child.first_name }} {{ child.last_name }}</h3>
+
+                    <div class="meta-info">
+                        {% if child.uid %}
+                        <div class="meta-item">
+                            <i class="fas fa-id-card"></i>
+                            <span>المعرف الوحيد: {{ child.uid }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="meta-item">
+                            <i class="fas fa-venus-mars"></i>
+                            <span>
+                                الجنس:
+                                {% if child.gender == "M" %}ذكر
+                                {% elif child.gender == "F" %}أنثى
+                                {% else %}غير محدد{% endif %}
+                            </span>
+                        </div>
+
+                        {% if child.birth_governorate %}
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>ولاية {{ child.get_birth_governorate_display }}</span>
+                        </div>
+                        {% endif %}
+
+                        {% if child.birth_date %}
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ child.birth_date|date:"d/m/Y" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if child.delegate_ch %}
+                    <div class="mandataire-info">
+                        <div class="mandataire-row">
+                            <i class="fas fa-building"></i>
+                            <span class="mandataire-label">المكتب المتعهد:</span>
+                            <span class="mandataire-name">{{ child.delegate_ch.get_wilaya_display }}</span>
+                        </div>
+
+                        <div class="mandataire-actions">
+                            <a href="{% url 'enfant_delinquent_detail' child.id %}" class="action-link details">
+                                <i class="fas fa-info-circle"></i>
+                                <span>أكثر معطيات</span>
+                            </a>
+
+                            <a href="{% url 'intervention_create' child.id %}" class="action-link notification">
+                                <i class="fas fa-bell"></i>
+                                <span>إضافة مطلب وساطة</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% endif %}
+
+        {# Séparateur avant section 4 #}
+        {% if delinquent_then_menaced %}<div class="section-divider"></div>{% endif %}
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SECTION 4 : خلاف مع القانون ثم مهددون              -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        {% if delinquent_then_menaced %}
+
+        <div class="section-header combined-reverse">
+            <h3 class="section-title">خلاف مع القانون ثم مهددون</h3>
+            <span class="badge-count">{{ delinquent_then_menaced|length }}</span>
+        </div>
+
+        <div class="results-grid">
+            {% for child in delinquent_then_menaced %}
+            <div class="result-card">
+                <div class="card-top">
+                    <div class="card-header">
+                        <div class="avatar">
+                            <i class="fas fa-child"></i>
+                        </div>
+                        <span class="card-type type-menaced">
+                            خلاف مع القانون ثم مهدد
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h3>{{ child.first_name }} {{ child.last_name }}</h3>
+
+                    <div class="meta-info">
+                        {% if child.uid %}
+                        <div class="meta-item">
+                            <i class="fas fa-id-card"></i>
+                            <span>المعرف الوحيد: {{ child.uid }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="meta-item">
+                            <i class="fas fa-venus-mars"></i>
+                            <span>
+                                الجنس:
+                                {% if child.gender == "M" %}ذكر
+                                {% elif child.gender == "F" %}أنثى
+                                {% else %}غير محدد{% endif %}
+                            </span>
+                        </div>
+
+                        {% if child.birth_governorate %}
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>ولاية {{ child.get_birth_governorate_display }}</span>
+                        </div>
+                        {% endif %}
+
+                        {% if child.birth_date %}
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ child.birth_date|date:"d/m/Y" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if child.delegate_ch %}
+                    <div class="mandataire-info">
+                        <div class="mandataire-row">
+                            <i class="fas fa-building"></i>
+                            <span class="mandataire-label">المكتب المتعهد:</span>
+                            <span class="mandataire-name">{{ child.delegate_ch.get_wilaya_display }}</span>
+                        </div>
+
+                        <div class="mandataire-actions">
+                            <a href="{% url 'child_detail' child.id %}" class="action-link details">
+                                <i class="fas fa-info-circle"></i>
+                                <span>أكثر معطيات</span>
+                            </a>
+
+                            {% if child.can_notify %}
+                            <a href="{% url 'new_notification' child.id %}" class="action-link notification">
+                                <i class="fas fa-bell"></i>
+                                <span>إضافة إشعار جديد</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
         {% endif %}
 
     {% endif %}
     </div>
-</div>
-
- 
-{% if request.GET and transitioned_children %}
-
-<div class="section-divider"></div>
-
-<div class="section-header combined">
-
-    <h3 class="section-title">
-        أطفال مهددون & خلاف مع القانون
-    </h3>
-
-    <span class="badge-count">
-        {{ transitioned_children|length }}
-    </span>
 
 </div>
 
-<div class="results-grid">
-
-    {% for child in transitioned_children %}
-
-    <div class="result-card delinquant">
-
-        <div class="card-top">
-
-            <div class="card-header">
-
-                <div class="avatar">
-                    <i class="fas fa-user-slash"></i>
-                </div>
-
-                <span class="card-type type-delinquant">
-                    طفل مهدد ثم في خلاف مع القانون
-                </span>
-
+<!-- ✅ MODAL : Changement de statut -->
+<div id="statusChangeModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 id="modalTitle">تحيين الوضعية</h3>
+        <p id="modalDescription">يرجى تحديد تاريخ اقتراف الفعلة (اختياري) للطفل <strong id="modalChildName"></strong></p>
+        
+        <form method="post" id="statusChangeForm" action="">
+            {% csrf_token %}
+            <input type="hidden" name="status" id="modalTargetStatus" value="">
+            
+            <div class="form-group" id="offenseDateGroup">
+                <label>تاريخ اقتراف الفعلة</label>
+                <input type="date" name="date_fait" id="modalDateFait" max="{% now 'Y-m-d' %}">
             </div>
 
-        </div>
-
-        <div class="card-body">
-
-            <h3>
-                {{ child.first_name }} {{ child.last_name }}
-            </h3>
-
-            <div class="meta-info">
-
-                {% if child.uid %}
-                <div class="meta-item">
-
-                    <i class="fas fa-id-card"></i>
-
-                    <span>
-                        المعرف الوحيد: {{ child.uid }}
-                    </span>
-
-                </div>
-                {% endif %}
-
-
-                <div class="meta-item">
-
-                    <i class="fas fa-venus-mars"></i>
-
-                    <span>
-                        الجنس:
-
-                        {% if child.gender == "M" %}
-                            ذكر
-                        {% elif child.gender == "F" %}
-                            أنثى
-                        {% else %}
-                            غير محدد
-                        {% endif %}
-
-                    </span>
-
-                </div>
-
-
-                {% if child.birth_governorate %}
-
-                <div class="meta-item">
-
-                    <i class="fas fa-map-marker-alt"></i>
-
-                    <span>
-                        ولاية {{ child.get_birth_governorate_display }}
-                    </span>
-
-                </div>
-
-                {% endif %}
-
-
-                {% if child.birth_date %}
-
-                <div class="meta-item">
-
-                    <i class="fas fa-calendar"></i>
-
-                    <span>
-                        {{ child.birth_date|date:"d/m/Y" }}
-                    </span>
-
-                </div>
-
-                {% endif %}
-
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeStatusChangeModal()">إلغاء</button>
+                <button type="submit" class="btn-confirm">تأكيد</button>
             </div>
-
-
-            {% if child.delegate_ch %}
-
-            <div class="mandataire-info">
-
-                <div class="mandataire-row">
-
-                    <i class="fas fa-building"></i>
-
-                    <span class="mandataire-label">
-                        المكتب المتعهد:
-                    </span>
-
-                    <span class="mandataire-name">
-                        {{ child.delegate_ch.get_wilaya_display }}
-                    </span>
-
-                </div>
-
-
-                <div class="mandataire-actions">
-
-                    <!-- أكثر معطيات -->
-                    <a href="{% url 'enfant_delinquent_detail' child.id %}"
-                       class="action-link details">
-
-                        <i class="fas fa-info-circle"></i>
-
-                        <span>
-                            أكثر معطيات
-                        </span>
-
-                    </a>
-
-
-                    <!-- إضافة مطلب وساطة -->
-                    <a href="{% url 'intervention_create' child.id %}"
-                       class="action-link notification">
-
-                        <i class="fas fa-bell"></i>
-
-                        <span>
-                            إضافة مطلب وساطة
-                        </span>
-
-                    </a>
-
-                </div>
-
-            </div>
-
-            {% endif %}
-
-        </div>
-
+        </form>
     </div>
-
-    {% endfor %}
-
 </div>
-
-{% endif %}
-
-
-
-<!-- Floating Action Button pour ajouter un enfant rapidement -->
-<a href="{% url 'child_create' %}" class="fab-add-child" title="إضافة طفل جديد">
-    <i class="fas fa-plus"></i>
-</a>
 
 <!-- Toast Notification -->
 <div id="toast" class="toast">
@@ -1910,20 +1430,28 @@ body {
     <span id="toastMessage">تم إعادة تعيين البحث</span>
 </div>
 
-
-
 <script>
+/* ✅ Fonction toast de secours */
+if (typeof window.showToast !== 'function') {
+    window.showToast = function (message) {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        if (!toast || !toastMessage) return;
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+    };
+}
+
 function handleSearch(event) {
     const form = document.getElementById('searchForm');
     const btn = document.getElementById('searchBtn');
-
     const inputs = form.querySelectorAll('input[type="text"], input[type="date"], select');
-    let filled = false;
 
-    inputs.forEach(input => {
-        if (input.value.trim() !== '') {
-            filled = true;
-        }
+    let filled = false;
+    Array.from(inputs).forEach(input => {
+        if (input.value && input.value.trim() !== '') filled = true;
     });
 
     if (!filled) {
@@ -1939,36 +1467,129 @@ function handleSearch(event) {
 
 function resetSearchForm() {
     const form = document.getElementById('searchForm');
-    form.reset();
-    showToast('تم إعادة تعيين حقول البحث');
+    form.querySelectorAll('input, select, textarea').forEach(field => {
+        if (field.type === 'checkbox' || field.type === 'radio') {
+            field.checked = field.defaultChecked;
+        } else if (field.tagName === 'SELECT') {
+            field.selectedIndex = 0;
+        } else {
+            field.value = '';
+        }
+    });
 
-    setTimeout(() => {
-        window.location.href = window.location.pathname;
-    }, 800);
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchBtn) {
+        searchBtn.classList.remove('loading');
+        searchBtn.innerHTML = '<i class="fas fa-search"></i><span>بحث</span>';
+    }
+
+    const resultsWrapper = document.getElementById('resultsWrapper');
+    if (resultsWrapper) {
+        resultsWrapper.innerHTML = `
+            <div class="initial-state">
+                <i class="fas fa-search-plus"></i>
+                <h3>ابدأ البحث</h3>
+                <p>استخدم نموذج البحث أعلاه للعثور على سجلات الأطفال في المنظومة</p>
+            </div>
+        `;
+    }
+
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 }
 
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.querySelector('#toastMessage').textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
+function parseISO(s) {
+    const [y, m, d] = s.split('-').map(Number);
+    return new Date(y, m - 1, d);
 }
 
-function confirmChangeStatus(childName) {
-    return confirm(
-        'هل أنت متأكد من تحيين وضعية الطفل "' +
-        childName +
-        '" من "مهدد" إلى "في خلاف مع القانون"؟\n\n' +
-        'سيتم نقل الطفل إلى قائمة أطفال مهددون & خلاف مع القانون.'
-    );
+function toLocalISO(d) {
+    return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+}
+
+function calculateAgeAtDate(birthDateString, targetDateString) {
+    if (!birthDateString || !targetDateString) return null;
+    const birth = parseISO(birthDateString);
+    const target = parseISO(targetDateString);
+    let age = target.getFullYear() - birth.getFullYear();
+    const m = target.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && target.getDate() < birth.getDate())) age--;
+    return age;
+}
+
+function calculateAge(birthDateString) {
+    if (!birthDateString) return null;
+    return calculateAgeAtDate(birthDateString, toLocalISO(new Date()));
+}
+
+function openStatusChangeModal(childName, formAction, targetStatus, targetLabel, birthDate = '') {
+    document.getElementById('modalTitle').innerText = 'تحيين الوضعية إلى ' + targetLabel;
+    document.getElementById('modalChildName').textContent = childName;
+    document.getElementById('statusChangeForm').action = formAction;
+    document.getElementById('modalTargetStatus').value = targetStatus;
+
+    const dateGroup = document.getElementById('offenseDateGroup');
+    const dateInput = document.getElementById('modalDateFait');
+    const description = document.getElementById('modalDescription');
+
+    dateInput.value = '';
+    dateInput.required = false;
+    dateInput.removeAttribute('min');
+    dateInput.max = toLocalISO(new Date());
+    dateInput.onchange = null;
+
+    if (targetStatus === 'THREATENED') {
+        dateGroup.style.display = 'none';
+
+        let ageText = '';
+        const age = birthDate ? calculateAge(birthDate) : null;
+        if (age !== null) ageText = ` العمر (${age} سنة).`;
+
+        description.innerHTML = `سيتم تحيين وضعية الطفل <strong>${childName}</strong> إلى "مهدد"${ageText}`;
+    } else {
+        dateGroup.style.display = 'block';
+
+        const age = birthDate ? calculateAge(birthDate) : null;
+        const mustHaveDate = age !== null && age > 18;
+        dateInput.required = mustHaveDate;
+
+        description.innerHTML = mustHaveDate
+            ? `عمر الطفل <strong>${childName}</strong> الحالي (${age} سنة) يتجاوز 18 سنة، تاريخ اقتراف الفعلة <strong>إجباري</strong>.<br><span style="color:#666;font-size:.85rem">(العمر وقت الفعلة بين 13 و 18 سنة)</span>`
+            : `يرجى تحديد تاريخ اقتراف الفعلة (اختياري) للطفل <strong>${childName}</strong>.<br><span style="color:#666;font-size:.85rem">(العمر بين 13 و 18 سنة)</span>`;
+
+        if (birthDate) {
+            const birth = parseISO(birthDate);
+            const minDate = new Date(birth.getFullYear() + 13, birth.getMonth(), birth.getDate());
+            const lastDay18 = new Date(birth.getFullYear() + 19, birth.getMonth(), birth.getDate() - 1);
+            const today = new Date();
+            const maxDate = lastDay18 < today ? lastDay18 : today;
+            dateInput.min = toLocalISO(minDate);
+            dateInput.max = toLocalISO(maxDate);
+        }
+
+        dateInput.onchange = function () {
+            if (this.value && birthDate) {
+                const ageAtOffense = calculateAgeAtDate(birthDate, this.value);
+                if (ageAtOffense < 13 || ageAtOffense > 18) {
+                    showToast(`⚠️ العمر في هذا التاريخ (${ageAtOffense} سنة) يجب أن يكون بين 13 و 18 سنة.`);
+                    this.value = '';
+                }
+            }
+        };
+    }
+
+    document.getElementById('statusChangeModal').style.display = 'flex';
+}
+
+function closeStatusChangeModal() {
+    document.getElementById('statusChangeModal').style.display = 'none';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -1977,24 +1598,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, observerOptions);
-
     document.querySelectorAll('.result-card').forEach(card => {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         observer.observe(card);
     });
+});
 
-    const inputs = document.querySelectorAll('.input-wrapper input, .input-wrapper select');
-    inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.parentElement.style.transform = 'scale(1.02)';
-            this.parentElement.parentElement.style.zIndex = '10';
+// Empêcher la saisie d'une date de naissance future (recherche)
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('id_date_naissance_search');
+    const today = new Date().toISOString().split('T')[0];
+    if (dateInput) {
+        dateInput.setAttribute('max', today);
+        dateInput.addEventListener('change', function() {
+            if (this.value && this.value > today) {
+                showToast('لا يمكن أن يكون هذا تاريخ الولادة');
+                this.value = '';
+            }
         });
+    }
+});
 
-        input.addEventListener('blur', function() {
-            this.parentElement.parentElement.style.transform = 'scale(1)';
-            this.parentElement.parentElement.style.zIndex = '1';
+// Clic sur l'icône calendrier ouvre le picker
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.input-wrapper i.fa-calendar-alt').forEach(icon => {
+        icon.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            if (input && input.type === 'date') {
+                input.showPicker ? input.showPicker() : input.focus();
+            }
         });
     });
 });
