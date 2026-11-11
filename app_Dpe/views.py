@@ -169,13 +169,14 @@ def child_create(request):
         ('final_abandon', 'تخلي نهائي'),
     ]
 
+    child = None                                    
+
     if request.method == 'POST':
         form = ChildForm(request.POST)
 
         if form.is_valid():
             child_data = form.cleaned_data
 
-            # 🔵 وضعية أولية
             initial = {}
             for p in persons:
                 value = request.POST.get(f'initial_{p}')
@@ -183,7 +184,6 @@ def child_create(request):
                     initial[p] = value
             child_data['initial_status_at_birth'] = initial
 
-            # 🔵 Si utilisateur connecté, on sauvegarde directement dans la DB
             if request.user.is_authenticated:
                 child = form.save(commit=False)
                 child.initial_status_at_birth = initial
@@ -192,33 +192,35 @@ def child_create(request):
                     delegate = request.user.delegate_profile
                     child.delegate_ch = delegate
                     child.delegate_unique_id = delegate.unique_id
-                    # ✅ CORRECTION : utiliser delegate_code au lieu de unique_number
                     child.delegate_unique_number = delegate.delegate_code
 
                 child.save()
                 form = ChildForm(initial={'uid': get_next_uid()})
-                
+
+                return render(request, 'account/child_form.html', {
+                    'form': form,
+                    'child': child,
+                    'persons': persons,
+                    'zip_values': zip_values,
+                    'DEPARTMENTS': Child.DEPARTMENTS,
+                    'initial_status': initial,
+                    'show_success_modal': True,   
+                })
 
             else:
-                # 🔵 Si utilisateur déconnecté, on stocke dans la session
+                # Utilisateur non connecté → stockage session
                 children = request.session.get('unsaved_children', [])
                 children.append({
                     **child_data,
-                    'initial_status_at_birth': initial
+                    'initial_status_at_birth': initial,
                 })
                 request.session['unsaved_children'] = children
-                form = ChildForm(initial={'uid': get_next_uid()})
-                
 
-            return render(request, 'account/child_form.html', {
-                'form': form,
-                'child': child,
-                'persons': persons,
-                'zip_values': zip_values,
-                'DEPARTMENTS': Child.DEPARTMENTS,
-                'initial_status': initial,
-                'show_success_modal': True,
-            })
+                messages.success(
+                    request,
+                    "✅ تم حفظ بيانات الطفل، ستتم إضافته بعد تسجيل الدخول"
+                )
+                return redirect('login_delegate')
 
     else:
         form = ChildForm(initial={'uid': get_next_uid()})
@@ -228,26 +230,105 @@ def child_create(request):
         'persons': persons,
         'zip_values': zip_values,
         'initial_status': {},
-        'DEPARTMENTS': Child.DEPARTMENTS
+        'DEPARTMENTS': Child.DEPARTMENTS,
     })
 
 
+def _apply_status(child, new_status, old_status, from_creation):
+    """Applique le statut et les marqueurs de transition."""
+    is_transition = (
+        not from_creation
+        and old_status in ("THREATENED", "DELINQUENT")
+        and old_status != new_status
+    )
+    child.status = new_status
+    child.status_updated_from_threatened = is_transition and new_status == "DELINQUENT"
+    child.status_updated_from_delinquent = is_transition and new_status == "THREATENED"
+    child.status_updated_at = timezone.now() if is_transition else None
+    child.save()
+
+
+@login_required
+@require_POST
 def set_child_status(request, child_id):
-    child = Child.objects.get(id=child_id)
+    child = get_object_or_404(Child, id=child_id)
 
-    if request.method == "POST":
-        status = request.POST.get("status")
+    referer = request.META.get('HTTP_REFERER', '')
+    from_creation = (
+        request.POST.get('from_creation') == '1'
+        or '/child_create' in referer
+        or '/child_registration' in referer
+    )
+    back = referer or 'recherche_enfants'
 
-        if status in ["THREATENED", "DELINQUENT"]:
-            child.status = status
-            child.save()
+    old_status = child.status
+    new_status = request.POST.get("status")
 
-            if status == "THREATENED":
-                return redirect("child_list_institutions")
-            else:
-                return redirect("enfant_list")
+    if new_status not in ["THREATENED", "DELINQUENT"]:
+        messages.error(request, "⚠️ وضعية غير صالحة.")
+        return redirect(back)
 
-    return redirect("child_create")
+    # 🔒 Verrou serveur : une seule transition autorisée
+    if not from_creation and child.status_updated_at:
+        messages.error(request, "⚠️ تم تحيين وضعية هذا الطفل من قبل.")
+        return redirect(back)
+
+    if not from_creation and new_status == old_status:
+        messages.info(request, "ℹ️ الطفل في هذه الوضعية بالفعل.")
+        return redirect(back)
+
+    # ---------- Sans date de naissance : pas de contrôle d'âge ----------
+    if not child.birth_date:
+        _apply_status(child, new_status, old_status, from_creation)
+       
+        if from_creation:
+            return redirect("enfant_list" if new_status == "DELINQUENT" else "child_list_institutions")
+        return redirect(back)
+
+    today = timezone.now().date()
+    current_age = calculate_age(child.birth_date, today)
+
+    # ---------- → خلاف مع القانون ----------
+    if new_status == "DELINQUENT":
+        raw_date = (request.POST.get('date_fait') or '').strip()
+        date_fait = safe_date(raw_date)
+
+        if raw_date and not date_fait:
+            messages.error(request, "⚠️ تاريخ اقتراف الفعلة غير صالح.")
+            return redirect(back)
+
+        if current_age > 18 and not date_fait:
+            messages.error(request, f"⚠️ عمر الطفل الحالي ({current_age} سنة) يتجاوز 18 سنة، تاريخ اقتراف الفعلة إجباري.")
+            return redirect(back)
+
+        if date_fait:
+            if date_fait < child.birth_date:
+                messages.error(request, "⚠️ تاريخ اقتراف الفعلة لا يمكن أن يكون قبل تاريخ الميلاد.")
+                return redirect(back)
+            if date_fait > today:
+                messages.error(request, "⚠️ تاريخ اقتراف الفعلة لا يمكن أن يكون في المستقبل.")
+                return redirect(back)
+            age_at_fact = calculate_age(child.birth_date, date_fait)
+            if age_at_fact < 13 or age_at_fact > 18:
+                messages.error(request, f"⚠️ عمر الطفل وقت اقتراف الفعلة ({age_at_fact} سنة) يجب أن يكون بين 13 و 18 سنة.")
+                return redirect(back)
+        elif current_age < 13:
+            messages.error(request, f"⚠️ عمر الطفل ({current_age} سنة) أقل من 13 سنة.")
+            return redirect(back)
+
+        _apply_status(child, "DELINQUENT", old_status, from_creation)
+        messages.success(request, "✅ تم تحيين الوضعية إلى طفل في خلاف مع القانون.")
+        return redirect("enfant_list") if from_creation else redirect(back)
+
+    # ---------- → مهدد ----------
+    if current_age > 18:
+        messages.error(request, f"⚠️ لا يمكن التحيين إلى 'مهدد': العمر ({current_age} سنة) يتجاوز 18 سنة.")
+        return redirect(back)
+
+    _apply_status(child, "THREATENED", old_status, from_creation)
+    messages.success(request, "✅ تم تحيين الوضعية إلى طفل مهدد.")
+    return redirect("child_list_institutions") if from_creation else redirect(back)
+
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 
@@ -405,6 +486,7 @@ def child_list_institutions(request):
     selected_governorate = request.GET.get('governorate', '')
     selected_gender = request.GET.get('gender', '')
     DEPARTMENTS = Child.DEPARTMENTS
+    
     delegates = Delegate.objects.exclude(
         user=request.user
     ).exclude(
@@ -420,7 +502,6 @@ def child_list_institutions(request):
         ('final_abandon', 'تخلي نهائي'),
     ]
     
-    # ✅ Initialiser children
     children = Child.objects.none()
     
     if hasattr(request.user, 'delegate_profile'):
@@ -428,17 +509,16 @@ def child_list_institutions(request):
         
         from django.db.models import Q
         
-        # ✅ CORRECTION : Utiliser 'notifications' au lieu de 'nouveaunotification'
+        
         children = Child.objects.filter(
             Q(delegate_ch=delegate) |
             Q(notifications__created_by=delegate),
-            status="THREATENED"
+        ).filter(
+            Q(status="THREATENED") |
+            Q(status_updated_from_threatened=True)
         ).distinct().order_by('-created_at')
-        
-        for child in children:
-            print(f"   - {child.first_name} {child.last_name} (status: {child.status})")
     
-    # 🔍 Filtres
+    
     if selected_governorate:
         children = children.filter(birth_governorate=selected_governorate)
     if selected_gender:
@@ -1396,562 +1476,245 @@ from .models import Child, EnfantDelinquant
 
 # ==================== RECHERCHE ====================
 
+# Mapping entre TUNISIA_GOVERNORATES (texte) et WILAYAS (numérique)
+GOVERNORATE_TO_WILAYA_CODE = {
+    "tunis": "01",
+    "ariana": "02",
+    "ben_arous": "03",
+    "manouba": "04",
+    "nabeul": "05",
+    "zaghouan": "06",
+    "bizerte": "07",
+    "jendouba": "08",
+    "kef": "09",
+    "siliana": "10",
+    "kairouan": "11",
+    "kasserine": "12",
+    "sidi_bouzid": "13",
+    "sousse": "14",
+    "monastir": "15",
+    "mahdia": "16",
+    "sfax": "17",
+    "gabes": "18",
+    "medenine": "19",
+    "tataouine": "20",
+    "kebili": "21",
+    "tozeur": "22",
+    "gafsa": "23",
+    "beja": "24",
+}
+
+
 def recherche_enfants(request):
-
-    # ============================================================
-    # 1. RÉCUPÉRATION DES PARAMÈTRES DE RECHERCHE
-    # ============================================================
-
     prenom = request.GET.get('prenom', '').strip()
     nom = request.GET.get('nom', '').strip()
     wilaya = request.GET.get('wilaya', '').strip()
     uid = request.GET.get('uid', '').strip()
     date_naissance = request.GET.get('date_naissance', '').strip()
 
+    prenom_mere = request.GET.get('prenom_mere', '').strip()
+    nom_mere    = request.GET.get('nom_mere', '').strip()
+    prenom_pere = request.GET.get('prenom_pere', '').strip()
+    nom_pere    = request.GET.get('nom_pere', '').strip()
+
     # ============================================================
     # 2. VARIABLES INITIALES
     # ============================================================
-
     menaced = Child.objects.none()
-
     delinquants = []
-
     transitioned_children = []
-
+    delinquent_then_menaced = Child.objects.none()          # ✅ NOUVEAU
     search_attempted = False
 
-    # ============================================================
-    # 3. UTILISATEUR CONNECTÉ
-    # ============================================================
-
     current_user = request.user
-
     is_delegate = (
         hasattr(current_user, 'delegate_profile')
         or hasattr(current_user, 'delegue_profile')
     )
 
-    # ============================================================
-    # DEBUG
-    # ============================================================
-
-    print("==============================================")
-    print("=== APPEL DE recherche_enfants ===")
-    print("==============================================")
-
-    print(f"GET parameters      : {request.GET}")
-    print(f"Recherche prénom    : '{prenom}'")
-    print(f"Recherche nom       : '{nom}'")
-    print(f"Recherche wilaya    : '{wilaya}'")
-    print(f"Recherche UID       : '{uid}'")
-    print(f"Recherche naissance : '{date_naissance}'")
-    print(f"is_delegate         : {is_delegate}")
-
-    # ============================================================
-    # 4. VÉRIFIER SI UNE RECHERCHE A ÉTÉ EFFECTUÉE
-    # ============================================================
-
-    if any([
-        prenom,
-        nom,
-        wilaya,
-        uid,
-        date_naissance
-    ]):
+    if any([prenom, nom, prenom_mere, nom_mere, prenom_pere, nom_pere,
+            wilaya, uid, date_naissance]):
 
         search_attempted = True
 
-        # ========================================================
-        # DATE DE NAISSANCE
-        # ========================================================
-
+        # ---- DATE ----
         date_obj = None
-
         if date_naissance:
-
             try:
-                date_obj = datetime.strptime(
-                    date_naissance,
-                    '%Y-%m-%d'
-                ).date()
-
-                print(
-                    f"Date de naissance convertie : {date_obj}"
-                )
-
+                date_obj = datetime.strptime(date_naissance, '%Y-%m-%d').date()
+                if date_obj > date.today():
+                    messages.error(request, "لا يمكن أن يكون هذا تاريخ الولادة")
+                    date_obj = None
+                    date_naissance = ''
             except ValueError:
+                date_obj = None
+                date_naissance = ''
 
-                print(
-                    "⚠️ Date de naissance invalide"
-                )
-
-        # ========================================================
-        # ========================================================
-        # 5. ENFANTS MENACÉS
-        #    Child.status = THREATENED
-        # ========================================================
-        # ========================================================
-
-        filters_m = Q()
-
-        if prenom:
-
-            filters_m &= Q(
-                first_name__icontains=prenom
-            )
-
-            print(
-                f"🔍 Filtre prénom menacé : '{prenom}'"
-            )
-
-        if nom:
-
-            filters_m &= Q(
-                last_name__icontains=nom
-            )
-
-            print(
-                f"🔍 Filtre nom menacé : '{nom}'"
-            )
-
-        if uid:
-
-            filters_m &= Q(
-                uid__icontains=uid
-            )
-
-            print(
-                f"🔍 Filtre UID menacé : '{uid}'"
-            )
-
-        if date_obj:
-
-            filters_m &= Q(
-                birth_date=date_obj
-            )
-
-            print(
-                f"🔍 Filtre date menacé : {date_obj}"
-            )
-
+        # ---- WILAYA ----
+        wilaya_num_code = None
         if wilaya:
+            wilaya_num_code = GOVERNORATE_TO_WILAYA_CODE.get(wilaya)
 
-            filters_m &= Q(
-                birth_governorate=wilaya
-            )
-
-            print(
-                f"🔍 Filtre wilaya menacé : '{wilaya}'"
-            )
-
-        # --------------------------------------------------------
-        # REQUÊTE
-        # --------------------------------------------------------
+        # ========================================================
+        # SECTION 1 : ENFANTS MENACÉS (inchangé)
+        # ========================================================
+        filters_m = Q()
+        if prenom:       filters_m &= Q(first_name__icontains=prenom)
+        if nom:          filters_m &= Q(last_name__icontains=nom)
+        if uid:          filters_m &= Q(uid__icontains=uid)
+        if date_obj:     filters_m &= Q(birth_date=date_obj)
+        if wilaya:       filters_m &= Q(birth_governorate=wilaya)
+        if prenom_mere:  filters_m &= Q(social_files__mother_first_name__icontains=prenom_mere)
+        if nom_mere:     filters_m &= Q(social_files__mother_last_name__icontains=nom_mere)
+        if prenom_pere:  filters_m &= Q(social_files__father_first_name__icontains=prenom_pere)
+        if nom_pere:     filters_m &= Q(social_files__father_last_name__icontains=nom_pere)
 
         menaced = (
             Child.objects
+            .filter(filters_m)
             .filter(
-                filters_m,
-                status='THREATENED'
+                Q(status='THREATENED') |
+                Q(status_updated_from_threatened=True)          # ← reste dans مهدد après transition vers خلاف
             )
             .select_related('delegate_ch')
+            .distinct()
         )
-
-        print(
-            f"✅ Enfants THREATENED trouvés : "
-            f"{menaced.count()}"
-        )
-
-        # --------------------------------------------------------
-        # INFORMATIONS POUR LE TEMPLATE
-        # --------------------------------------------------------
 
         for child in menaced:
-
-            # Tous les délégués authentifiés peuvent notifier
             child.can_notify = is_delegate
-
-            # Nom du délégué ayant créé l'enfant
             if child.delegate_ch:
-
-                child.delegate_full_name = (
-                    f"{child.delegate_ch.first_name} "
-                    f"{child.delegate_ch.last_name}"
-                )
-
+                child.delegate_full_name = f"{child.delegate_ch.first_name} {child.delegate_ch.last_name}"
             else:
-
                 child.delegate_full_name = "غير معروف"
 
         # ========================================================
+        # ✅ NOUVEAU : ENFANTS "خلاف ثم مهدد"
+        # (anciennement DELINQUENT, actuellement THREATENED)
         # ========================================================
-        # 6. ENFANTS DU MODÈLE EnfantDelinquant
-        # ========================================================
-        # ========================================================
+        delinquent_then_menaced = (
+            Child.objects
+            .filter(filters_m)
+            .filter(
+                Q(status='THREATENED'),
+                Q(status_updated_from_delinquent=True),
+            )
+            .select_related('delegate_ch')
+            .distinct()
+        )
 
+        for child in delinquent_then_menaced:
+            child.can_notify = is_delegate
+            if child.delegate_ch:
+                child.delegate_full_name = f"{child.delegate_ch.first_name} {child.delegate_ch.last_name}"
+            else:
+                child.delegate_full_name = "غير معروف"
+
+        # ========================================================
+        # SECTION 2 : ENFANTS DÉLINQUANTS (EnfantDelinquant)
+        # ========================================================
         filters_d = Q()
-
-        if prenom:
-
-            filters_d &= Q(
-                prenom__icontains=prenom
-            )
-
-            print(
-                f"🔍 Filtre prénom EnfantDelinquant : "
-                f"'{prenom}'"
-            )
-
-        if nom:
-
-            filters_d &= Q(
-                nom__icontains=nom
-            )
-
-            print(
-                f"🔍 Filtre nom EnfantDelinquant : "
-                f"'{nom}'"
-            )
-
-        if uid:
-
-            filters_d &= Q(
-                num_extrait_naissance__icontains=uid
-            )
-
-            print(
-                f"🔍 Filtre UID EnfantDelinquant : "
-                f"'{uid}'"
-            )
-
-        if date_obj:
-
-            filters_d &= Q(
-                date_naissance=date_obj
-            )
-
-            print(
-                f"🔍 Filtre date EnfantDelinquant : "
-                f"{date_obj}"
-            )
-
+        if prenom:    filters_d &= Q(prenom__icontains=prenom)
+        if nom:       filters_d &= Q(nom__icontains=nom)
+        if uid:       filters_d &= Q(num_extrait_naissance__icontains=uid)
+        if date_obj:  filters_d &= Q(date_naissance=date_obj)
         if wilaya:
+            filters_d &= Q(delegue__wilaya=wilaya_num_code) if wilaya_num_code else Q(delegue__wilaya=wilaya)
 
-            filters_d &= Q(
-                delegue__wilaya=wilaya
-            )
-
-            print(
-                f"🔍 Filtre wilaya EnfantDelinquant : "
-                f"'{wilaya}'"
-            )
-
-        # --------------------------------------------------------
-        # REQUÊTE EnfantDelinquant
-        # --------------------------------------------------------
-
-        delinquants_from_model = (
-            EnfantDelinquant.objects
-            .filter(filters_d)
-            .select_related('delegue')
-        )
-
-        print(
-            "✅ EnfantDelinquant trouvés : "
-            f"{delinquants_from_model.count()}"
-        )
-
-        # --------------------------------------------------------
-        # PRÉPARER LES OBJETS EnfantDelinquant
-        # --------------------------------------------------------
+        if prenom_mere or nom_mere or prenom_pere or nom_pere:
+            delinquants_from_model = EnfantDelinquant.objects.none()
+        else:
+            delinquants_from_model = EnfantDelinquant.objects.filter(filters_d).select_related('delegue')
 
         for enfant in delinquants_from_model:
-
             enfant.can_notify = is_delegate
-
             if enfant.delegue:
-
-                enfant.delegate_full_name = (
-                    f"{enfant.delegue.first_name} "
-                    f"{enfant.delegue.last_name}"
-                )
-
+                enfant.delegate_full_name = f"{enfant.delegue.first_name} {enfant.delegue.last_name}"
             else:
-
                 enfant.delegate_full_name = "غير معروف"
-
             delinquants.append(enfant)
 
         # ========================================================
+        # SECTION 3 : CHILD DELINQUENT (+ reste après transition)
         # ========================================================
-        # 7. ENFANTS Child DONT LE STATUT EST DEVENUE
-        #    DELINQUENT
-        # ========================================================
-        #
-        # THREATENED
-        #      ↓
-        # actualisation de situation
-        #      ↓
-        # DELINQUENT
-        #
-        # Ces enfants restent des objets Child.
-        # ========================================================
-        # ========================================================
-
         filters_child_delinquent = Q()
+        if prenom:       filters_child_delinquent &= Q(first_name__icontains=prenom)
+        if nom:          filters_child_delinquent &= Q(last_name__icontains=nom)
+        if uid:          filters_child_delinquent &= Q(uid__icontains=uid)
+        if date_obj:     filters_child_delinquent &= Q(birth_date=date_obj)
+        if wilaya:       filters_child_delinquent &= Q(birth_governorate=wilaya)
+        if prenom_mere:  filters_child_delinquent &= Q(social_files__mother_first_name__icontains=prenom_mere)
+        if nom_mere:     filters_child_delinquent &= Q(social_files__mother_last_name__icontains=nom_mere)
+        if prenom_pere:  filters_child_delinquent &= Q(social_files__father_first_name__icontains=prenom_pere)
+        if nom_pere:     filters_child_delinquent &= Q(social_files__father_last_name__icontains=nom_pere)
 
-        if prenom:
-
-            filters_child_delinquent &= Q(
-                first_name__icontains=prenom
-            )
-
-            print(
-                f"🔍 Filtre prénom Child DELINQUENT : "
-                f"'{prenom}'"
-            )
-
-        if nom:
-
-            filters_child_delinquent &= Q(
-                last_name__icontains=nom
-            )
-
-            print(
-                f"🔍 Filtre nom Child DELINQUENT : "
-                f"'{nom}'"
-            )
-
-        if uid:
-
-            filters_child_delinquent &= Q(
-                uid__icontains=uid
-            )
-
-            print(
-                f"🔍 Filtre UID Child DELINQUENT : "
-                f"'{uid}'"
-            )
-
-        if date_obj:
-
-            filters_child_delinquent &= Q(
-                birth_date=date_obj
-            )
-
-            print(
-                f"🔍 Filtre date Child DELINQUENT : "
-                f"{date_obj}"
-            )
-
-        if wilaya:
-
-            filters_child_delinquent &= Q(
-                birth_governorate=wilaya
-            )
-
-            print(
-                f"🔍 Filtre wilaya Child DELINQUENT : "
-                f"'{wilaya}'"
-            )
-
-        # --------------------------------------------------------
-        # REQUÊTE CHILD DELINQUENT
-        # --------------------------------------------------------
-
+        # ✅ MODIFIÉ : inclure les DELINQUENT + ceux qui étaient DELINQUENT et sont devenus THREATENED
         delinquents_from_child = (
             Child.objects
+            .filter(filters_child_delinquent)
             .filter(
-                filters_child_delinquent,
-                status='DELINQUENT'
+                Q(status='DELINQUENT') |
+                Q(status_updated_from_delinquent=True)          # ✅ reste dans خلاف
             )
             .select_related('delegate_ch')
+            .distinct()
         )
-
-        print(
-            "✅ Child avec status='DELINQUENT' : "
-            f"{delinquents_from_child.count()}"
-        )
+        print(f"✅ Enfants 'خلاف ثم مهدد' : {delinquent_then_menaced.count()}")
 
         # ========================================================
+        # SECTION 4 : WRAPPER + section combinée "مهدد ثم خلاف"
         # ========================================================
-        # 8. ENFANTS TRANSITIONNÉS
-        # ========================================================
-        #
-        # IMPORTANT :
-        #
-        # transitioned_children contient directement les objets
-        # Child.
-        #
-        # Donc :
-        #
-        # child.id
-        #
-        # est le ID du modèle Child.
-        #
-        # Il ne faut PAS supposer qu'il correspond au ID de
-        # EnfantDelinquant.
-        # ========================================================
-        # ========================================================
-
         for child in delinquents_from_child:
-
             child.can_notify = is_delegate
-
             if child.delegate_ch:
-
-                child.delegate_full_name = (
-                    f"{child.delegate_ch.first_name} "
-                    f"{child.delegate_ch.last_name}"
-                )
-
+                child.delegate_full_name = f"{child.delegate_ch.first_name} {child.delegate_ch.last_name}"
             else:
-
                 child.delegate_full_name = "غير معروف"
 
-            # ----------------------------------------------------
-            # Ajouter à la liste des enfants transitionnés
-            # ----------------------------------------------------
-
-            transitioned_children.append(child)
-
-            # ----------------------------------------------------
-            # Ajouter aussi à la liste générale des délinquants
-            # ----------------------------------------------------
+            # ✅ Uniquement pour la transition مهدد → خلاف
+            if child.status_updated_from_threatened:
+                transitioned_children.append(child)
 
             class DelinquentWrapper:
                 pass
 
             wrapper = DelinquentWrapper()
-
             wrapper.id = child.id
-
             wrapper.prenom = child.first_name
-
             wrapper.nom = child.last_name
-
             wrapper.sexe = child.gender
-
             wrapper.date_naissance = child.birth_date
-
             wrapper.num_extrait_naissance = child.uid
-
             wrapper.delegue = child.delegate_ch
-
             wrapper.uid = child.uid
-
             wrapper.can_notify = is_delegate
-
             wrapper.child_id = child.id
-
             wrapper.source = "Child"
-
             wrapper.status = child.status
+            wrapper.status_updated_from_threatened = child.status_updated_from_threatened
+            wrapper.status_updated_from_delinquent = child.status_updated_from_delinquent   # ✅ NOUVEAU
+            wrapper.status_updated_at = child.status_updated_at
 
             if child.delegate_ch:
-
-                wrapper.delegate_full_name = (
-                    f"{child.delegate_ch.first_name} "
-                    f"{child.delegate_ch.last_name}"
-                )
-
+                wrapper.delegate_full_name = f"{child.delegate_ch.first_name} {child.delegate_ch.last_name}"
             else:
-
                 wrapper.delegate_full_name = "غير معروف"
 
             delinquants.append(wrapper)
 
-        # ========================================================
-        # DEBUG FINAL
-        # ========================================================
-
-        print("----------------------------------------------")
-
-        print(
-            f"✅ Total EnfantDelinquant : "
-            f"{len(delinquants_from_model)}"
-        )
-
-        print(
-            f"✅ Total Child DELINQUENT : "
-            f"{len(transitioned_children)}"
-        )
-
-        print(
-            f"✅ Total liste délinquants : "
-            f"{len(delinquants)}"
-        )
-
-        print("----------------------------------------------")
-
-        for enfant in delinquants:
-
-            print(
-                "  - Délinquant : "
-                f"{getattr(enfant, 'prenom', '?')} "
-                f"{getattr(enfant, 'nom', '?')}"
-            )
-
-            print(
-                "    ID : "
-                f"{getattr(enfant, 'id', '?')}"
-            )
-
-            print(
-                "    Child ID : "
-                f"{getattr(enfant, 'child_id', 'N/A')}"
-            )
-
-            print(
-                "    can_notify : "
-                f"{getattr(enfant, 'can_notify', False)}"
-            )
-
-            print(
-                "    delegate_full_name : "
-                f"{getattr(enfant, 'delegate_full_name', 'Non défini')}"
-            )
-
     # ============================================================
-    # 9. CONTEXT
+    # 11. CONTEXT
     # ============================================================
-
     context = {
-
-        # Enfants actuellement menacés
         'menaced': menaced,
-
-        # Liste générale des délinquants
         'delinquants': delinquants,
-
-        # Child ayant status = DELINQUENT
-        #
-        # IMPORTANT :
-        # ce sont de vrais objets Child
-        'transitioned_children': transitioned_children,
-
-        # Liste des wilayas
-        'WILAYAS': WILAYAS,
-
-        # Une recherche a-t-elle été effectuée ?
+        'transitioned_children': transitioned_children,           # مهدد ثم خلاف
+        'delinquent_then_menaced': delinquent_then_menaced,       # ✅ خلاف ثم مهدد
+        'WILAYAS': Child.TUNISIA_GOVERNORATES,
         'search_attempted': search_attempted,
-
-        # Utilisateur délégué ?
         'is_delegate': is_delegate,
     }
 
-    # ============================================================
-    # 10. RENDU DU TEMPLATE
-    # ============================================================
-
-    return render(
-        request,
-        'account/recherche_enfants.html',
-        context
-    )
-
-
-
+    return render(request, 'account/recherche_enfants.html', context)
 
 # ==================== EMAIL ====================
 
@@ -5889,18 +5652,28 @@ def intervention_delete(request, id):
 def enfant_list(request):
     search_query = request.GET.get('q', '')
 
-    enfants = Child.objects.exclude(status="THREATENED")
+    from django.db.models import Q
+
+    enfants = Child.objects.none()
+
+    if hasattr(request.user, 'delegate_profile'):
+        delegate = request.user.delegate_profile
+        # ✅ Garder les enfants actuellement délinquants
+        # PLUS ceux qui étaient délinquants et ont été transitionnés
+        enfants = Child.objects.filter(
+            Q(delegate_ch=delegate) | Q(notifications__created_by=delegate),
+            Q(status="DELINQUENT") | Q(status_updated_from_delinquent=True),
+        ).distinct().order_by('-created_at')
+
     social_file = SocialFile.objects.all()
 
     if search_query:
         query = (
-            Q(nom__icontains=search_query) |
-            Q(prenom__icontains=search_query)
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query)
         )
-
         if search_query.isdigit():
             query |= Q(id=int(search_query))
-
         enfants = enfants.filter(query)
 
     total_enfants = enfants.count()
@@ -5918,7 +5691,6 @@ def enfant_list(request):
         'total_not_specified': total_not_specified,
         'total_social_files': total_social_files,
     })
-
 
 
 # ==================== CHILD REGISTRATION ====================
@@ -6029,8 +5801,22 @@ from django.shortcuts import render, get_object_or_404, redirect
 def central_enfants_juveniles(request):
     query = request.GET.get('q', '').strip()
 
-    # ==================== 1. Enfants du modèle EnfantDelinquant ====================
+    ROLES_AUTORISES = ['chef de bureau', 'central']
+    can_delete = (
+        request.user.is_superuser
+        or (
+            hasattr(request.user, 'delegate_profile')
+            and request.user.delegate_profile.role in ROLES_AUTORISES
+        )
+    )
+    show_hidden = request.GET.get('show_hidden') == '1' and can_delete
+
+    # ==================== 1. EnfantDelinquant ====================
     enfants_delinquant_model = EnfantDelinquant.objects.select_related('delegue').all()
+
+    # ✅ Filtrer les cachés (le modèle doit avoir is_hidden)
+    if not show_hidden:
+        enfants_delinquant_model = enfants_delinquant_model.filter(is_hidden=False)
 
     if query:
         filters = Q()
@@ -6038,7 +5824,6 @@ def central_enfants_juveniles(request):
         filters |= Q(prenom__icontains=query)
         filters |= Q(uid__icontains=query)
         filters |= Q(num_extrait_naissance__icontains=query)
-
         try:
             if '/' in query:
                 parts = query.split('/')
@@ -6050,25 +5835,25 @@ def central_enfants_juveniles(request):
                 filters |= Q(date_naissance=date_obj)
         except (ValueError, IndexError):
             pass
-
         if query.isdigit():
             filters |= Q(id=int(query))
-
         for code, name in WILAYAS:
             if query.lower() in name.lower():
                 filters |= Q(delegue__wilaya=code)
-
         enfants_delinquant_model = enfants_delinquant_model.filter(filters)
 
-    # ==================== 2. Enfants du modèle Child avec status='DELINQUENT' ====================
+    # ==================== 2. Child DELINQUENT ====================
     enfants_child_model = Child.objects.filter(status='DELINQUENT').select_related('delegate_ch')
+
+    # ✅ Filtrer les cachés
+    if not show_hidden:
+        enfants_child_model = enfants_child_model.filter(is_hidden=False)
 
     if query:
         filters_child = Q()
         filters_child |= Q(first_name__icontains=query)
         filters_child |= Q(last_name__icontains=query)
         filters_child |= Q(uid__icontains=query)
-
         try:
             if '/' in query:
                 parts = query.split('/')
@@ -6080,23 +5865,21 @@ def central_enfants_juveniles(request):
                 filters_child |= Q(birth_date=date_obj)
         except (ValueError, IndexError):
             pass
-
         if query.isdigit():
             filters_child |= Q(id=int(query))
-
         for code, name in Child.TUNISIA_GOVERNORATES:
             if query.lower() in name.lower():
                 filters_child |= Q(birth_governorate=code)
-
         enfants_child_model = enfants_child_model.filter(filters_child)
 
-    # ==================== 3. Fusion des deux listes avec wrapper compatible template ====================
+    # ==================== 3. Fusion ====================
     class DelinquentWrapper:
-        """Wrapper pour rendre un Child compatible avec les champs attendus par le template
-        (nom, prenom, sexe, date_naissance, num_extrait_naissance, delegue, uid, id)."""
         pass
 
-    combined = list(enfants_delinquant_model)
+    combined = []
+    for e in enfants_delinquant_model:
+        e.source_model = 'delinquant'    # ✅ NOUVEAU
+        combined.append(e)
 
     for child in enfants_child_model:
         wrapper = DelinquentWrapper()
@@ -6108,13 +5891,11 @@ def central_enfants_juveniles(request):
         wrapper.num_extrait_naissance = child.uid
         wrapper.uid = child.uid
         wrapper.delegue = child.delegate_ch
-        # Marqueur pour savoir de quel modèle vient l'objet (utile si besoin
-        # d'adapter l'URL de suppression selon le type, voir note plus bas)
-        wrapper.source_model = 'child'
+        wrapper.source_model = 'child'           
+        wrapper.is_hidden = child.is_hidden      
         wrapper.date_creation = child.created_at
         combined.append(wrapper)
 
-    # Tri combiné par date de création (du plus récent au plus ancien)
     combined.sort(
         key=lambda e: getattr(e, 'date_creation', None) or timezone.now(),
         reverse=True
@@ -6123,25 +5904,39 @@ def central_enfants_juveniles(request):
     paginator = Paginator(combined, 25)
     page_obj = paginator.get_page(request.GET.get('page'))
 
-    context = {
+    return render(request, 'central/central_enfants_juvéniles.html', {
         'page_obj': page_obj,
         'query': query,
         'total_results': len(combined) if query else None,
         'total_children': len(combined),
         'WILAYAS': WILAYAS,
-    }
-
-    return render(request, 'central/central_enfants_juvéniles.html', context)
-
+        'can_delete': can_delete,       
+        'show_hidden': show_hidden,    
+    })
 
 @login_required
 def central_enfants_menaces(request):
     query = request.GET.get('q', '').strip()
 
+    ROLES_AUTORISES = ['chef de bureau', 'central']
+    can_delete = (
+        request.user.is_superuser
+        or (
+            hasattr(request.user, 'delegate_profile')
+            and request.user.delegate_profile.role in ROLES_AUTORISES
+        )
+    )
+    # ✅ NOUVEAU : masquer les enfants cachés par défaut
+    show_hidden = request.GET.get('show_hidden') == '1' and can_delete
+
     enfants = Child.objects.filter(
         status='THREATENED',
         nationality='TUN'
     ).select_related('delegate_ch').order_by('-created_at')
+
+    # ✅ NOUVEAU
+    if not show_hidden:
+        enfants = enfants.filter(is_hidden=False)
 
     if query:
         filters = Q()
@@ -6177,6 +5972,8 @@ def central_enfants_menaces(request):
         'page_obj': page_obj,
         'query': query,
         'total_children': enfants.count(),
+        'can_delete': can_delete,
+        'show_hidden': show_hidden,   # ✅ NOUVEAU
     })
 
 
@@ -6184,9 +5981,22 @@ def central_enfants_menaces(request):
 def central_enfants_etrangers(request):
     query = request.GET.get('q', '').strip()
 
+    ROLES_AUTORISES = ['chef de bureau', 'central']
+    can_delete = (
+        request.user.is_superuser
+        or (
+            hasattr(request.user, 'delegate_profile')
+            and request.user.delegate_profile.role in ROLES_AUTORISES
+        )
+    )
+    show_hidden = request.GET.get('show_hidden') == '1' and can_delete
+
     enfants = Child.objects.filter(
         nationality="FOREIGN"
     ).select_related('delegate_ch').order_by('-created_at')
+
+    if not show_hidden:
+        enfants = enfants.filter(is_hidden=False)
 
     if query:
         filters = Q()
@@ -6204,8 +6014,6 @@ def central_enfants_etrangers(request):
             if key in query.lower():
                 filters |= Q(foreign_country=code)
         
-        
-        
         if query.isdigit():
             filters |= Q(id=int(query))
         
@@ -6218,6 +6026,8 @@ def central_enfants_etrangers(request):
         'page_obj': page_obj,
         'query': query,
         'total_children': enfants.count(),
+        'can_delete': can_delete,      
+        'show_hidden': show_hidden,    
     })
 
 
@@ -6225,9 +6035,22 @@ def central_enfants_etrangers(request):
 def central_enfants_hors_mariage(request):
     query = request.GET.get('q', '').strip()
 
+    ROLES_AUTORISES = ['chef de bureau', 'central']
+    can_delete = (
+        request.user.is_superuser
+        or (
+            hasattr(request.user, 'delegate_profile')
+            and request.user.delegate_profile.role in ROLES_AUTORISES
+        )
+    )
+    show_hidden = request.GET.get('show_hidden') == '1' and can_delete
+
     enfants = Child.objects.filter(
         birth_status="UNMARRIED"
     ).select_related('delegate_ch').order_by('-created_at')
+
+    if not show_hidden:
+        enfants = enfants.filter(is_hidden=False)
 
     if query:
         filters = Q()
@@ -6269,7 +6092,59 @@ def central_enfants_hors_mariage(request):
         'page_obj': page_obj,
         'query': query,
         'total_children': enfants.count(),
+        'can_delete': can_delete,      
+        'show_hidden': show_hidden,    
     })
+
+
+# ==================== SOFT-HIDE : إخفاء / إظهار ====================
+
+@login_required
+@require_POST
+def toggle_child_visibility(request, pk, model_type):
+    """
+    Bascule is_hidden pour un Child ou un EnfantDelinquant.
+    Réservé à 'chef de bureau', 'central' et superuser.
+    NE SUPPRIME PAS l'enfant — c'est juste un masquage.
+    """
+    ROLES_AUTORISES = ['chef de bureau', 'central']
+
+    # ✅ Vérification des droits
+    if not request.user.is_superuser:
+        if not hasattr(request.user, 'delegate_profile'):
+            messages.error(request, "❌ Vous n'avez pas les droits.")
+            return redirect('index2')
+        if request.user.delegate_profile.role not in ROLES_AUTORISES:
+            messages.error(request, "❌ Votre rôle ne permet pas cette action.")
+            return redirect('index2')
+
+    # ✅ Récupération de l'objet
+    if model_type == 'child':
+        obj = get_object_or_404(Child, pk=pk)
+        label = f"{obj.first_name} {obj.last_name}"
+    elif model_type == 'delinquant':
+        obj = get_object_or_404(EnfantDelinquant, pk=pk)
+        label = f"{obj.prenom} {obj.nom}"
+    else:
+        messages.error(request, "❌ نوع غير معروف")
+        return redirect('index2')
+
+    # ✅ Toggle
+    obj.is_hidden = not obj.is_hidden
+    obj.hidden_at = timezone.now() if obj.is_hidden else None
+
+    if obj.is_hidden and hasattr(request.user, 'delegate_profile'):
+        obj.hidden_by = request.user.delegate_profile
+    elif not obj.is_hidden:
+        obj.hidden_by = None
+
+    obj.save()
+
+    action = "إخفاء" if obj.is_hidden else "إظهار"
+    messages.success(request, f"✅ تم {action} الطفل {label} بنجاح")
+
+    next_url = request.POST.get('next') or request.META.get('HTTP_REFERER') or '/'
+    return redirect(next_url)
 
 
 # ==================== FONCTIONS DE SUPPRESSION ====================
@@ -6587,11 +6462,9 @@ def enfant_delinquent_detail(request, enfant_id):
     # ============================================================
 
     child = Child.objects.filter(
+        Q(status='DELINQUENT') | Q(status_updated_from_delinquent=True),
         id=enfant_id,
-        status='DELINQUENT'
-    ).select_related(
-        'delegate_ch'
-    ).first()
+    ).select_related('delegate_ch').first()
 
     if child:
 

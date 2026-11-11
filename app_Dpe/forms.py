@@ -24,11 +24,11 @@ class ChildForm(forms.ModelForm):
     
 
     birth_date = forms.DateField(
-        required=False,  # ✨ هنا نلغي required
+        required=False, 
         widget=forms.DateInput(
             attrs={
                 'type': 'date',
-                'max': date.today().strftime('%Y-%m-%d'),  # تمنع تواريخ مستقبلية
+                'max': date.today().strftime('%Y-%m-%d'),  
             }
         )
     )

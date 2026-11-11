@@ -1760,22 +1760,31 @@ setTimeout(function() {
                 <h4 class="fw-bold text-dark mb-3">
           هل الطفل مهدد أم في خلاف مع القانون؟
         </h4>
-                {% if child and child.id %}
-                <form method="post" action="{% url 'set_child_status' child.id %}">
-                    {% csrf_token %}
-                    <div class="d-flex justify-content-center gap-3 flex-wrap">
-                       <button type="submit" name="status" value="THREATENED"
-        class="btn btn-black px-4 py-2 fw-bold">
-    طفل مهدد
-</button>
+        {% if child and child.id %}
+<form method="post" action="{% url 'set_child_status' child.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="from_creation" value="1">
 
-<button type="submit" name="status" value="DELINQUENT"
-        class="btn btn-black px-4 py-2 fw-bold">
-    طفل في خلاف مع القانون
-</button>
-                    </div>
-                </form>
-                {% endif %}
+    <div class="mb-3" id="dateFaitWrapper" style="display:none;">
+        <label class="form-label fw-bold">تاريخ اقتراف الفعلة (إن كان خلاف مع القانون)</label>
+        <input type="date" name="date_fait" class="form-control"
+               max="{% now 'Y-m-d' %}">
+    </div>
+
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <button type="submit" name="status" value="THREATENED"
+                class="btn btn-black px-4 py-2 fw-bold"
+                onclick="document.getElementById('dateFaitWrapper').style.display='none';">
+            طفل مهدد
+        </button>
+        <button type="submit" name="status" value="DELINQUENT"
+                class="btn btn-black px-4 py-2 fw-bold"
+                onclick="document.getElementById('dateFaitWrapper').style.display='block';">
+            طفل في خلاف مع القانون
+        </button>
+    </div>
+</form>
+{% endif %}
             </div>
         </div>
     </div>

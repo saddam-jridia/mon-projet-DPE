@@ -529,6 +529,10 @@ class Child(models.Model):
         default=False,
         verbose_name="تم تحيين الوضعية من طفل مهدد إلى طفل في خلاف مع القانون"
     )
+    status_updated_from_delinquent = models.BooleanField(
+        default=False,
+        verbose_name="تم تحيين الوضعية من طفل في خلاف مع القانون إلى طفل مهدد"
+    )
 
     # تاريخ تحيين الوضعية
     status_updated_at = models.DateTimeField(
@@ -542,8 +546,26 @@ class Child(models.Model):
     null=True
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    is_hidden = models.BooleanField(
+        default=False,
+        db_index=True,
+        verbose_name="مخفي"
+    )
+    hidden_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="تاريخ الإخفاء"
+    )
+    hidden_by = models.ForeignKey(
+        'Delegate',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='hidden_children',
+        verbose_name="الذي أخفى"
+    )
 
+    
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.uid})"
         
@@ -1691,6 +1713,20 @@ class EnfantDelinquant(models.Model):
         null=True,
         blank=True,
         verbose_name="المعرف الوحيد"
+    )
+
+    is_hidden = models.BooleanField(
+        default=False,
+        db_index=True,
+        verbose_name="مخفي"
+    )
+    hidden_at = models.DateTimeField(null=True, blank=True)
+    hidden_by = models.ForeignKey(
+        Delegate,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='hidden_delinquents'
     )
 
     def __str__(self):

@@ -10,7 +10,6 @@
    Style GRIS/DORÉ - Dimensions ajustées
 ================================= */
 
-/* Wrapper principal - padding réduit */
 .list-wrapper {
     min-height: calc(100vh - 150px);
     display: flex;
@@ -23,7 +22,6 @@
         linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
 }
 
-/* En-tête de page - plus compact */
 .page-header {
     background: #ffffff;
     border-radius: 16px;
@@ -35,7 +33,6 @@
     max-width: 1200px;
 }
 
-/* Titre centré - plus compact */
 .header-title {
     text-align: center;
     margin-bottom: 1rem;
@@ -60,7 +57,6 @@
     font-size: 1.4rem;
 }
 
-/* Section contrôles */
 .header-controls {
     display: flex;
     justify-content: space-between;
@@ -69,7 +65,6 @@
     gap: 0.75rem;
 }
 
-/* Barre de recherche - plus compacte */
 .search-group {
     display: flex;
     align-items: center;
@@ -114,7 +109,6 @@
     outline: none;
 }
 
-/* Bouton بحث - taille réduite */
 .search-btn {
     background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
     color: white;
@@ -142,7 +136,6 @@
     font-size: 0.85rem;
 }
 
-/* Bouton إلغاء - taille réduite */
 .clear-btn {
     background: #6b7280;
     color: white;
@@ -170,7 +163,6 @@
     font-size: 0.85rem;
 }
 
-/* Stats badge - plus compact */
 .stats-badge {
     background: #f0f0f0;
     border: 2px solid #b8860b;
@@ -198,7 +190,6 @@
     color: #666;
 }
 
-/* Messages - plus compacts */
 .messages-wrapper {
     width: 100%;
     max-width: 1200px;
@@ -250,7 +241,6 @@
     opacity: 1;
 }
 
-/* Table container - plus compact */
 .table-container {
     background: #ffffff;
     border-radius: 16px;
@@ -274,7 +264,6 @@
     font-family: 'Tajawal', 'Times New Roman', serif;
 }
 
-/* TABLE HEADER - NOIR/DORÉ */
 .table thead th {
     background: #1a1a1a;
     color: #b8860b;
@@ -297,7 +286,15 @@
     background: #f8f9fa;
 }
 
-/* Badges - plus compacts */
+/* ✅ NOUVEAU : Ligne enfant masqué */
+tr.row-hidden {
+    opacity: 0.55;
+    background: #f9fafb;
+}
+tr.row-hidden:hover {
+    opacity: 0.85;
+}
+
 .badge-uid {
     background: #f0f0f0;
     color: #2c2c2c;
@@ -382,7 +379,23 @@
     gap: 0.2rem;
 }
 
-/* Bouton suppression - taille réduite */
+/* ✅ NOUVEAU : Badge مخفي */
+.badge-hidden {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #dc2626;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    margin-right: 0.3rem;
+    white-space: nowrap;
+}
+
+/* Bouton حذف نهائي */
 .btn-danger {
     background: #dc3545;
     border: none;
@@ -405,7 +418,81 @@
     text-decoration: none;
 }
 
-/* Pagination - plus compacte */
+/* ✅ NOUVEAU : Bouton إخفاء (jaune) */
+.btn-hide {
+    background: #f59e0b;
+    border: none;
+    color: white;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-hide:hover {
+    background: #d97706;
+    transform: scale(1.08);
+}
+
+/* ✅ NOUVEAU : Bouton إظهار (vert) */
+.btn-show {
+    background: #10b981;
+    border: none;
+    color: white;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-show:hover {
+    background: #059669;
+    transform: scale(1.08);
+}
+
+/* ✅ NOUVEAU : Case "عرض المخفيين" */
+.show-hidden-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    padding: 0.5rem 1rem;
+    background: #fef3c7;
+    border: 1px dashed #b8860b;
+    border-radius: 10px;
+}
+
+.show-hidden-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-family: 'Tajawal', 'Times New Roman', serif;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.show-hidden-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #b8860b;
+}
+
+.show-hidden-label i {
+    color: #b8860b;
+    font-size: 1rem;
+}
+
 .pagination {
     margin-top: 1rem;
     margin-bottom: 0;
@@ -436,7 +523,6 @@
     background: #f9fafb;
 }
 
-/* État vide - plus compact */
 .empty-state {
     text-align: center;
     padding: 2rem 1.5rem;
@@ -458,13 +544,11 @@
     color: #fca5a5;
 }
 
-/* Texte muted */
 .text-muted {
     color: #9ca3af !important;
     font-size: 0.75rem;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .list-wrapper {
         padding: 1rem;
@@ -516,7 +600,7 @@
         padding: 0.2rem 0.5rem;
     }
     
-    .btn-danger {
+    .btn-danger, .btn-hide, .btn-show {
         padding: 0.3rem 0.6rem;
         font-size: 0.7rem;
     }
@@ -566,6 +650,20 @@
                         {% endif %}
                     </div>
                 </form>
+
+                <!-- ✅ NOUVEAU : Filtre عرض المخفيين -->
+                {% if can_delete %}
+                <form method="GET" class="show-hidden-wrapper">
+                    {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                    <label class="show-hidden-label">
+                        <input type="checkbox" name="show_hidden" value="1"
+                               {% if show_hidden %}checked{% endif %}
+                               onchange="this.form.submit()">
+                        <i class="fas fa-eye-slash"></i>
+                        عرض الأطفال المخفيين
+                    </label>
+                </form>
+                {% endif %}
             </div>
 
             <!-- Stats -->
@@ -617,18 +715,26 @@
                         <th>الولاية</th>
                         <th>الجنسية</th>
                         <th>الوضعية القانونية</th>
-                        <th>حذف</th>
+                        {% if can_delete %}
+                            <th>إخفاء / إظهار</th>
+                            <th>حذف نهائي</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for child in page_obj %}
-                    <tr>
+                    <tr class="{% if child.is_hidden %}row-hidden{% endif %}">
                         <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
                         <td>
                             <span class="badge-uid">{{ child.uid|default:"-" }}</span>
                         </td>
                         <td>
                             <strong>{{ child.first_name }}</strong>
+                            {% if child.is_hidden %}
+                                <span class="badge-hidden" title="مخفي">
+                                    <i class="fas fa-eye-slash"></i> مخفي
+                                </span>
+                            {% endif %}
                         </td>
                         <td>
                             <strong>{{ child.last_name }}</strong>
@@ -671,19 +777,38 @@
                                 {{ child.get_nationality_display|default:"أجنبي" }}
                             </span>
                         </td>
-                       
                         <td>
-                            <a href="{% url 'enfant_menace_delete' child.id %}" 
+                            <!-- ⚠️ Votre template n'avait rien ici — colonne vide -->
+                            <span class="text-muted">-</span>
+                        </td>
+                        {% if can_delete %}
+                        <td>
+                            <!-- ✅ NOUVEAU : Bouton إخفاء / إظهار -->
+                            <form method="POST"
+                                  action="{% url 'toggle_child_visibility' child.id 'child' %}"
+                                  style="display:inline; margin:0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button type="submit"
+                                        class="{% if child.is_hidden %}btn-show{% else %}btn-hide{% endif %}"
+                                        title="{% if child.is_hidden %}إظهار{% else %}إخفاء{% endif %}">
+                                    <i class="fas fa-{% if child.is_hidden %}eye{% else %}eye-slash{% endif %}"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            <!-- ✅ CORRIGÉ : delete_enfant_etranger au lieu de enfant_menace_delete -->
+                            <a href="{% url 'delete_enfant_etranger' child.id %}" 
                                class="btn-danger"
-                               title="حذف">
-                               
+                               title="حذف نهائي">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </td>
+                        {% endif %}
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="10" class="empty-state {% if query %}search-active{% endif %}">
+                        <td colspan="{% if can_delete %}11{% else %}9{% endif %}" class="empty-state {% if query %}search-active{% endif %}">
                             <i class="fas fa-{% if query %}search{% else %}globe{% endif %}"></i>
                             <strong>
                                 {% if query %}
@@ -709,7 +834,7 @@
             <ul class="pagination">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}{% if show_hidden %}&show_hidden=1{% endif %}">
                             <i class="fas fa-chevron-right"></i>
                         </a>
                     </li>
@@ -726,14 +851,14 @@
                         </li>
                     {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query|urlencode }}{% endif %}">{{ num }}</a>
+                            <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query|urlencode }}{% endif %}{% if show_hidden %}&show_hidden=1{% endif %}">{{ num }}</a>
                         </li>
                     {% endif %}
                 {% endfor %}
                 
                 {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}{% if show_hidden %}&show_hidden=1{% endif %}">
                             <i class="fas fa-chevron-left"></i>
                         </a>
                     </li>
