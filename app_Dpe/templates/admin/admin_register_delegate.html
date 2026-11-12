@@ -358,22 +358,24 @@
                 </div>
             </div>
 
-            <!-- الصفة -->
+                        <!-- الصفة -->
             <div class="col-md-6 form-section">
                 <label class="form-label">الصفة *</label>
                 <div class="input-icon">
                     <i class="fas fa-user-tag"></i>
-                    <select name="role" class="form-select role-select" required>
+                    <!-- Ajout de l'id="role_select" ici -->
+                    <select name="role" id="role_select" class="form-select role-select" required>
                         <option value="">اختر الصفة</option>
-                        <option value="central">المندوب العام </option>
-                        <option value="regional">مندوب حماية الطفولة </option>
+                        <option value="central">المندوب العام</option>
+                        <option value="regional">مندوب حماية الطفولة</option>
                         <option value="chef de bureau">Admin</option>
                     </select>
                 </div>
             </div>
 
             <!-- الرمز (auto-incrémenté affiché) -->
-            <div class="col-md-6 form-section">
+            <!-- Ajout de l'id="unique_id_container" et style="display: none;" ici -->
+            <div class="col-md-6 form-section" id="unique_id_container" style="display: none;">
                 <label class="form-label">الرمز</label>
                 <div class="input-icon">
                     <i class="fas fa-barcode"></i>
@@ -452,27 +454,49 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const wilayaSelect = document.getElementById('wilaya');
+    const roleSelect = document.getElementById('role_select');
+    const uniqueIdContainer = document.getElementById('unique_id_container');
     const previewInput = document.getElementById('unique_id_preview');
     const delegateCodeInput = document.getElementById('delegate_code');
     const phoneInput = document.getElementById('phone');
 
-    // Quand on change de wilaya, récupérer le prochain code
-    wilayaSelect.addEventListener('change', function () {
-        const wilaya = this.value;
-        if (!wilaya) {
-            previewInput.value = '';
-            return;
+    // Fonction pour afficher/masquer le code et le générer
+    function toggleUniqueId() {
+        const role = roleSelect.value;
+        
+        if (role === 'regional') {
+            // Afficher le champ
+            uniqueIdContainer.style.display = 'block';
+            
+            // Si une wilaya est déjà sélectionnée, on génère le code
+            const wilaya = wilayaSelect.value;
+            if (wilaya) {
+                fetch("{% url 'ajax_next_delegate_id' %}?wilaya=" + encodeURIComponent(wilaya))
+                .then(resp => resp.json())
+                .then(data => {
+                    previewInput.value = data.next_id || '';
+                })
+                .catch(err => {
+                    previewInput.value = "خطأ في الشبكة";
+                });
+            } else {
+                previewInput.value = '';
+            }
+        } else {
+            // Cacher le champ pour central et chef de bureau
+            uniqueIdContainer.style.display = 'none';
+            previewInput.value = ''; // Vider le champ
         }
+    }
 
-        fetch("{% url 'ajax_next_delegate_id' %}?wilaya=" + encodeURIComponent(wilaya))
-        .then(resp => resp.json())
-        .then(data => {
-            previewInput.value = data.next_id || '';
-        })
-        .catch(err => {
-            previewInput.value = "خطأ في الشبكة";
-        });
-    });
+    // Écouter le changement de rôle
+    roleSelect.addEventListener('change', toggleUniqueId);
+
+    // Écouter le changement de wilaya
+    wilayaSelect.addEventListener('change', toggleUniqueId);
+
+    // Appel initial au chargement de la page
+    toggleUniqueId();
 
     // Validation téléphone (8 chiffres)
     phoneInput.addEventListener('input', e => {
@@ -498,12 +522,8 @@ document.addEventListener('DOMContentLoaded', function () {
 // Gestion de la soumission avec état de chargement
 function handleSubmit(event) {
     const btn = document.getElementById('submitBtn');
-    
-    // Désactiver le bouton et montrer le chargement
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> جاري التسجيل...';
-    
-    // Permettre la soumission normale du formulaire
     return true;
 }
 </script>

@@ -1,5 +1,5 @@
 from django.db import models
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.core.validators import RegexValidator
 from django.utils.text import slugify
 from django.contrib.auth.models import User
@@ -54,8 +54,8 @@ def generate_unique_number():
 
 class Delegate(models.Model):
     wilaya = models.CharField(max_length=2, choices=WILAYAS, verbose_name="الولاية")
-    unique_id = models.CharField(max_length=20, unique=True, blank=True)  
-    delegate_code = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="المعرف الوحيد")  # 10 chiffres saisis
+    unique_id = models.CharField(max_length=20, unique=True, blank=True, null=True)  
+    delegate_code = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="المعرف الوحيد")
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     role = models.CharField(max_length=100, choices=ROLES, verbose_name="الدور")
@@ -71,7 +71,8 @@ class Delegate(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        if not self.unique_id:
+       
+        if not self.unique_id and self.role == 'regional':
             prefix = f"D{self.wilaya}_"
             with transaction.atomic():
                 existing_ids = Delegate.objects.filter(

@@ -17,8 +17,8 @@ urlpatterns = [
     path('logout/', views.View_logout, name='logout'),
 
     # Delegate
-    path('delegate/register/', views.register_delegate, name='register_delegate'),
-    path('delegate/create/', views.create_delegate, name='delegate_create'),
+    #path('delegate/register/', views.register_delegate, name='register_delegate'),
+    #path('delegate/create/', views.create_delegate, name='delegate_create'),
     path('ajax/next-delegate-id/', views.ajax_next_delegate_id, name='ajax_next_delegate_id'),
     path('delegates/', views.delegate_list, name='delegate_list'),
     path('delegates/<int:pk>/edit/', views.delegate_edit, name='delegate_edit'),
