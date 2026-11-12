@@ -47,26 +47,21 @@ def safe_date(value):
         return None
 
 def admin_required(view_func):
-    """
-    Décorateur pour vérifier que l'utilisateur est un administrateur (chef de bureau ou central)
-    """
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect('login_delegate')
+            return redirect('login_delegate')          
 
         allowed_roles = ['chef de bureau', 'central']
-        # Vérifier si l'utilisateur a un rôle autorisé
         if hasattr(request.user, 'delegate_profile'):
             if request.user.delegate_profile.role in allowed_roles:
-                return view_func(request, *args, **kwargs)
+                return view_func(request, *args, **kwargs)   
 
-        # Si l'utilisateur est superuser Django
         if request.user.is_superuser:
-            return view_func(request, *args, **kwargs)
+            return view_func(request, *args, **kwargs)  
 
         messages.error(request, "❌ Vous n'avez pas les droits pour accéder à cette page.")
-        return redirect('index2')
+        return redirect('index2')                      
 
     return wrapper
 
@@ -4491,6 +4486,7 @@ def View_logout(request):
     return redirect("login_delegate")
 
 @login_required
+@admin_required
 def home_tableauboard(request):
     """
     Dashboard Central - Statistiques pour toutes les 24 wilayas
@@ -4854,7 +4850,8 @@ def get_next_unique_id_for_wilaya(wilaya_code):
 
     return f"{prefix}{max_suffix + 1}"
 
-
+@login_required
+@admin_required
 def register_delegate(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -4898,11 +4895,16 @@ def register_delegate(request):
                         email=email or ""
                     )
 
+                    unique_id = None
+                    if role == 'regional':
+                        unique_id = get_next_unique_id_for_wilaya(wilaya)
+
                     # 2️⃣ Création Delegate
                     delegate = Delegate.objects.create(
                         user=user,
                         delegate_code=delegate_code,
                         wilaya=wilaya,
+                        unique_id=unique_id,
                         first_name=first_name,
                         last_name=last_name,
                         role=role,
@@ -4926,7 +4928,7 @@ def register_delegate(request):
             messages.error(request, f"أخطاء: {form.errors}")
             return redirect("register_delegate")
 
-    return render(request, "central/register_delegate.html")
+    return render(request, "admin/admin_register_delegate.html")
 
 
 def register_success_view(request):
@@ -4951,59 +4953,9 @@ def register_success_view(request):
         'generated_password': generated_password,
     }
     
-    return render(request, 'central/register_success.html', context)
+    return render(request, 'admin/admin_register_success.html', context)
 
 
-def create_delegate(request):
-    if request.method == "POST":
-        wilaya = request.POST.get("wilaya")
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        role = request.POST.get("role")
-        phone = request.POST.get("phone")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        unique_number = request.POST.get("unique_number")  # 12 chiffres
-
-        # Vérifications
-        if not wilaya or not first_name or not last_name or not email or not password:
-            messages.error(request, "جميع الحقول المطلوبة يجب أن تكون معبأة.")
-            return redirect("delegate_create")
-
-        if not re.fullmatch(r"\d{12}", unique_number):
-            messages.error(request, "الرقم يجب أن يحتوي على 12 رقمًا.")
-            return redirect("delegate_create")
-
-        with transaction.atomic():
-            # Créer l'utilisateur Django
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=password,
-                first_name=first_name,
-                last_name=last_name
-            )
-
-            # Générer unique_id
-            unique_id = get_next_unique_id_for_wilaya(wilaya)
-
-            # Créer le profil Delegate
-            delegate = Delegate.objects.create(
-                user=user,
-                wilaya=wilaya,
-                unique_id=unique_id,
-                unique_number=unique_number,
-                first_name=first_name,
-                last_name=last_name,
-                role=role,
-                phone=phone,
-                email=email
-            )
-
-        messages.success(request, f"تم تسجيل المندوب {first_name} {last_name} بنجاح!")
-        return redirect("login")
-
-    return render(request, "central/register_delegate.html")
 
 # ---------------------- AJAX ----------------------
 
@@ -5191,7 +5143,7 @@ def delegate_edit(request, pk):
         # REDIRECTION au lieu de render - C'est la clé !
         return redirect('delegate_list')
     
-    return render(request, 'central/delegate_edit.html', {
+    return render(request, 'admin/delegate_edit.html', {
         'delegate': delegate,
         'wilayas': WILAYAS,
         'roles': ROLES
@@ -5204,7 +5156,7 @@ def delegate_delete(request, pk):
         delegate.delete()
         messages.success(request, f"تم حذف المندوب {nom_complet} بنجاح.")
         return redirect('delegate_list')
-    return render(request, 'central/delegate_confirm_delete.html', {'delegate': delegate})
+    return render(request, 'admin/delegate_confirm_delete.html', {'delegate': delegate})
 
 
 def register_success(request):
@@ -5798,6 +5750,7 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 
 @login_required
+@admin_required
 def central_enfants_juveniles(request):
     query = request.GET.get('q', '').strip()
 
@@ -5915,6 +5868,7 @@ def central_enfants_juveniles(request):
     })
 
 @login_required
+@admin_required
 def central_enfants_menaces(request):
     query = request.GET.get('q', '').strip()
 
@@ -5978,6 +5932,7 @@ def central_enfants_menaces(request):
 
 
 @login_required
+@admin_required
 def central_enfants_etrangers(request):
     query = request.GET.get('q', '').strip()
 
@@ -6032,6 +5987,7 @@ def central_enfants_etrangers(request):
 
 
 @login_required
+@admin_required
 def central_enfants_hors_mariage(request):
     query = request.GET.get('q', '').strip()
 
@@ -6854,10 +6810,15 @@ def admin_register_delegate(request):
                         email=email or ""
                     )
 
+                    unique_id = None
+                    if role == 'regional':
+                        unique_id = get_next_unique_id_for_wilaya(wilaya)
+
                     delegate = Delegate.objects.create(
                         user=user,
                         delegate_code=delegate_code,
                         wilaya=wilaya,
+                        unique_id=unique_id,
                         first_name=first_name,
                         last_name=last_name,
                         role=role,
@@ -6922,6 +6883,7 @@ def admin_delegate_delete(request, pk):
 # ==================== ADMIN - GESTION DES ENFANTS ====================
 
 @login_required
+@admin_required
 def admin_dashboard(request):
     """
     Dashboard Admin - Gestion des délégués uniquement
